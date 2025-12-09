@@ -2,37 +2,189 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Didactic-Eureka - Modelo Maestro Óptimo</title>
+<title>Didactic-Eureka - Modelo Maestro</title>
 <style>
-/* ===== Diseño gráfico Experimento 2 ===== */
+/* ===== Diseño gráfico Modelo Maestro inspirado en Michael Millerman ===== */
 body {
     font-family: "Arial", sans-serif;
-    margin: 2em;
-    background: #f0f0f0;
+    margin: 0;
+    background: #f5f7fa;
     color: #333;
 }
 h1 {
     text-align: center;
     font-size: 2em;
-    margin-bottom: 1em;
+    margin: 1em 0;
 }
 .container {
-    max-width: 1000px;
-    margin: auto;
-    padding: 2em;
+    display: flex;
+    max-width: 1200px;
+    margin: 2em auto;
     background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+.sidebar {
+    width: 280px;
+    border-right: 1px solid rgba(0,0,0,0.1);
+    background: #f9fbfc;
+    padding: 1em;
+    overflow-y: auto;
+}
+.sidebar h2 {
+    font-size: 1.2em;
+    margin-bottom: 1em;
+}
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+.sidebar li {
+    margin: 0.5em 0;
+    padding: 0.3em 0.5em;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+.sidebar li:hover {
+    background: #e6f0fa;
+}
+.sidebar a {
+    color: #2a558f;
+    text-decoration: none;
+    font-weight: 500;
+}
+.sidebar a:hover {
+    text-decoration: underline;
+}
+.main {
+    flex: 1;
+    padding: 1em;
 }
 input[type="file"] {
     margin-bottom: 1em;
     padding: 0.5em;
     font-size: 1em;
+    width: 100%;
 }
-ul {
-    list-style: none;
-    padding: 0;
-    max-height: 300px;
-    overflow-y: auto;
-    border: 1px solid #ccc;
-    border-radius:
+iframe {
+    width: 100%;
+    height: 600px;
+    border: 2px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    background: #fff;
+}
+.spinner {
+    display: none;
+    text-align: center;
+    margin: 1em 0;
+    font-style: italic;
+    color: #2a558f;
+}
+</style>
+</head>
+<body>
+<h1>Didactic-Eureka - Modelo Maestro</h1>
+<div class="container">
+    <div class="sidebar">
+        <h2>Archivos de la carpeta</h2>
+        <input type="file" id="folderInput" webkitdirectory multiple>
+        <div class="spinner" id="spinner">Cargando...</div>
+        <ul id="fileList"></ul>
+    </div>
+    <div class="main">
+        <iframe id="viewer" src=""></iframe>
+    </div>
+</div>
+
+<script>
+// ------------------- Contenido inicial -------------------
+const archivos = {
+  "css/style.css": "body { background-color: #fff; font-family: Arial; }",
+  "js/script.js": "console.log('Script cargado');",
+  "img/logo.png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA...",
+  "docs/ejemplo.html": "<!DOCTYPE html><html><body><h2>Ejemplo</h2></body></html>"
+};
+
+// ------------------- Validación de navegador -------------------
+function validarNavegador() {
+  if (!('webkitdirectory' in document.createElement('input'))) {
+    alert("Tu navegador no soporta selección de carpetas completa. Usa Chrome, Edge u Opera.");
+  }
+}
+validarNavegador();
+
+// ------------------- Generar índice dinámico -------------------
+const fileList = document.getElementById("fileList");
+const viewer = document.getElementById("viewer");
+const spinner = document.getElementById("spinner");
+
+function generarIndice() {
+  fileList.innerHTML = "";
+  Object.keys(archivos).sort().forEach(path => {
+    const li = document.createElement("li");
+    const link = document.createElement("a");
+
+    if (archivos[path].startsWith("data:")) {
+      link.href = archivos[path];
+    } else {
+      const blobType = path.endsWith(".html") ? "text/html" :
+                       path.endsWith(".css") ? "text/css" :
+                       path.endsWith(".js") ? "text/javascript" : "text/plain";
+      const blob = new Blob([archivos[path]], {type: blobType});
+      link.href = URL.createObjectURL(blob);
+    }
+
+    link.textContent = path;
+    link.target = "viewer";
+
+    link.addEventListener("click", () => {
+      if (viewer.src) URL.revokeObjectURL(viewer.src);
+      spinner.style.display = "block";
+      setTimeout(()=>spinner.style.display="none",100);
+    });
+
+    li.appendChild(link);
+    fileList.appendChild(li);
+
+    if (archivos[path].length > 500000) {
+      console.warn(`Archivo grande detectado: ${path}`);
+    }
+  });
+}
+
+generarIndice();
+
+// ------------------- Manejo de carpetas seleccionadas dinámicamente -------------------
+document.getElementById("folderInput").addEventListener("change", (event) => {
+  const files = Array.from(event.target.files);
+  spinner.style.display = "block";
+
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const key = file.webkitRelativePath;
+      if (archivos[key]) {
+        let count = 1;
+        let newKey = key;
+        while(archivos[newKey]) { newKey = `${key}-${count++}`; }
+        archivos[newKey] = e.target.result;
+      } else {
+        archivos[key] = e.target.result;
+      }
+      generarIndice();
+    };
+
+    if (file.type.startsWith("image/")) {
+      reader.readAsDataURL(file);
+    } else {
+      reader.readAsText(file);
+    }
+  });
+
+  setTimeout(()=>spinner.style.display="none", 200);
+});
+</script>
+</body>
+</html>
