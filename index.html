@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Didactic-Eureka - Modelo Maestro Óptimo</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 2em; background: #f0f0f0; }
+h1 { color: #333; }
+input { margin-bottom: 1em; }
+ul { list-style: none; padding: 0; }
+li { margin: 0.3em 0; }
+a { color: #007bff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+iframe, object { width: 100%; height: 500px; border: 1px solid #ccc; margin-top: 1em; background: white; }
+.container { max-width: 1000px; margin: auto; padding: 1em; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+.spinner { display: none; text-align: center; margin-top: 1em; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Didactic-Eureka - Modelo Maestro Óptimo</h1>
+
+<p>Selecciona la carpeta raíz de tu proyecto para regenerar el índice:</p>
+<input type="file" id="folderInput" webkitdirectory multiple>
+<div class="spinner" id="spinner">Cargando...</div>
+<ul id="fileList"></ul>
+<iframe id="viewer" src=""></iframe>
+</div>
+
+<script>
+// ------------------- Contenido inicial de la carpeta -------------------
+const archivos = {
+  "css/style.css": "body { background-color: #fff; font-family: Arial; }",
+  "js/script.js": "console.log('Script cargado');",
+  "img/logo.png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA...",
+  "docs/ejemplo.html": "<!DOCTYPE html><html><body><h2>Ejemplo</h2></body></html>"
+};
+
+// ------------------- Función de auto-corrección y validación -------------------
+function validarNavegador() {
+  if (!('webkitdirectory' in document.createElement('input'))) {
+    alert("Tu navegador no soporta selección de carpetas completa. Usa Chrome, Edge u Opera.");
+  }
+}
+validarNavegador();
+
+// ------------------- Generar índice dinámico -------------------
+const fileList = document.getElementById("fileList");
+const viewer = document.getElementById("viewer");
+const spinner = document.getElementById("spinner");
+
+function generarIndice() {
+  fileList.innerHTML = "";
+  Object.keys(archivos).sort().forEach(path => {
+    const li = document.createElement("li");
+    const link = document.createElement("a");
+
+    if (archivos[path].startsWith("data:")) {
+      link.href = archivos[path]; // imagen u otro binario
+    } else {
+      const blobType = path.endsWith(".html") ? "text/html" : path.endsWith(".css") ? "text/css" : path.endsWith(".js") ? "text/javascript" : "text/plain";
+      const blob = new Blob([archivos[path]], {type: blobType});
+      link.href = URL.createObjectURL(blob);
+    }
+
+    link.textContent = path;
+    link.target = "viewer";
+
+    // Auto-liberar URL anterior para eficiencia
+    link.addEventListener("click", () => {
+      if (viewer.src) URL.revokeObjectURL(viewer.src);
+      spinner.style.display = "block";
+      setTimeout(()=>spinner.style.display="none",100); // pequeño delay para spinner
+    });
+
+    li.appendChild(link);
+    fileList.appendChild(li);
+
+    // Aviso de archivos grandes
+    if (archivos[path].length > 500000) {
+      console.warn(`Archivo grande detectado: ${path}, puede afectar rendimiento`);
+    }
+  });
+}
+
+generarIndice();
+
+// ------------------- Manejo de carpetas seleccionadas dinámicamente -------------------
+document.getElementById("folderInput").addEventListener("change", (event) => {
+  const files = Array.from(event.target.files);
+  spinner.style.display = "block";
+
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const key = file.webkitRelativePath;
+      if (archivos[key]) {
+        // Auto-corregir duplicados
+        let count = 1;
+        let newKey = key;
+        while(archivos[newKey]) { newKey = `${key}-${count++}`; }
+        archivos[newKey] = e.target.result;
+      } else {
+        archivos[key] = e.target.result;
+      }
+      generarIndice();
+    };
+
+    if (file.type.startsWith("image/")) {
+      reader.readAsDataURL(file);
+    } else {
+      reader.readAsText(file);
+    }
+  });
+
+  setTimeout(()=>spinner.style.display="none", 200);
+});
+</script>
+</body>
+</html>
