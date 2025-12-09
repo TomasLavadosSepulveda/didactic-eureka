@@ -2,9 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Didactic-Eureka - Modelo Maestro Ejemplar 1.6</title>
+<title>Didactic-Eureka</title>
 <style>
-/* ===== Pauta Maestra: Elegancia y color ===== */
+/* ===== Pauta Maestra: Estilo elegante y visual ===== */
 body {
     font-family: "Arial", sans-serif;
     margin: 0;
@@ -16,8 +16,13 @@ header {
     padding: 2em 1em;
     background: linear-gradient(90deg, #2a558f, #4b9cd3);
     color: white;
-    font-size: 2.2em;
+    font-size: 2.4em;
     font-weight: bold;
+}
+header p {
+    font-size: 1.2em;
+    color: #eef3fa;
+    margin-top: 0.5em;
 }
 .navbar {
     display: flex;
@@ -96,7 +101,10 @@ iframe {
 </head>
 <body>
 
-<header>Didactic-Eureka - Modelo Maestro</header>
+<header>
+  Didactic-Eureka
+  <p>Aprender y Mejorar</p>
+</header>
 
 <nav class="navbar">
   <ul id="navbar-categories">
@@ -109,43 +117,54 @@ iframe {
 </div>
 
 <script>
-// ===== Generar navbar dinámico desde la carpeta 5_contenido =====
+// ===== Principio de Inmutabilidad =====
+// Categorías fijas
+const categoriasFijas = ["Filosofía", "Ciencia", "Teología"];
 
-// Simulación de estructura de carpetas y archivos (Ejemplo)
-const contenido = {
-  "Filosofía": ["geometria_sagrada.html", "religion.html"],
-  "Cultura Antigua": ["grecia_antigua.html", "culturas_ancient.html", "culturas_mundo.html"],
-  "Ciencia": ["ciencia.html"],
-  "Modernidad": ["modernidad.html", "democracia.html"]
+// Simulación de estructura de carpeta madre (5_contenido)
+const carpetaMadre = {
+  "Filosofía": ["metafisica.html", "logica.html", "etica.html"],
+  "Ciencia": ["fisica.html", "biologia.html"],
+  "Teología": ["cristianismo.html", "budismo.html"]
 };
 
-// Función para generar navbar dinámicamente
-const navbar = document.getElementById("navbar-categories");
+// Evita duplicados automáticamente
+function generarNavbar() {
+  const navbar = document.getElementById("navbar-categories");
+  categoriasFijas.forEach(cat => {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.textContent = cat;
+    a.href = "#";
 
-Object.keys(contenido).forEach(categoria => {
-  const li = document.createElement("li");
-  const a = document.createElement("a");
-  a.textContent = categoria;
-  a.href = "#";
+    const ul = document.createElement("ul");
+    const articulos = carpetaMadre[cat] || [];
+    articulos.forEach((archivo, idx) => {
+      const subLi = document.createElement("li");
+      const subA = document.createElement("a");
+      const nombre = archivo.replace(".html","").replace(/_/g," ");
+      subA.textContent = nombre;
+      // Ruta fija a carpeta madre
+      subA.href = `5_contenido/${cat}/${archivo}`;
+      subA.target = "viewer";
+      subLi.appendChild(subA);
+      ul.appendChild(subLi);
+    });
 
-  const ul = document.createElement("ul");
-  contenido[categoria].forEach(archivo => {
-    const subLi = document.createElement("li");
-    const subA = document.createElement("a");
-    subA.textContent = archivo.replace(".html","").replace(/_/g," ");
-    subA.href = `5_contenido/${categoria}/${archivo}`;
-    subA.target = "viewer";
-    subLi.appendChild(subA);
-    ul.appendChild(subLi);
+    li.appendChild(a);
+    li.appendChild(ul);
+    navbar.appendChild(li);
   });
+}
 
-  li.appendChild(a);
-  li.appendChild(ul);
-  navbar.appendChild(li);
-});
+generarNavbar();
+
+// ===== Contenido visual Pauta Maestra =====
+// Aquí se podrían añadir iconos, gradientes, imágenes base64 por categoría
 </script>
 
 </body>
 </html>
+
 
 
