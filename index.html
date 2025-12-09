@@ -2,13 +2,13 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Didactic-Eureka - Modelo Maestro Ejemplar 1.5</title>
+<title>Didactic-Eureka - Modelo Maestro Ejemplar 1.6</title>
 <style>
-/* ===== Pauta Maestra: Landing Page Estilo Michael Millerman ===== */
+/* ===== Pauta Maestra: Elegancia y color ===== */
 body {
     font-family: "Arial", sans-serif;
     margin: 0;
-    background: #f5f7fa;
+    background: #f0f2f5;
     color: #333;
 }
 header {
@@ -16,7 +16,7 @@ header {
     padding: 2em 1em;
     background: linear-gradient(90deg, #2a558f, #4b9cd3);
     color: white;
-    font-size: 2em;
+    font-size: 2.2em;
     font-weight: bold;
 }
 .navbar {
@@ -46,7 +46,7 @@ header {
     color: #2a558f;
     text-decoration: none;
     font-weight: 500;
-    transition: background 0.3s;
+    transition: background 0.3s, color 0.3s;
 }
 .navbar a:hover {
     background: #e6f0fa;
@@ -61,13 +61,20 @@ header {
     padding: 0.5em 0;
     border: 1px solid rgba(0,0,0,0.1);
     border-radius: 5px;
-    min-width: 180px;
+    min-width: 200px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 .navbar li:hover ul {
     display: block;
 }
 .navbar li ul li a {
     padding: 0.5em 1em;
+    color: #1a3a6d;
+}
+.navbar li ul li a:hover {
+    background: #cfe3f7;
+    color: #0d1f40;
+    border-radius: 4px;
 }
 .main {
     max-width: 1200px;
@@ -75,7 +82,7 @@ header {
     padding: 1em;
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
 iframe {
     width: 100%;
@@ -92,35 +99,8 @@ iframe {
 <header>Didactic-Eureka - Modelo Maestro</header>
 
 <nav class="navbar">
-  <ul>
-    <li>
-      <a href="#">Filosofía</a>
-      <ul>
-        <li><a href="5_contenido/docs/geometria_sagrada.html" target="viewer">Geometría Sagrada</a></li>
-        <li><a href="5_contenido/docs/religion.html" target="viewer">Religión</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#">Cultura Antigua</a>
-      <ul>
-        <li><a href="5_contenido/docs/grecia_antigua.html" target="viewer">Grecia Antigua</a></li>
-        <li><a href="5_contenido/docs/culturas_ancient.html" target="viewer">Culturas Antiguas</a></li>
-        <li><a href="5_contenido/docs/culturas_mundo.html" target="viewer">Culturas del Mundo</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#">Ciencia</a>
-      <ul>
-        <li><a href="5_contenido/docs/ciencia.html" target="viewer">Ciencia</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#">Modernidad</a>
-      <ul>
-        <li><a href="5_contenido/docs/modernidad.html" target="viewer">Modernidad</a></li>
-        <li><a href="5_contenido/docs/democracia.html" target="viewer">Democracia</a></li>
-      </ul>
-    </li>
+  <ul id="navbar-categories">
+    <!-- Categorías generadas dinámicamente desde JS -->
   </ul>
 </nav>
 
@@ -129,8 +109,40 @@ iframe {
 </div>
 
 <script>
-// Todo estático, página funciona como landing page
-// Links apuntan directamente a 5_contenido/docs/*.html
+// ===== Generar navbar dinámico desde la carpeta 5_contenido =====
+
+// Simulación de estructura de carpetas y archivos (Ejemplo)
+const contenido = {
+  "Filosofía": ["geometria_sagrada.html", "religion.html"],
+  "Cultura Antigua": ["grecia_antigua.html", "culturas_ancient.html", "culturas_mundo.html"],
+  "Ciencia": ["ciencia.html"],
+  "Modernidad": ["modernidad.html", "democracia.html"]
+};
+
+// Función para generar navbar dinámicamente
+const navbar = document.getElementById("navbar-categories");
+
+Object.keys(contenido).forEach(categoria => {
+  const li = document.createElement("li");
+  const a = document.createElement("a");
+  a.textContent = categoria;
+  a.href = "#";
+
+  const ul = document.createElement("ul");
+  contenido[categoria].forEach(archivo => {
+    const subLi = document.createElement("li");
+    const subA = document.createElement("a");
+    subA.textContent = archivo.replace(".html","").replace(/_/g," ");
+    subA.href = `5_contenido/${categoria}/${archivo}`;
+    subA.target = "viewer";
+    subLi.appendChild(subA);
+    ul.appendChild(subLi);
+  });
+
+  li.appendChild(a);
+  li.appendChild(ul);
+  navbar.appendChild(li);
+});
 </script>
 
 </body>
