@@ -1,6 +1,0 @@
-git checkout --orphan gh-pages
-git rm -rf .
-echo "Hello" > index.html
-git add index.html
-git commit -m "Initialize gh-pages"
-git push -u origin gh-pages
