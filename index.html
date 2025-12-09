@@ -2,9 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Didactic-Eureka - Modelo Maestro</title>
+<title>Didactic-Eureka - Modelo Maestro Ejemplar 1.3</title>
 <style>
-/* ===== Diseño gráfico Modelo Maestro inspirado en Michael Millerman ===== */
+/* ===== Pauta Maestra: Diseño gráfico Experimento 3 ===== */
 body {
     font-family: "Arial", sans-serif;
     margin: 0;
@@ -15,6 +15,9 @@ h1 {
     text-align: center;
     font-size: 2em;
     margin: 1em 0;
+    background: linear-gradient(90deg, #2a558f, #4b9cd3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 .container {
     display: flex;
@@ -26,7 +29,7 @@ h1 {
     overflow: hidden;
 }
 .sidebar {
-    width: 280px;
+    width: 300px;
     border-right: 1px solid rgba(0,0,0,0.1);
     background: #f9fbfc;
     padding: 1em;
@@ -41,6 +44,8 @@ h1 {
     padding: 0;
 }
 .sidebar li {
+    display: flex;
+    align-items: center;
     margin: 0.5em 0;
     padding: 0.3em 0.5em;
     border-radius: 5px;
@@ -48,6 +53,11 @@ h1 {
 }
 .sidebar li:hover {
     background: #e6f0fa;
+}
+.sidebar img {
+    width: 24px;
+    height: 24px;
+    margin-right: 0.5em;
 }
 .sidebar a {
     color: #2a558f;
@@ -62,6 +72,7 @@ h1 {
     padding: 1em;
 }
 input[type="file"] {
+    display: block;
     margin-bottom: 1em;
     padding: 0.5em;
     font-size: 1em;
@@ -85,7 +96,7 @@ iframe {
 </style>
 </head>
 <body>
-<h1>Didactic-Eureka - Modelo Maestro</h1>
+<h1>Didactic-Eureka - Modelo Maestro Ejemplar 1.3</h1>
 <div class="container">
     <div class="sidebar">
         <h2>Archivos de la carpeta</h2>
@@ -99,12 +110,17 @@ iframe {
 </div>
 
 <script>
-// ------------------- Contenido inicial -------------------
+// ------------------- Contenido inicial con Pauta Maestra -------------------
 const archivos = {
-  "css/style.css": "body { background-color: #fff; font-family: Arial; }",
-  "js/script.js": "console.log('Script cargado');",
-  "img/logo.png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA...",
-  "docs/ejemplo.html": "<!DOCTYPE html><html><body><h2>Ejemplo</h2></body></html>"
+  "img/logo.png": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAA...",
+  "docs/geometria_sagrada.html": "<!DOCTYPE html><html><body><h2>Geometría Sagrada</h2><p>Contenido sobre mandalas y fractales.</p></body></html>",
+  "docs/religion.html": "<!DOCTYPE html><html><body><h2>Religión</h2><p>Contenido sobre espiritualidad y símbolos universales.</p></body></html>",
+  "docs/grecia_antigua.html": "<!DOCTYPE html><html><body><h2>Grecia Antigua</h2><p>Contenido sobre cultura, filosofía y arquitectura clásica.</p></body></html>",
+  "docs/culturas_ancient.html": "<!DOCTYPE html><html><body><h2>Culturas Antiguas</h2><p>Arte, mitología y rituales históricos.</p></body></html>",
+  "docs/culturas_mundo.html": "<!DOCTYPE html><html><body><h2>Culturas del Mundo</h2><p>Diversidad cultural y tradiciones globales.</p></body></html>",
+  "docs/ciencia.html": "<!DOCTYPE html><html><body><h2>Ciencia</h2><p>Contenido sobre descubrimientos y avances científicos.</p></body></html>",
+  "docs/modernidad.html": "<!DOCTYPE html><html><body><h2>Modernidad</h2><p>Diseño, tecnología y minimalismo moderno.</p></body></html>",
+  "docs/democracia.html": "<!DOCTYPE html><html><body><h2>Democracia</h2><p>Historia de la democracia y participación ciudadana.</p></body></html>"
 };
 
 // ------------------- Validación de navegador -------------------
@@ -115,17 +131,25 @@ function validarNavegador() {
 }
 validarNavegador();
 
-// ------------------- Generar índice dinámico -------------------
+// ------------------- Generar índice dinámico con filtro de duplicados -------------------
 const fileList = document.getElementById("fileList");
 const viewer = document.getElementById("viewer");
 const spinner = document.getElementById("spinner");
 
 function generarIndice() {
   fileList.innerHTML = "";
+  const seen = new Set(); // filtro duplicados
   Object.keys(archivos).sort().forEach(path => {
-    const li = document.createElement("li");
-    const link = document.createElement("a");
+    if (seen.has(path)) return;
+    seen.add(path);
 
+    const li = document.createElement("li");
+
+    const icono = document.createElement("img");
+    icono.src = archivos["img/logo.png"];
+    li.appendChild(icono);
+
+    const link = document.createElement("a");
     if (archivos[path].startsWith("data:")) {
       link.href = archivos[path];
     } else {
@@ -135,9 +159,9 @@ function generarIndice() {
       const blob = new Blob([archivos[path]], {type: blobType});
       link.href = URL.createObjectURL(blob);
     }
-
     link.textContent = path;
     link.target = "viewer";
+    li.appendChild(link);
 
     link.addEventListener("click", () => {
       if (viewer.src) URL.revokeObjectURL(viewer.src);
@@ -145,18 +169,13 @@ function generarIndice() {
       setTimeout(()=>spinner.style.display="none",100);
     });
 
-    li.appendChild(link);
     fileList.appendChild(li);
-
-    if (archivos[path].length > 500000) {
-      console.warn(`Archivo grande detectado: ${path}`);
-    }
   });
 }
 
 generarIndice();
 
-// ------------------- Manejo de carpetas seleccionadas dinámicamente -------------------
+// ------------------- Manejo de carpeta madre y desactivación input -------------------
 document.getElementById("folderInput").addEventListener("change", (event) => {
   const files = Array.from(event.target.files);
   spinner.style.display = "block";
@@ -165,12 +184,7 @@ document.getElementById("folderInput").addEventListener("change", (event) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const key = file.webkitRelativePath;
-      if (archivos[key]) {
-        let count = 1;
-        let newKey = key;
-        while(archivos[newKey]) { newKey = `${key}-${count++}`; }
-        archivos[newKey] = e.target.result;
-      } else {
+      if (!archivos[key]) { // evitar duplicados
         archivos[key] = e.target.result;
       }
       generarIndice();
@@ -183,8 +197,12 @@ document.getElementById("folderInput").addEventListener("change", (event) => {
     }
   });
 
+  // Desactivar input para que la página quede estática
+  document.getElementById("folderInput").style.display = "none";
+
   setTimeout(()=>spinner.style.display="none", 200);
 });
 </script>
 </body>
 </html>
+
