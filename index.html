@@ -1,253 +1,173 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Didactic-Eureka - Modelo Maestro Ejemplar 1.11</title>
-<style>
-/* ===== Colores y tipografías según Pauta Maestra ===== */
-:root {
-    --color-fondo: #e0e0e0;
-    --color-navbar: #FFA500; /* naranja pastel */
-    --color-submenu1: #FFB347;
-    --color-submenu2: #FFD700;
-    --color-submenu3: #90EE90;
-    --color-submenu4: #ADD8E6;
-    --color-submenu5: #FF69B4;
-    --color-enlace: #007bff;
-    --color-hover: #FFB6C1;
-    --color-encabezado: #000000;
-    --gradiente-columna1: linear-gradient(135deg, #fffacd, #e0ffe0);
-    --gradiente-columna2: linear-gradient(135deg, #e0f7ff, #f0e6ff);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Didactic Eureka — Index Maestro</title>
 
-/* ===== General ===== */
-body {
-    margin:0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: var(--color-fondo);
-    color: #333;
-}
-header {
-    text-align:center;
-    padding:2em 1em;
-    background: linear-gradient(90deg,#2a558f,#4b9cd3);
-    color:white;
-    font-size:2.5em;
-    font-weight:bold;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-}
-header p {
-    font-size:1.2em;
-    color:#eef3fa;
-    margin-top:0.5em;
-    font-style:italic;
-}
-.navbar {
-    display:flex;
-    justify-content:center;
-    background: var(--color-navbar);
-    position:sticky;
-    top:0;
-    z-index:1000;
-}
-.navbar ul {
-    list-style:none;
-    margin:0;
-    padding:0;
-    display:flex;
-}
-.navbar li {
-    position:relative;
-}
-.navbar > ul > li {
-    margin:0 1.5em;
-}
-.navbar a {
-    display:block;
-    padding:1em;
-    color:#000;
-    text-decoration:none;
-    font-weight:bold;
-    transition: background 0.3s,color 0.3s;
-}
-.navbar a:hover {
-    background: var(--color-hover);
-    border-radius:5px;
-}
-.navbar li ul {
-    display:none;
-    position:absolute;
-    top:100%;
-    left:0;
-    background:#fff;
-    padding:0.5em 0;
-    border:1px solid rgba(0,0,0,0.1);
-    border-radius:5px;
-    min-width:200px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.2);
-}
-.navbar li:hover ul { display:block; }
-.navbar li ul li a {
-    padding:0.5em 1em;
-    font-weight:normal;
-    color: #333;
-}
-.navbar li ul li a:hover { background:#cfe3f7; border-radius:4px; color:#000; }
+    <!-- Estilo madre basado en la Pauta Maestra Visual -->
+    <style>
+        :root {
+            --fondo: #f6f6f6;
+            --texto: #222;
+            --panel: #ffffff;
+            --panel-borde: #ccc;
+            --primario: #2c3e50;
+            --primario-suave: #34495e;
+            --hover: #2980b9;
+        }
 
-#folderInputContainer { text-align:center; margin:1em; }
+        body {
+            margin: 0;
+            font-family: ui-serif, Georgia, "Times New Roman";
+            background: var(--fondo);
+            color: var(--texto);
+        }
 
-/* ===== Main ===== */
-.main {
-    max-width:1200px;
-    margin:2em auto;
-    padding:1em;
-    background:white;
-    border-radius:12px;
-    box-shadow:0 8px 20px rgba(0,0,0,0.08);
-    background-image: url('https://upload.wikimedia.org/wikipedia/commons/6/6a/Geometry_and_culture.jpg');
-    background-size: cover;
-    background-position: center;
-}
-iframe {
-    width:100%;
-    height:600px;
-    border:2px solid rgba(0,0,0,0.1);
-    border-radius:8px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.05);
-}
+        header {
+            background: var(--primario);
+            color: white;
+            text-align: center;
+            padding: 2.2rem 1rem;
+        }
 
-/* ===== Banners fijos ===== */
-.banner {
-    position:relative;
-    margin:1em 0;
-    padding:1em 2em;
-    text-align:center;
-    color:white;
-    font-size:1.5em;
-    font-weight:bold;
-    border-radius:12px;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-}
-.banner1 { background: linear-gradient(90deg,#FFD700,#FFA500); }
-.banner2 { background: linear-gradient(90deg,#90EE90,#32CD32); }
-.banner3 { background: linear-gradient(90deg,#87CEFA,#4682B4); }
-</style>
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            margin: 0.3rem 0 0 0;
+            font-size: 1.1rem;
+            opacity: 0.85;
+        }
+
+        nav {
+            background: var(--primario-suave);
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+        }
+
+        nav a:hover {
+            background: var(--hover);
+        }
+
+        .contenedor {
+            max-width: 900px;
+            margin: 2rem auto;
+            background: var(--panel);
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid var(--panel-borde);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 0;
+            font-size: 1.8rem;
+        }
+
+        .categoria {
+            margin-bottom: 3rem;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 1.2rem 0 0 0;
+        }
+
+        ul li {
+            margin: 0.5rem 0;
+            font-size: 1.05rem;
+        }
+
+        ul li a {
+            color: var(--hover);
+            text-decoration: none;
+        }
+
+        ul li a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 1rem;
+            color: #777;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
-<body>
 
+<body>
 <header>
-  Didactic-Eureka
-  <p>Aprender y Mejorar</p>
+    <h1>Didactic Eureka</h1>
+    <p>Index Maestro — Arquitectura Madre de Filosofía, Teología y Ciencias</p>
 </header>
 
-<div class="banner banner1">Búsqueda</div>
-<div class="banner banner2">Aprendizaje</div>
-<div class="banner banner3">Ensayo</div>
-
-<div id="folderInputContainer">
-  <p>Selecciona la Carpeta Formal para inicializar la página:</p>
-  <input type="file" id="folderInput" webkitdirectory multiple>
-</div>
-
-<nav class="navbar">
-  <ul id="navbar-categories"></ul>
+<nav>
+    <a href="#filosofia">Filosofía</a>
+    <a href="#teologia">Teología</a>
+    <a href="#ciencias">Ciencias</a>
 </nav>
 
-<div class="main">
-  <iframe name="viewer" src=""></iframe>
+<div class="contenedor">
+
+    <!-- FILOSOFÍA -->
+    <section id="filosofia" class="categoria">
+        <h2>Filosofía</h2>
+        <ul>
+            <li><a href="4_pages/filosofia/metafisica.html">Metafísica</a></li>
+            <li><a href="4_pages/filosofia/epistemologia.html">Epistemología</a></li>
+            <li><a href="4_pages/filosofia/estetica.html">Estética</a></li>
+            <li><a href="4_pages/filosofia/logica.html">Lógica</a></li>
+            <li><a href="4_pages/filosofia/etica.html">Ética</a></li>
+        </ul>
+    </section>
+
+    <!-- TEOLOGÍA -->
+    <section id="teologia" class="categoria">
+        <h2>Teología</h2>
+        <ul>
+            <li><a href="4_pages/teologia/dogmatica.html">Teología Dogmática</a></li>
+            <li><a href="4_pages/teologia/biblica.html">Teología Bíblica</a></li>
+            <li><a href="4_pages/teologia/comparada.html">Teología Comparada</a></li>
+            <li><a href="4_pages/teologia/mistica.html">Mística</a></li>
+        </ul>
+    </section>
+
+    <!-- CIENCIAS -->
+    <section id="ciencias" class="categoria">
+        <h2>Ciencias</h2>
+        <ul>
+            <li><a href="4_pages/ciencias/fisica.html">Física</a></li>
+            <li><a href="4_pages/ciencias/biologia.html">Biología</a></li>
+            <li><a href="4_pages/ciencias/astronomia.html">Astronomía</a></li>
+            <li><a href="4_pages/ciencias/cosmologia.html">Cosmología</a></li>
+        </ul>
+    </section>
+
 </div>
 
-<script>
-// ===== Bloqueo de propiedad con contraseña =====
-const tokenKey = 'carpetaCargadaToken';
-const contrasenaAbierta = "didactic-eureka";
-
-// Bloqueo inicial
-if(localStorage.getItem(tokenKey)){
-    document.getElementById('folderInputContainer').style.display='none';
-}
-
-// Solicitar contraseña al hacer click en input
-document.getElementById('folderInput').addEventListener('click',(e)=>{
-    if(localStorage.getItem(tokenKey)){
-        alert("Acceso Denegado: Carpeta ya cargada.");
-        e.preventDefault(); return;
-    }
-    let pwd = prompt("Introduce la contraseña para cargar la Carpeta Formal:");
-    if(pwd !== contrasenaAbierta){
-        alert("Contraseña incorrecta. Acceso denegado.");
-        e.preventDefault(); return;
-    }
-});
-
-// ===== Funciones para navbar dinámico (Principio de Representación Madre) =====
-function generarMenu(obj, ul){
-    Object.keys(obj).forEach(key=>{
-        const li=document.createElement("li");
-        const a=document.createElement("a"); a.textContent=key; a.href="#";
-        if(Array.isArray(obj[key])){
-            const subUl=document.createElement("ul");
-            obj[key].forEach(file=>{
-                const subLi=document.createElement("li");
-                const subA=document.createElement("a");
-                subA.textContent=file.replace(".html","").replace(/_/g," ");
-                subA.href=`5_contenido/${key}/${file}`;
-                subA.target="viewer";
-                subLi.appendChild(subA);
-                subUl.appendChild(subLi);
-            });
-            li.appendChild(a); li.appendChild(subUl);
-        } else {
-            const subUl=document.createElement("ul");
-            generarMenu(obj[key],subUl);
-            li.appendChild(a); li.appendChild(subUl);
-        }
-        ul.appendChild(li);
-    });
-}
-
-// ===== Manejo de subida de Carpeta Formal =====
-document.getElementById('folderInput').addEventListener('change',(event)=>{
-    if(localStorage.getItem(tokenKey)){
-        alert("Acceso Denegado: Carpeta ya cargada.");
-        return;
-    }
-    const files = Array.from(event.target.files);
-    const carpetaFormal = {};
-
-    files.forEach(file=>{
-        const path = file.webkitRelativePath.split('/');
-        if(path.length>=2){
-            const cat = path[1];
-            const subcat = path.length>3 ? path[2] : null;
-            const archivo = path[path.length-1];
-            if(!carpetaFormal[cat]) carpetaFormal[cat]={};
-            let nivel = carpetaFormal[cat];
-            if(subcat){
-                if(!nivel[subcat]) nivel[subcat]=[];
-                nivel[subcat].push(archivo);
-            } else {
-                if(!nivel['Artículos']) nivel['Artículos']=[];
-                nivel['Artículos'].push(archivo);
-            }
-        }
-    });
-
-    const navbar = document.getElementById("navbar-categories");
-    navbar.innerHTML='';
-    generarMenu(carpetaFormal, navbar);
-
-    // Bloquear input y guardar token
-    document.getElementById('folderInputContainer').style.display='none';
-    localStorage.setItem(tokenKey,'true');
-});
-</script>
+<footer>
+    Versión Beta del Index Maestro — Conforme al Principio del Genio y Tarea 1
+</footer>
 
 </body>
 </html>
-
-
-
-
-
 
