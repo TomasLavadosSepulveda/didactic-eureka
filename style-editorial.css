@@ -1,0 +1,77 @@
+/* Didactic Eureka — estilo editorial (referencia: Michael Millerman, traducido) */
+
+:root{
+  --bg: #f6f5f2;
+  --paper: #ffffff;
+  --ink: #141414;
+  --muted: #6b6b6b;
+  --line: #e2e0d9;
+  --link: #1f3cff;
+}
+
+body{
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  line-height: 1.65;
+  font-size: 18px;
+}
+
+/* Header sobrio y “bibliográfico” */
+header{
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+h1{
+  font-size: 22px;
+  font-weight: normal;
+  letter-spacing: 0.2px;
+}
+
+.section-title, h2{
+  font-size: 22px;
+  font-weight: normal;
+  letter-spacing: 0.2px;
+  margin-top: 0;
+}
+
+/* Tabs más “texto” y menos “botón” */
+nav button{
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: var(--muted) !important;
+  padding: 6px 12px !important;
+}
+
+nav button.active{
+  background: #efefe9 !important;
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+}
+
+/* Lista de artículos como índice editorial */
+.item{
+  border-bottom: 1px solid var(--line) !important;
+}
+
+.item button{
+  color: var(--ink) !important;
+  font-size: 18px !important;
+}
+
+.item button:hover{
+  color: var(--link) !important;
+  text-decoration: none !important;
+}
+
+/* Artículo */
+.article img{
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.article iframe{
+  border-radius: 10px;
+  border: 1px solid var(--line);
+}
