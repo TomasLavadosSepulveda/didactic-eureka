@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Didactic Eureka</title>
+<meta name="description" content="Didactic Eureka · Lectura eidética en línea" />
+
+<style>
+  body{
+    margin:0;
+    font-family: Georgia, "Times New Roman", serif;
+    background:#f5f5f3;
+    color:#1c1c1c;
+    line-height:1.65;
+  }
+  header{
+    border-bottom:1px solid #ddd;
+    background:white;
+  }
+  header, main{
+    max-width:1100px;
+    margin:auto;
+    padding:2.5rem 2rem;
+  }
+  h1{
+    font-size:2.6rem;
+    margin:0 0 .5rem;
+    font-weight:600;
+  }
+  .subtitle{
+    color:#555;
+    max-width:760px;
+  }
+  section{
+    margin-top:3rem;
+  }
+  h2{
+    font-size:1.9rem;
+    border-bottom:1px solid #ccc;
+    padding-bottom:.5rem;
+  }
+  article{
+    margin:2rem 0;
+    padding:1.5rem;
+    background:white;
+    border:1px solid #ddd;
+    border-radius:10px;
+  }
+  article h3{
+    margin:.2rem 0 1rem;
+    font-size:1.4rem;
+    font-weight:600;
+  }
+  iframe{
+    width:100%;
+    height:70vh;
+    border:none;
+    border-top:1px solid #ccc;
+  }
+  footer{
+    margin-top:4rem;
+    padding:2rem;
+    text-align:center;
+    font-size:.9rem;
+    color:#666;
+  }
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Didactic Eureka</h1>
+  <p class="subtitle">
+    Plataforma bifásica de lectura eidética.  
+    Los textos se leen aquí: no se descargan, no se imponen.
+  </p>
+</header>
+
+<main id="content">
+  <p>Cargando textos…</p>
+</main>
+
+<footer>
+  Didactic Eureka · Lectura en línea · GitHub Pages
+</footer>
+
+<script>
+/* === Auto-detección GitHub Pages === */
+const owner = location.hostname.split(".")[0];
+const repo  = location.pathname.split("/").filter(Boolean)[0];
+const apiBase = `https://api.github.com/repos/${owner}/${repo}/contents`;
+
+/* === Carpetas reales === */
+const CATEGORIES = [
+  { label:"Filosofía", path:"filosofia:" },
+  { label:"Teología", path:"teologia:" },
+  { label:"Ciencia", path:"ciencia:" },
+  { label:"Ensayos", path:"ensayos:" },
+  { label:"Teorética", path:"teoretica:" }
+];
+
+/* === Helpers === */
+function humanize(name){
+  return name
+    .replace(/\.pdf$/i,"")
+    .replace(/[_\-]+/g," ")
+    .replace(/([a-z])([A-Z])/g,"$1 $2")
+    .replace(/\b\w/g,l=>l.toUpperCase());
+}
+
+async function fetchDir(path){
+  const r = await fetch(`${apiBase}/${encodeURIComponent(path)}`);
+  if(!r.ok) return [];
+  return await r.json();
+}
+
+async function collectPDFs(path){
+  let out=[];
+  const stack=[path];
+  while(stack.length){
+    const p=stack.pop();
+    const items=await fetchDir(p);
+    for(const it of items){
+      if(it.type==="dir") stack.push(it.path);
+      if(it.type==="file" && it.name.toLowerCase().endsWith(".pdf")){
+        out.push(it);
+      }
+    }
+  }
+  return out;
+}
+
+/* === Render === */
+(async ()=>{
+  const main=document.getElementById("content");
+  main.innerHTML="";
+
+  for(const cat of CATEGORIES){
+    const pdfs = await collectPDFs(cat.path);
+    if(!pdfs.length) continue;
+
+    const section=document.createElement("section");
+    section.innerHTML=`<h2>${cat.label}</h2>`;
+
+    pdfs.forEach(f=>{
+      const art=document.createElement("article");
+      art.innerHTML=`
+        <h3>${humanize(f.name)}</h3>
+        <iframe src="${f.download_url}#toolbar=0&navpanes=0"></iframe>
+      `;
+      section.appendChild(art);
+    });
+
+    main.appendChild(section);
+  }
+})();
+</script>
+
+</body>
+</html>
