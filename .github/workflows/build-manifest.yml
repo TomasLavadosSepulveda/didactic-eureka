@@ -1,0 +1,44 @@
+name: Build Manifest
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Generate manifest.json
+        run: |
+          python << 'EOF'
+          import os, json
+
+          def scan(path):
+              node = {"folders": {}, "files": []}
+              for item in sorted(os.listdir(path)):
+                  if item.startswith(".") or item == "manifest.json":
+                      continue
+                  full = os.path.join(path, item)
+                  if os.path.isdir(full):
+                      node["folders"][item] = scan(full)
+                  elif item.lower().endswith(".pdf"):
+                      node["files"].append(item)
+              return node
+
+          manifest = scan(".")
+          with open("manifest.json", "w", encoding="utf-8") as f:
+              json.dump(manifest, f, ensure_ascii=False, indent=2)
+          EOF
+
+      - name: Commit manifest
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add manifest.json
+          git commit -m "Auto-build manifest.json" || echo "No changes"
+          git push
