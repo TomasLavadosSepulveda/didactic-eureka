@@ -1,179 +1,219 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Didactic Eureka</title>
-
+<meta name="description" content="Didactic Eureka · lectura editorial en línea" />
 <style>
-:root{
-  --bg:#f6f5f2; --paper:#ffffff; --ink:#141414; --muted:#5c5c5c;
-  --line:#e3e1da;
-}
+:root{--bg:#f6f5f2;--paper:#fff;--ink:#141414;--muted:#5a5a5a;--line:#e2e0d9;--accent:#1f3cff}
 *{box-sizing:border-box}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--ink);
-  font-family: ui-serif, Georgia, "Times New Roman", serif;
-  line-height:1.7;
-}
-header{
-  position:sticky; top:0; z-index:10;
-  background:var(--paper);
-  border-bottom:1px solid var(--line);
-}
-.wrap{max-width:1100px;margin:auto;padding:0 22px}
-.top{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:18px 0;
-}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-serif,Georgia,"Times New Roman",serif;line-height:1.7}
+.wrap{max-width:1100px;margin:auto;padding:0 20px}
+header{position:sticky;top:0;z-index:10;background:var(--paper);border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
 h1{margin:0;font-size:22px}
-nav{display:flex;gap:8px;flex-wrap:wrap}
-nav a{
-  text-decoration:none;color:var(--ink);
-  font-size:13px;padding:6px 10px;border-radius:20px;
-}
-nav a:hover{background:#eee}
-main{padding:28px 0}
-section{
-  background:var(--paper);
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:18px;
-  margin-bottom:24px;
-}
-section h2{margin:0 0 14px}
-.item{margin-bottom:14px}
-.item button{
-  background:none;border:none;
-  font-family:inherit;
-  font-size:15px;
-  cursor:pointer;
-  color:#000;
-}
-.item button:hover{text-decoration:underline}
-iframe,img{
-  width:100%;
-  margin-top:12px;
-  border-radius:12px;
-  border:1px solid var(--line);
-}
-iframe{height:70vh}
-footer{
-  border-top:1px solid var(--line);
-  padding:20px;
-  font-size:12px;
-  color:var(--muted);
-  text-align:center;
-}
+nav a{text-decoration:none;color:var(--ink);padding:6px 12px;border-radius:999px;font-size:13px}
+nav a:hover{background:#efefe9}
+.hero{background:var(--paper);border:1px solid var(--line);border-radius:16px;margin:18px 0;overflow:hidden}
+.hero img{width:100%;display:block}
+.hero .caption{padding:16px;color:var(--muted)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:18px}
+.card img{width:100%;border-radius:12px;border:1px solid var(--line);margin-bottom:12px}
+.card h2{margin:0 0 8px;font-size:20px}
+.meta{color:var(--muted);font-size:12px;margin:0 0 10px}
+.card button{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:8px 12px;cursor:pointer}
+.card button:hover{opacity:.92}
+.reader{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px;margin:22px 0}
+iframe{width:100%;height:70vh;border:none;border-radius:12px}
+footer{border-top:1px solid var(--line);padding:18px 0;color:var(--muted);font-size:12px;text-align:center}
+code{background:#f0efe9;padding:2px 6px;border-radius:8px}
 </style>
 </head>
-
 <body>
 
 <header>
   <div class="wrap top">
     <h1>Didactic Eureka</h1>
-    <nav id="menu"></nav>
+    <nav><a href="#articulos">Artículos</a></nav>
   </div>
 </header>
 
-<main class="wrap" id="content">
-  <p>Cargando estructura…</p>
+<div class="wrap" id="portada"></div>
+
+<main class="wrap" id="articulos">
+  <p>Cargando artículos…</p>
 </main>
 
+<div class="wrap reader" id="lector" style="display:none"></div>
+
 <footer>
-  Lectura directa · estructura viva · carpeta madre como fuente de verdad
+  Didactic Eureka · modo Autónomos · el repositorio es la fuente de verdad
 </footer>
 
 <script>
 const owner = location.hostname.split(".")[0];
 const repo  = location.pathname.split("/").filter(Boolean)[0];
-const api = `https://api.github.com/repos/${owner}/${repo}/contents`;
+const API   = `https://api.github.com/repos/${owner}/${repo}/contents`;
+const IMG_RE = /\.(jpg|jpeg|png|webp)$/i;
 
-function titleCase(str){
-  return str
-    .replace(/[-_]+/g," ")
-    .replace(/:/g,"")
+function prettyFromFilename(name){
+  return name
+    .replace(/\.(pdf|jpg|jpeg|png|webp)$/i,"")
+    .replace(/[_\-]+/g," ")
+    .replace(/\s+/g," ")
+    .trim()
     .toLowerCase()
     .split(" ")
-    .map(w=>w?w[0].toUpperCase()+w.slice(1):"")
+    .map(w => w ? (w[0].toUpperCase()+w.slice(1)) : "")
     .join(" ");
 }
 
 async function fetchDir(path=""){
-  const r = await fetch(path ? `${api}/${encodeURIComponent(path)}` : api);
+  const r = await fetch(path ? `${API}/${encodeURIComponent(path)}` : API);
   if(!r.ok) return [];
   return await r.json();
 }
 
-async function collectFiles(path){
-  const out=[];
-  const stack=[path];
-  while(stack.length){
-    const p=stack.pop();
-    const items=await fetchDir(p);
-    for(const it of items){
-      if(it.type==="dir") stack.push(it.path);
-      if(it.type==="file" && /\.(pdf|png|jpg|jpeg|webp)$/i.test(it.name)){
-        out.push(it);
-      }
-    }
-  }
-  return out;
+async function fetchTextFile(path){
+  const r = await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/main/${path}`);
+  if(!r.ok) return null;
+  return (await r.text()).trim();
 }
 
-function openItem(it,container){
-  container.innerHTML="";
-  const h=document.createElement("h3");
-  h.textContent=titleCase(it.name.replace(/\.(pdf|png|jpg|jpeg|webp)$/i,""));
-  container.appendChild(h);
-  if(it.name.toLowerCase().endsWith(".pdf")){
-    const f=document.createElement("iframe");
-    f.src=it.download_url+"#toolbar=0";
-    container.appendChild(f);
-  }else{
-    const i=document.createElement("img");
-    i.src=it.download_url;
-    container.appendChild(i);
+async function loadPortada(){
+  const p = await fetchDir("portada");
+  const img = p.find(x=>x.type==="file" && IMG_RE.test(x.name));
+  if(img){
+    document.getElementById("portada").innerHTML =
+      `<div class="hero"><img src="${img.download_url}"><div class="caption">Portada</div></div>`;
   }
+}
+
+function openPDF(url, title){
+  const box = document.getElementById("lector");
+  box.style.display = "block";
+  box.innerHTML = `<h2 style="margin:0 0 10px">${title}</h2><iframe src="${url}#toolbar=0&navpanes=0&view=FitH"></iframe>`;
+  window.scrollTo({top: box.offsetTop-90, behavior:"smooth"});
+}
+
+function normalizeArticleTitle(fallbackTitle, tituloTxt){
+  // Si existe titulo.txt, manda. Si no, usamos el fallback.
+  return (tituloTxt && tituloTxt.length) ? tituloTxt : fallbackTitle;
+}
+
+async function buildArticleCard({title, pdfUrl, imgUrl, where}){
+  const main = document.getElementById("articulos");
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    ${imgUrl ? `<img src="${imgUrl}" alt="${title}">` : ``}
+    <h2>${title}</h2>
+    <p class="meta">${where}</p>
+    <button>Leer</button>
+  `;
+  card.querySelector("button").onclick = ()=>openPDF(pdfUrl, title);
+  main.appendChild(card);
+}
+
+function isLikelyLegacyCategoryFolder(name){
+  // tus carpetas antiguas suelen terminar en ":" (filosofia:, teologia:, etc.)
+  return name.endsWith(":");
+}
+
+// 1) Modo Autónomos nuevo: /articulos/<carpeta>/{pdf + imagen + (opcional) titulo.txt}
+async function readNewMode(){
+  const root = await fetchDir("articulos");
+  const dirs = root.filter(x=>x.type==="dir");
+  const articles = [];
+
+  for(const dir of dirs){
+    const files = await fetchDir(dir.path);
+    const pdf = files.find(x=>x.type==="file" && /\.pdf$/i.test(x.name));
+    if(!pdf) continue;
+
+    const tituloPath = `${dir.path}/titulo.txt`;
+    const tituloTxt = await fetchTextFile(tituloPath);
+
+    const fallback = prettyFromFilename(pdf.name);
+    const title = normalizeArticleTitle(fallback, tituloTxt);
+
+    const base = pdf.name.replace(/\.pdf$/i,"");
+    const img =
+      files.find(x=>x.type==="file" && /^imagen\.(jpg|jpeg|png|webp)$/i.test(x.name)) ||
+      files.find(x=>x.type==="file" && IMG_RE.test(x.name) && x.name.replace(IMG_RE,"") === base);
+
+    articles.push({
+      title,
+      pdfUrl: pdf.download_url,
+      imgUrl: img ? img.download_url : null,
+      where: `articulos/${dir.name}`
+    });
+  }
+  return articles;
+}
+
+// 2) Modo legado: carpetas en root (muchas terminan en ":") con PDFs dentro
+async function readLegacyMode(){
+  const root = await fetchDir();
+  const dirs = root.filter(x=>x.type==="dir" && x.name !== "articulos" && x.name !== "portada");
+  const legacyDirs = dirs.filter(d => isLikelyLegacyCategoryFolder(d.name) || true); // si quieres restringir, quita el "|| true"
+
+  const articles = [];
+  for(const dir of legacyDirs){
+    const files = await fetchDir(dir.path);
+    const pdfs = files.filter(x=>x.type==="file" && /\.pdf$/i.test(x.name));
+    if(!pdfs.length) continue;
+
+    // titulo.txt opcional por carpeta (aplica a todos si hay 1 solo pdf; si hay varios, se usa fallback)
+    const tituloPath = `${dir.path}/titulo.txt`;
+    const folderTitleTxt = await fetchTextFile(tituloPath);
+
+    for(const pdf of pdfs){
+      const fallback = prettyFromFilename(pdf.name);
+      const title = normalizeArticleTitle(fallback, (pdfs.length===1 ? folderTitleTxt : null));
+
+      const base = pdf.name.replace(/\.pdf$/i,"");
+      const img =
+        files.find(x=>x.type==="file" && /^imagen\.(jpg|jpeg|png|webp)$/i.test(x.name)) ||
+        files.find(x=>x.type==="file" && IMG_RE.test(x.name) && x.name.replace(IMG_RE,"") === base);
+
+      articles.push({
+        title,
+        pdfUrl: pdf.download_url,
+        imgUrl: img ? img.download_url : null,
+        where: dir.name
+      });
+    }
+  }
+  return articles;
 }
 
 (async()=>{
-  const root = await fetchDir();
-  const menu = document.getElementById("menu");
-  const content = document.getElementById("content");
-  content.innerHTML="";
-  menu.innerHTML="";
+  await loadPortada();
 
-  for(const dir of root.filter(x=>x.type==="dir")){
-    const section=document.createElement("section");
-    section.id=dir.name;
-    const h2=document.createElement("h2");
-    h2.textContent=titleCase(dir.name);
-    section.appendChild(h2);
+  const main = document.getElementById("articulos");
+  main.innerHTML = "";
 
-    const files = await collectFiles(dir.name);
-    for(const f of files){
-      const div=document.createElement("div");
-      div.className="item";
-      const btn=document.createElement("button");
-      btn.textContent=titleCase(f.name.replace(/\.(pdf|png|jpg|jpeg|webp)$/i,""));
-      btn.onclick=()=>openItem(f,div);
-      div.appendChild(btn);
-      section.appendChild(div);
-    }
+  const a1 = await readNewMode();
+  const a2 = await readLegacyMode();
 
-    content.appendChild(section);
+  const all = [...a1, ...a2];
 
-    const a=document.createElement("a");
-    a.href="#"+dir.name;
-    a.textContent=titleCase(dir.name);
-    menu.appendChild(a);
+  if(!all.length){
+    main.innerHTML = `<p>No hay artículos aún. Crea <code>/articulos</code> o usa carpetas legado con PDFs.</p>`;
+    return;
+  }
+
+  // Orden estable: por "where" y luego por título
+  all.sort((x,y)=>(x.where.localeCompare(y.where,"es")) || (x.title.localeCompare(y.title,"es")));
+
+  for(const a of all){
+    await buildArticleCard(a);
   }
 })();
 </script>
 
 </body>
 </html>
+
