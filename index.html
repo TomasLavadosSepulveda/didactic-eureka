@@ -6,62 +6,72 @@
 <title>Didactic Eureka</title>
 
 <style>
-body{
-  margin:0;
+body {
+  margin: 0;
   font-family: Georgia, "Times New Roman", serif;
-  background:#f6f5f2;
-  color:#141414;
+  background: #f6f5f2;
+  color: #141414;
 }
-header{
+header {
+  background: #ffffff;
+  border-bottom: 1px solid #ddd;
+  padding: 14px;
   position: sticky;
   top: 0;
   z-index: 10;
-  background:#ffffff;
-  border-bottom:1px solid #ddd;
-  padding:14px;
 }
-h1{margin:0 0 10px 0;font-size:22px}
-nav{
-  display:flex;
-  gap:8px;
-  overflow-x:auto;
+h1 {
+  margin: 0 0 10px 0;
+  font-size: 22px;
 }
-nav button{
-  border:none;
-  background:#eee;
-  padding:6px 14px;
-  border-radius:20px;
-  cursor:pointer;
-  white-space:nowrap;
+nav {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
 }
-nav button.active{background:#ccc}
-main{
-  max-width:900px;
-  margin:auto;
-  padding:20px;
+nav button {
+  border: none;
+  background: #eee;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
 }
-.section-title{font-size:20px;margin-bottom:12px}
-.item{
-  padding:10px 0;
-  border-bottom:1px solid #ddd;
+nav button.active {
+  background: #ccc;
 }
-.item button{
-  background:none;
-  border:none;
-  color:#1f3cff;
-  cursor:pointer;
-  font-size:16px;
-  text-align:left;
+main {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
 }
-.item button:hover{text-decoration:underline}
-.article img{
-  max-width:100%;
-  margin-bottom:16px;
+.section-title {
+  font-size: 20px;
+  margin-bottom: 12px;
 }
-.article iframe{
-  width:100%;
-  height:80vh;
-  border:none;
+.item {
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
+}
+.item button {
+  background: none;
+  border: none;
+  color: #1f3cff;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: left;
+}
+.item button:hover {
+  text-decoration: underline;
+}
+.article img {
+  max-width: 100%;
+  margin-bottom: 16px;
+}
+.article iframe {
+  width: 100%;
+  height: 80vh;
+  border: none;
 }
 </style>
 </head>
@@ -74,86 +84,80 @@ main{
 </header>
 
 <main id="content">
-  <img src="main.jpg" style="max-width:100%;margin-bottom:20px"
-       onerror="this.style.display='none'">
   <p>Cargando…</p>
 </main>
 
 <script>
-// --- UTILIDADES ---
-function normalize(str){
+/* Función que transforma nombres de archivo en títulos legibles */
+function humanTitle(str) {
   return str
-    .normalize("NFD").replace(/[\u0300-\u036f]/g,"") // quita acentos
-    .replace(/\.pdf$/i,"")
-    .replace(/[_\-]+/g," ")
-    .replace(/\s+/g," ")
+    .replace(/\.pdf$/i, "")
+    .replace(/[_\-]+/g, " ")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")  // elimina acentos
+    .trim()
     .toLowerCase()
-    .replace(/\b\w/g,l=>l.toUpperCase());
+    .split(" ")
+    .map(w => w ? w[0].toUpperCase() + w.slice(1) : "")
+    .join(" ");
 }
 
-// Base absoluta del sitio (evita errores de ruta)
-const BASE = location.origin + location.pathname.replace(/\/[^\/]*$/,"");
+// Construye la URL absoluta base para recursos del mismo repo
+const BASE = location.origin + location.pathname.replace(/\/[^\/]*$/, "");
 
-// --- RENDER ARTÍCULO ---
-function openArticle(cat, file){
+// Muestra un artículo (PDF) dentro del sitio
+function showArticle(cat, file) {
   const content = document.getElementById("content");
-  const title = normalize(file);
-  const pdfUrl = `${BASE}/${encodeURI(cat)}/${encodeURI(file)}`;
-  const imgUrl = pdfUrl.replace(/\.pdf$/i,".jpg");
+  const pdfUrl = `${BASE}/${encodeURIComponent(cat)}/${encodeURIComponent(file)}`;
+  const imgUrl = pdfUrl.replace(/\.pdf$/i, ".jpg");
 
   content.innerHTML = `
     <div class="article">
-      <h2>${title}</h2>
+      <h2>${humanTitle(file)}</h2>
       <img src="${imgUrl}" onerror="this.style.display='none'">
       <iframe src="${pdfUrl}" loading="lazy"></iframe>
     </div>
   `;
 }
 
-// --- CARGA DEL MANIFEST ---
-fetch("manifest.json", {cache:"no-store"})
-.then(r => r.json())
-.then(manifest => {
-  const nav = document.getElementById("nav");
-  const content = document.getElementById("content");
+// Carga y despliega el contenido (categorías y artículos) desde manifest.json
+fetch("manifest.json")
+  .then(res => res.json())
+  .then(manifest => {
+    const nav = document.getElementById("nav");
+    const content = document.getElementById("content");
+    nav.innerHTML = "";
+    content.innerHTML = "";
 
-  function showCategory(name, data){
-    content.innerHTML = `<h2 class="section-title">${normalize(name)}</h2>`;
-    if(!data.files || data.files.length === 0){
-      content.innerHTML += "<p>No hay artículos.</p>";
-      return;
-    }
-    data.files.forEach(file => {
-      const div = document.createElement("div");
-      div.className = "item";
+    // Crea pestañas para cada carpeta
+    Object.entries(manifest.folders || {}).forEach(([catName, catData], idx) => {
       const btn = document.createElement("button");
-      btn.textContent = normalize(file);
-      btn.onclick = () => openArticle(name, file);
-      div.appendChild(btn);
-      content.appendChild(div);
+      btn.textContent = humanTitle(catName);
+      btn.onclick = () => {
+        document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        // Mostrar lista de artículos
+        content.innerHTML = `<h2 class="section-title">${humanTitle(catName)}</h2>`;
+        if (!catData.files || catData.files.length === 0) {
+          content.innerHTML += "<p>No hay artículos.</p>";
+        } else {
+          catData.files.forEach(file => {
+            const div = document.createElement("div");
+            div.className = "item";
+            div.innerHTML = `<button onclick="showArticle('${catName}', '${file}')">${humanTitle(file)}</button>`;
+            content.appendChild(div);
+          });
+        }
+      };
+      nav.appendChild(btn);
+
+      // Abre la primera pestaña automáticamente
+      if (idx === 0) btn.click();
     });
-  }
-
-  const entries = Object.entries(manifest.folders || {});
-  nav.innerHTML = "";
-
-  entries.forEach(([name, data], i) => {
-    const btn = document.createElement("button");
-    btn.textContent = normalize(name);
-    btn.onclick = () => {
-      document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      showCategory(name, data);
-    };
-    nav.appendChild(btn);
-    if(i === 0) btn.click();
+  })
+  .catch(() => {
+    document.getElementById("content").innerHTML = "<p>Error al cargar el contenido.</p>";
   });
-})
-.catch(err => {
-  document.getElementById("content").innerHTML =
-    "<p>Error al cargar el contenido.</p>";
-  console.error(err);
-});
 </script>
 
 </body>
