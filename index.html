@@ -15,21 +15,12 @@
       line-height: 1.6;
     }
     header, main, footer {
-      max-width: 980px;
+      max-width: 1000px;
       margin: auto;
       padding: 3rem 2rem;
     }
-    h1 {
-      font-size: 2.6rem;
-      margin-bottom: 1rem;
-    }
-    h2 {
-      margin-top: 3rem;
-      font-size: 1.6rem;
-    }
-    p {
-      max-width: 720px;
-    }
+    h1 { font-size: 2.6rem; }
+    h2 { margin-top: 3rem; }
     nav {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -37,7 +28,6 @@
       margin-top: 2rem;
     }
     a.card {
-      display: block;
       padding: 1.2rem;
       border: 1px solid #2a2f3a;
       border-radius: 12px;
@@ -48,6 +38,8 @@
     a.card:hover {
       border-color: #6b87ff;
     }
+    ul { margin-top: 1rem; }
+    li { margin-bottom: 0.5rem; }
     footer {
       border-top: 1px solid #2a2f3a;
       font-size: 0.85rem;
@@ -60,42 +52,56 @@
 
 <header>
   <h1>Didactic Eureka</h1>
-  <p>
-    Plataforma bifásica de transmisión eidética.
-    No impone recorridos. Ofrece puertas.
-  </p>
+  <p>Plataforma bifásica · Navegación modular · PDFs vivos</p>
 </header>
 
 <main>
   <h2>Dominios</h2>
 
   <nav>
-    <a class="card" href="metodo/index.html">
-      <strong>Método</strong><br>
-      Marco bifásico y principios operativos
-    </a>
-    <a class="card" href="filosofia/index.html">
-      <strong>Filosofía</strong><br>
-      Ontología, conciencia, forma
-    </a>
-    <a class="card" href="teologia/index.html">
-      <strong>Teología</strong><br>
-      Logos, encarnación, apocatástasis
-    </a>
-    <a class="card" href="ciencia/index.html">
-      <strong>Ciencia</strong><br>
-      Epistemología, modelos y límites
-    </a>
-    <a class="card" href="arte/index.html">
-      <strong>Arte</strong><br>
-      Forma simbólica y creación
-    </a>
+    <a class="card" href="#filosofia">Filosofía</a>
+    <a class="card" href="#teologia">Teología</a>
+    <a class="card" href="#ciencia">Ciencia</a>
+    <a class="card" href="#arte">Arte</a>
   </nav>
+
+  <section id="biblioteca">
+    <h2>Biblioteca (PDFs)</h2>
+    <ul id="pdf-list">Cargando documentos…</ul>
+  </section>
 </main>
 
 <footer>
-  Didactic Eureka · Proyecto bifásico en evolución permanente
+  Didactic Eureka · GitHub Pages
 </footer>
+
+<script>
+const owner = "TomasLavadosSepulveda";   // ← si cambia, edítalo
+const repo  = "didactic-eureka";         // ← si cambia, edítalo
+const path  = "";                        // raíz del repo
+
+async function listarPDFs() {
+  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const ul = document.getElementById("pdf-list");
+  ul.innerHTML = "";
+
+  data.forEach(item => {
+    if (item.name.endsWith(".pdf")) {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = item.download_url;
+      a.textContent = item.name;
+      a.style.color = "#9fb4ff";
+      li.appendChild(a);
+      ul.appendChild(li);
+    }
+  });
+}
+
+listarPDFs();
+</script>
 
 </body>
 </html>
