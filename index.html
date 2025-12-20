@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Didactic Eureka</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Georgia,"Times New Roman",serif;
+  background:#f6f5f2;
+  color:#141;
+}
+header{
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:#fff;
+  border-bottom:1px solid #ddd;
+  padding:16px;
+}
+h1{margin:0;font-size:24px;font-weight:normal}
+nav{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+nav button{
+  background:#eee;
+  border:none;
+  padding:6px 14px;
+  border-radius:20px;
+  cursor:pointer;
+}
+nav button.active{background:#ccc}
+
+main{
+  display:grid;
+  grid-template-columns: 1fr 280px;
+  gap:24px;
+  max-width:1200px;
+  margin:auto;
+  padding:20px;
+}
+@media(max-width:900px){
+  main{grid-template-columns:1fr}
+}
+
+.section-title{
+  font-size:22px;
+  margin:0 0 12px 0;
+}
+
+.item{
+  padding:8px 0;
+  border-bottom:1px solid #ddd;
+}
+.item button{
+  background:none;
+  border:none;
+  font-size:17px;
+  cursor:pointer;
+  text-align:left;
+}
+.item button:hover{color:#1f3cff}
+
+.article iframe{
+  width:100%;
+  height:80vh;
+  border:1px solid #ddd;
+  border-radius:8px;
+}
+
+aside{
+  border-left:1px solid #ddd;
+  padding-left:16px;
+}
+aside h3{
+  margin-top:0;
+  font-weight:normal;
+}
+aside button{
+  display:block;
+  background:none;
+  border:none;
+  padding:6px 0;
+  text-align:left;
+  cursor:pointer;
+}
+aside button:hover{color:#1f3cff}
+
+.note{
+  color:#666;
+  font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Didactic Eureka</h1>
+  <nav id="nav"></nav>
+</header>
+
+<main>
+  <section id="content"></section>
+  <aside id="sidebar"></aside>
+</main>
+
+<script>
+/* -------- UTILIDADES -------- */
+function titleize(str){
+  return str
+    .replace(/\.pdf$/i,"")
+    .replace(/[_\-]+/g," ")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase()
+    .replace(/\b\w/g,c=>c.toUpperCase());
+}
+
+const BASE = location.origin + location.pathname.replace(/\/[^\/]*$/,"");
+let MANIFEST = null;
+let CURRENT_PATH = [];
+let CURRENT_FILES = [];
+
+/* -------- NODO ACTUAL -------- */
+function getNode(){
+  let node = MANIFEST;
+  for(const p of CURRENT_PATH){
+    node = node.folders[p];
+  }
+  return node;
+}
+
+/* -------- RENDER NAV -------- */
+function renderNav(){
+  const nav = document.getElementById("nav");
+  nav.innerHTML = "";
+
+  Object.keys(MANIFEST.folders||{}).forEach(cat=>{
+    const b=document.createElement("button");
+    b.textContent=titleize(cat.replace(/:$/,""));
+    b.onclick=()=>{
+      CURRENT_PATH=[cat];
+      render();
+    };
+    nav.appendChild(b);
+  });
+}
+
+/* -------- RENDER -------- */
+function render(){
+  const content=document.getElementById("content");
+  const sidebar=document.getElementById("sidebar");
+  content.innerHTML="";
+  sidebar.innerHTML="";
+
+  const node=getNode();
+  CURRENT_FILES=node.files||[];
+
+  content.innerHTML=`<h2 class="section-title">${titleize(CURRENT_PATH.at(-1)||"Inicio")}</h2>`;
+
+  /* Subcarpetas */
+  Object.keys(node.folders||{}).forEach(sub=>{
+    const d=document.createElement("div");
+    d.className="item";
+    const b=document.createElement("button");
+    b.textContent="▶ "+titleize(sub.replace(/:$/,""));
+    b.onclick=()=>{
+      CURRENT_PATH.push(sub);
+      render();
+    };
+    d.appendChild(b);
+    content.appendChild(d);
+  });
+
+  /* Artículos */
+  CURRENT_FILES.forEach(file=>{
+    const d=document.createElement("div");
+    d.className="item";
+    const b=document.createElement("button");
+    b.textContent=titleize(file);
+    b.onclick=()=>openArticle(file);
+    d.appendChild(b);
+    content.appendChild(d);
+  });
+
+  sidebar.innerHTML=`<p class="note">Selecciona un artículo para leerlo.</p>`;
+}
+
+/* -------- ARTÍCULO -------- */
+function openArticle(file){
+  const content=document.getElementById("content");
+  const sidebar=document.getElementById("sidebar");
+  const url=[...CURRENT_PATH,file].map(encodeURIComponent).join("/");
+
+  content.innerHTML=`
+    <h2 class="section-title">${titleize(file)}</h2>
+    <iframe src="${url}"></iframe>
+  `;
+
+  sidebar.innerHTML=`<h3>En esta categoría</h3>`;
+  CURRENT_FILES.forEach(f=>{
+    if(f!==file){
+      const b=document.createElement("button");
+      b.textContent=titleize(f);
+      b.onclick=()=>openArticle(f);
+      sidebar.appendChild(b);
+    }
+  });
+}
+
+/* -------- INIT -------- */
+fetch("manifest.json",{cache:"no-store"})
+.then(r=>r.json())
+.then(m=>{
+  MANIFEST=m;
+  renderNav();
+  render();
+})
+.catch(()=>{
+  document.getElementById("content").innerHTML="Error cargando manifest.json";
+});
+</script>
+
+</body>
+</html>
