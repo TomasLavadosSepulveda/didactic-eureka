@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Didactic Eureka</title>
+
+<style>
+:root{
+  --bg:#f6f5f2; --paper:#fff; --ink:#141414;
+  --muted:#666; --line:#e2e0d9; --accent:#1f3cff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family: ui-serif, Georgia, "Times New Roman", serif; line-height:1.7;
+}
+.wrap{max-width:1200px;margin:auto;padding:0 22px}
+header{
+  position:sticky;top:0;z-index:10;
+  background:var(--paper);border-bottom:1px solid var(--line);
+}
+.top{display:flex;justify-content:space-between;align-items:center;padding:16px 0}
+h1{margin:0;font-size:22px}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav button{
+  background:none;border:none;font-family:inherit;font-size:13px;
+  padding:6px 12px;border-radius:999px;cursor:pointer;
+}
+nav button.active,nav button:hover{background:#efefe9}
+
+main{padding:26px 0 48px}
+.panel{
+  background:var(--paper);border:1px solid var(--line);
+  border-radius:16px;padding:18px;margin-bottom:20px;
+}
+.panel h2{margin:0 0 12px;font-size:20px}
+.item{padding:10px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:none}
+.item button{
+  background:none;border:none;font-family:inherit;font-size:15px;
+  color:var(--accent);cursor:pointer;
+}
+.item button:hover{text-decoration:underline}
+.thumb{
+  max-width:520px;width:100%;border-radius:12px;
+  border:1px solid var(--line);margin:10px 0;
+}
+.article{
+  background:var(--paper);border:1px solid var(--line);
+  border-radius:16px;padding:20px;
+}
+.article h2{margin-top:0}
+.article img{
+  max-width:100%;border-radius:12px;border:1px solid var(--line);
+  margin-bottom:14px;
+}
+iframe{
+  width:100%;height:75vh;border:none;border-radius:12px;
+}
+footer{
+  border-top:1px solid var(--line);padding:18px 0;
+  text-align:center;font-size:12px;color:var(--muted);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="wrap top">
+    <h1>Didactic Eureka</h1>
+    <nav id="tabs"></nav>
+  </div>
+</header>
+
+<main class="wrap" id="content">
+  <p>Cargando estructura…</p>
+</main>
+
+<footer>
+  Didactic Eureka · método bifásico · auto-lectura del repositorio
+</footer>
+
+<script>
+const owner = location.hostname.split(".")[0];
+const repo  = location.pathname.split("/").filter(Boolean)[0];
+const API   = `https://api.github.com/repos/${owner}/${repo}/contents`;
+const IMG_RE = /\.(jpg|jpeg|png|webp)$/i;
+
+function titleCase(str){
+  return str
+    .replace(/\.(pdf)$/i,"")
+    .replace(/[_\-]+/g," ")
+    .replace(/\s+/g," ")
+    .toLowerCase()
+    .split(" ")
+    .map(w=>w?w[0].toUpperCase()+w.slice(1):"")
+    .join(" ");
+}
+
+async function fetchDir(path=""){
+  const r = await fetch(path?`${API}/${encodeURIComponent(path)}`:API);
+  if(!r.ok) return [];
+  return await r.json();
+}
+
+// Lee recursivamente una carpeta y devuelve {dirs, pdfs}
+async function scan(path){
+  const items = await fetchDir(path);
+  const dirs=[], pdfs=[];
+  for(const it of items){
+    if(it.type==="dir") dirs.push(it);
+    if(it.type==="file" && /\.pdf$/i.test(it.name)) pdfs.push(it);
+  }
+  return {dirs,pdfs,items};
+}
+
+function renderArticle(pdf, img){
+  const c = document.getElementById("content");
+  c.innerHTML = `
+    <div class="article">
+      <h2>${titleCase(pdf.name)}</h2>
+      ${img?`<img src="${img.download_url}" alt="${titleCase(pdf.name)}">`:``}
+      <iframe src="${pdf.download_url}#toolbar=0&navpanes=0&view=FitH"></iframe>
+    </div>
+  `;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+async function renderLevel(path, label){
+  const c = document.getElementById("content");
+  c.innerHTML = "";
+  const {dirs,pdfs,items} = await scan(path);
+
+  const panel = document.createElement("div");
+  panel.className="panel";
+  panel.innerHTML = `<h2>${label}</h2>`;
+  c.appendChild(panel);
+
+  // Subcarpetas → pestañas secundarias
+  if(dirs.length){
+    const nav = document.getElementById("tabs");
+    nav.innerHTML="";
+    dirs.forEach(d=>{
+      const b=document.createElement("button");
+      b.textContent=titleCase(d.name.replace(/:$/,""));
+      b.onclick=()=>renderLevel(d.path, titleCase(d.name.replace(/:$/,"")));
+      nav.appendChild(b);
+    });
+  }
+
+  // PDFs → artículos
+  pdfs.forEach(pdf=>{
+    const base = pdf.name.replace(/\.pdf$/i,"").toLowerCase();
+    const img = items.find(f=>f.type==="file" && IMG_RE.test(f.name) && f.name.replace(IMG_RE,"").toLowerCase()===base);
+    const it=document.createElement("div");
+    it.className="item";
+    it.innerHTML = `
+      <button>${titleCase(pdf.name)}</button>
+      ${img?`<img class="thumb" src="${img.download_url}">`:``}
+    `;
+    it.querySelector("button").onclick=()=>renderArticle(pdf,img);
+    panel.appendChild(it);
+  });
+}
+
+async function init(){
+  const root = await fetchDir();
+  const topDirs = root.filter(x=>x.type==="dir");
+  const tabs = document.getElementById("tabs");
+  tabs.innerHTML="";
+
+  topDirs.forEach(d=>{
+    const b=document.createElement("button");
+    b.textContent=titleCase(d.name.replace(/:$/,""));
+    b.onclick=()=>{
+      document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+      b.classList.add("active");
+      renderLevel(d.path, titleCase(d.name.replace(/:$/,"")));
+    };
+    tabs.appendChild(b);
+  });
+
+  if(tabs.firstChild) tabs.firstChild.click();
+}
+
+init().catch(()=>{
+  document.getElementById("content").innerHTML="<p>Error leyendo el repositorio.</p>";
+});
+</script>
+
+</body>
+</html>
