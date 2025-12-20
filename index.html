@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Didactic Eureka</title>
+
+<style>
+body{
+  margin:0;
+  font-family: Georgia, "Times New Roman", serif;
+  background:#f6f5f2;
+  color:#141414;
+}
+header{
+  background:#ffffff;
+  border-bottom:1px solid #e2e0d9;
+  padding:16px;
+}
+h1{margin:0;font-size:22px}
+nav{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:12px 0;
+}
+nav button{
+  background:none;
+  border:1px solid #e2e0d9;
+  border-radius:999px;
+  padding:6px 12px;
+  cursor:pointer;
+}
+nav button.active{
+  background:#efefe9;
+}
+main{
+  max-width:1000px;
+  margin:auto;
+  padding:20px;
+}
+.section{
+  background:#ffffff;
+  border:1px solid #e2e0d9;
+  border-radius:12px;
+  padding:16px;
+}
+.item{
+  padding:8px 0;
+  border-top:1px solid #e2e0d9;
+}
+.item:first-child{border-top:none}
+a{
+  text-decoration:none;
+  color:#1f3cff;
+}
+a:hover{text-decoration:underline}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Didactic Eureka</h1>
+  <nav id="tabs"></nav>
+</header>
+
+<main>
+  <div id="content">Cargando…</div>
+</main>
+
+<script>
+const owner = location.hostname.split(".")[0];
+const repo  = location.pathname.split("/").filter(Boolean)[0];
+const API   = `https://api.github.com/repos/${owner}/${repo}/contents`;
+
+function titleCase(name){
+  return name
+    .replace(/:$/,"")
+    .replace(/\.pdf$/i,"")
+    .replace(/[_\-]+/g," ")
+    .replace(/\s+/g," ")
+    .toLowerCase()
+    .split(" ")
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+async function fetchDir(path=""){
+  const r = await fetch(path ? `${API}/${path}` : API);
+  if(!r.ok) return [];
+  return await r.json();
+}
+
+async function showCategory(dir){
+  const content = document.getElementById("content");
+  content.innerHTML = "";
+
+  const files = await fetchDir(dir.path);
+  const pdfs = files.filter(f => f.type==="file" && f.name.endsWith(".pdf"));
+
+  const box = document.createElement("div");
+  box.className = "section";
+  box.innerHTML = `<h2>${titleCase(dir.name)}</h2>`;
+
+  if(pdfs.length === 0){
+    box.innerHTML += "<p>No hay artículos.</p>";
+  }
+
+  pdfs.forEach(pdf=>{
+    const d = document.createElement("div");
+    d.className = "item";
+    d.innerHTML = `<a href="${pdf.download_url}" target="_blank">${titleCase(pdf.name)}</a>`;
+    box.appendChild(d);
+  });
+
+  content.appendChild(box);
+}
+
+async function init(){
+  const root = await fetchDir();
+  const dirs = root.filter(x => x.type === "dir");
+
+  const tabs = document.getElementById("tabs");
+  const content = document.getElementById("content");
+  tabs.innerHTML = "";
+  content.innerHTML = "";
+
+  dirs.forEach(dir=>{
+    const b = document.createElement("button");
+    b.textContent = titleCase(dir.name);
+    b.onclick = ()=>{
+      document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+      b.classList.add("active");
+      showCategory(dir);
+    };
+    tabs.appendChild(b);
+  });
+
+  if(dirs.length){
+    tabs.firstChild.click();
+  } else {
+    content.innerHTML = "No hay carpetas en el repositorio.";
+  }
+}
+
+init().catch(()=>{
+  document.getElementById("content").innerText =
+    "Error al leer el repositorio.";
+});
+</script>
+
+</body>
+</html>
