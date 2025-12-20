@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Didactic Eureka</title>
+  <meta name="description" content="Didactic Eureka · Lectura eidética en línea" />
+
+  <style>
+    :root{
+      --bg:#f6f5f2; --paper:#ffffff; --ink:#141414; --muted:#5c5c5c;
+      --line:#e3e1da; --accent:#1f3cff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:var(--bg); color:var(--ink);
+      font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+      line-height:1.7;
+    }
+    .wrap{max-width:1140px; margin:0 auto; padding:0 22px;}
+    header{
+      background:var(--paper); border-bottom:1px solid var(--line);
+      position:sticky; top:0; z-index:10;
+    }
+    .topbar{display:flex; align-items:baseline; justify-content:space-between; gap:16px; padding:18px 0;}
+    .brand{display:flex; flex-direction:column; gap:2px}
+    .brand h1{margin:0; font-size:22px; letter-spacing:.2px; font-weight:700}
+    .brand .sub{color:var(--muted); font-size:13px}
+    nav{display:flex; gap:14px; flex-wrap:wrap; justify-content:flex-end}
+    nav a{
+      color:var(--ink); text-decoration:none; font-size:13px;
+      padding:6px 10px; border-radius:999px;
+    }
+    nav a:hover{background:#f0efe9}
+    nav a.active{background:#edf0ff; color:#0d1cff}
+    main{padding:26px 0 60px}
+    .hero{
+      background:var(--paper); border:1px solid var(--line);
+      border-radius:16px; padding:22px; margin:18px 0 22px;
+    }
+    .hero h2{margin:0 0 8px; font-size:22px}
+    .hero p{margin:0; color:var(--muted); max-width:72ch}
+    .grid{
+      display:grid; grid-template-columns: 1.25fr .75fr; gap:18px;
+    }
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+    .panel{
+      background:var(--paper); border:1px solid var(--line);
+      border-radius:16px; padding:16px;
+    }
+    .panel h3{margin:0 0 10px; font-size:15px; letter-spacing:.2px}
+    .kicker{color:var(--muted); font-size:12px; margin:0 0 10px}
+    .list{display:flex; flex-direction:column; gap:10px}
+    .item{
+      border:1px solid var(--line); border-radius:14px; padding:12px;
+    }
+    .item .title{font-weight:700; margin:0 0 6px; font-size:15px}
+    .item .meta{color:var(--muted); font-size:12px; margin:0}
+    .read{
+      margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;
+      align-items:center; justify-content:space-between;
+    }
+    .btn{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px; border-radius:12px; border:1px solid var(--line);
+      background:#faf9f6; color:var(--ink); text-decoration:none; font-size:13px;
+    }
+    .btn:hover{border-color:#cfd3ff}
+    .btn.primary{background:#1218ff; border-color:#1218ff; color:white}
+    .reader{
+      margin-top:12px; border-top:1px solid var(--line);
+      padding-top:12px;
+    }
+    iframe{
+      width:100%; height:70vh; border:0; border-radius:12px; background:#fff;
+    }
+    details{border:1px solid var(--line); border-radius:14px; padding:12px; background:var(--paper)}
+    summary{cursor:pointer; font-weight:700}
+    .muted{color:var(--muted)}
+    footer{
+      border-top:1px solid var(--line);
+      padding:22px 0; color:var(--muted); font-size:12px;
+    }
+    code{background:#f0efe9; padding:2px 6px; border-radius:8px}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="wrap topbar">
+    <div class="brand">
+      <h1>Didactic Eureka</h1>
+      <div class="sub">Lectura eidética en línea · navegación editorial sobria (Referencia 1)</div>
+    </div>
+    <nav aria-label="Secciones">
+      <a href="#filosofia">Filosofía</a>
+      <a href="#teologia">Teología</a>
+      <a href="#ciencia">Ciencia</a>
+      <a href="#arte">Arte</a>
+      <a href="#ensayos">Ensayos</a>
+      <a href="#biblioteca">Biblioteca</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h2>Portada</h2>
+    <p>
+      Aquí los documentos se <strong>leen</strong>. No se impone un recorrido: se ofrecen puertas.
+      (Un solo <code>index.html</code> en root, para funcionar ya en GitHub Pages.)
+    </p>
+  </section>
+
+  <section class="grid">
+    <div class="panel">
+      <h3>Lecturas</h3>
+      <p class="kicker">Se listan automáticamente desde tus carpetas del repo (PDF). Haz clic y se abre aquí mismo.</p>
+      <div id="feed" class="list">
+        <div class="item">
+          <p class="title">Cargando…</p>
+          <p class="meta muted">Leyendo PDFs desde GitHub.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Secciones</h3>
+      <p class="kicker">Estructura modular, limpia, tipo “portal editorial”.</p>
+      <div class="list">
+        <details id="filosofia"><summary>Filosofía</summary><div class="muted" style="margin-top:10px" data-box="filosofia:">Cargando…</div></details>
+        <details id="teologia"><summary>Teología</summary><div class="muted" style="margin-top:10px" data-box="teologia:">Cargando…</div></details>
+        <details id="ciencia"><summary>Ciencia</summary><div class="muted" style="margin-top:10px" data-box="ciencia:">Cargando…</div></details>
+        <details id="arte"><summary>Arte</summary><div class="muted" style="margin-top:10px" data-box="arte:">Cargando…</div></details>
+        <details id="ensayos"><summary>Ensayos</summary><div class="muted" style="margin-top:10px" data-box="ensayos:">Cargando…</div></details>
+        <details id="biblioteca"><summary>Biblioteca (todo)</summary><div class="muted" style="margin-top:10px" data-box="">Cargando…</div></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" style="margin-top:18px">
+    <h3>Lector</h3>
+    <p class="kicker">Aquí se abre el PDF seleccionado (online, embebido).</p>
+    <div id="reader" class="reader muted">Selecciona un documento para leerlo aquí.</div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    Didactic Eureka · GitHub Pages · Si algo no aparece, revisa que exista <code>index.html</code> en root y que el repo sea público.
+  </div>
+</footer>
+
+<script>
+  // Detecta owner/repo desde GitHub Pages sin que tú escribas nada.
+  const owner = (location.hostname || "").split(".")[0] || "";
+  const repo  = (location.pathname.split("/").filter(Boolean)[0]) || "";
+  const apiBase = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents`;
+
+  // Carpetas esperadas (según tu patrón con ":"). Si alguna no existe, se ignora.
+  const CATS = [
+    {key:"filosofia:", label:"Filosofía"},
+    {key:"teologia:", label:"Teología"},
+    {key:"ciencia:", label:"Ciencia"},
+    {key:"arte:", label:"Arte"},
+    {key:"ensayos:", label:"Ensayos"},
+  ];
+
+  function humanize(filename){
+    return filename
+      .replace(/\.pdf$/i,"")
+      .replace(/[_\-]+/g," ")
+      .replace(/([a-z])([A-Z])/g,"$1 $2")
+      .replace(/\s+/g," ")
+      .trim()
+      .split(" ")
+      .map(w => w ? (w[0].toUpperCase()+w.slice(1)) : "")
+      .join(" ");
+  }
+
+  async function fetchDir(path){
+    const url = path ? `${apiBase}/${encodeURIComponent(path)}` : apiBase;
+    const r = await fetch(url, {headers:{Accept:"application/vnd.github+json"}});
+    if(!r.ok) return null;
+    return await r.json();
+  }
+
+  async function collectPDFs(startPath){
+    const out = [];
+    const stack = [startPath];
+    while(stack.length){
+      const p = stack.pop();
+      const items = await fetchDir(p);
+      if(!items || !Array.isArray(items)) continue;
+      for(const it of items){
+        if(it.type==="dir") stack.push(it.path);
+        if(it.type==="file" && (it.name||"").toLowerCase().endsWith(".pdf")){
+          out.push({name: it.name, url: it.download_url, path: it.path});
+        }
+      }
+    }
+    out.sort((a,b)=>a.name.localeCompare(b.name,"es"));
+    return out;
+  }
+
+  function openInReader(item){
+    const reader = document.getElementById("reader");
+    reader.classList.remove("muted");
+    reader.innerHTML = `
+      <div class="item" style="border:0;padding:0">
+        <p class="title" style="margin:0 0 8px">${humanize(item.name)}</p>
+        <div class="read">
+          <span class="meta">Ruta: <code>${item.path}</code></span>
+          <a class="btn" href="${item.url}" target="_blank" rel="noopener">Abrir en pestaña</a>
+        </div>
+        <iframe src="${item.url}#toolbar=0&navpanes=0&view=FitH"></iframe>
+      </div>
+    `;
+    window.scrollTo({top: reader.getBoundingClientRect().top + window.scrollY - 90, behavior:"smooth"});
+  }
+
+  function renderList(container, pdfs, limit=8){
+    if(!pdfs.length){
+      container.innerHTML = `<span class="muted">Sin PDFs detectados aquí.</span>`;
+      return;
+    }
+    const shown = pdfs.slice(0, limit);
+    container.innerHTML = "";
+    for(const p of shown){
+      const a = document.createElement("a");
+      a.href = "javascript:void(0)";
+      a.className = "btn";
+      a.textContent = humanize(p.name);
+      a.onclick = () => openInReader(p);
+      container.appendChild(a);
+    }
+    if(pdfs.length > limit){
+      const more = document.createElement("div");
+      more.className = "muted";
+      more.style.marginTop = "10px";
+      more.textContent = `(+ ${pdfs.length - limit} más)`;
+      container.appendChild(more);
+    }
+  }
+
+  async function boot(){
+    // Feed principal: mezcla de todo (biblioteca), para portada tipo editorial
+    const all = await collectPDFs("");
+    const feed = document.getElementById("feed");
+    feed.innerHTML = "";
+
+    const top = all.slice(0, 10);
+    if(!top.length){
+      feed.innerHTML = `<div class="item"><p class="title">No se detectaron PDFs</p><p class="meta muted">Revisa que el repo sea público y que los PDFs terminen en .pdf.</p></div>`;
+    } else {
+      for(const p of top){
+        const box = document.createElement("div");
+        box.className = "item";
+        box.innerHTML = `
+          <p class="title">${humanize(p.name)}</p>
+          <p class="meta muted">${p.path}</p>
+          <div class="read">
+            <a class="btn primary" href="javascript:void(0)">Leer aquí</a>
+            <a class="btn" href="${p.url}" target="_blank" rel="noopener">Abrir en pestaña</a>
+          </div>
+        `;
+        box.querySelector(".primary").onclick = () => openInReader(p);
+        feed.appendChild(box);
+      }
+    }
+
+    // Secciones
+    for(const cat of CATS){
+      const target = document.querySelector(`[data-box="${cat.key}"]`);
+      if(!target) continue;
+      const pdfs = await collectPDFs(cat.key);
+      renderList(target, pdfs, 8);
+    }
+
+    // Biblioteca (todo)
+    const libBox = document.querySelector(`[data-box=""]`);
+    if(libBox){
+      renderList(libBox, all, 12);
+    }
+  }
+
+  boot().catch(() => {
+    const feed = document.getElementById("feed");
+    feed.innerHTML = `<div class="item"><p class="title">Error al leer GitHub</p><p class="meta muted">¿Repo privado o límite de API? Prueba de nuevo en 1 minuto.</p></div>`;
+  });
+</script>
+
+</body>
+</html>
