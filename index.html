@@ -20,10 +20,7 @@ header{
   border-bottom:1px solid #ddd;
   padding:14px;
 }
-h1{
-  margin:0 0 10px 0;
-  font-size:22px;
-}
+h1{margin:0 0 10px 0;font-size:22px}
 nav{
   display:flex;
   gap:8px;
@@ -37,18 +34,13 @@ nav button{
   cursor:pointer;
   white-space:nowrap;
 }
-nav button.active{
-  background:#ccc;
-}
+nav button.active{background:#ccc}
 main{
   max-width:900px;
   margin:auto;
   padding:20px;
 }
-.section-title{
-  font-size:20px;
-  margin-bottom:12px;
-}
+.section-title{font-size:20px;margin-bottom:12px}
 .item{
   padding:10px 0;
   border-bottom:1px solid #ddd;
@@ -61,9 +53,7 @@ main{
   font-size:16px;
   text-align:left;
 }
-.item button:hover{
-  text-decoration:underline;
-}
+.item button:hover{text-decoration:underline}
 .article img{
   max-width:100%;
   margin-bottom:16px;
@@ -90,70 +80,82 @@ main{
 </main>
 
 <script>
-function titleize(name){
-  return name
+// --- UTILIDADES ---
+function normalize(str){
+  return str
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"") // quita acentos
     .replace(/\.pdf$/i,"")
     .replace(/[_\-]+/g," ")
+    .replace(/\s+/g," ")
     .toLowerCase()
     .replace(/\b\w/g,l=>l.toUpperCase());
 }
 
-function openArticle(path, title){
+// Base absoluta del sitio (evita errores de ruta)
+const BASE = location.origin + location.pathname.replace(/\/[^\/]*$/,"");
+
+// --- RENDER ARTÍCULO ---
+function openArticle(cat, file){
   const content = document.getElementById("content");
-  const imgPath = path.replace(/\.pdf$/i,".jpg");
+  const title = normalize(file);
+  const pdfUrl = `${BASE}/${encodeURI(cat)}/${encodeURI(file)}`;
+  const imgUrl = pdfUrl.replace(/\.pdf$/i,".jpg");
 
   content.innerHTML = `
     <div class="article">
       <h2>${title}</h2>
-      <img src="${imgPath}" onerror="this.style.display='none'">
-      <iframe src="${path}" loading="lazy"></iframe>
+      <img src="${imgUrl}" onerror="this.style.display='none'">
+      <iframe src="${pdfUrl}" loading="lazy"></iframe>
     </div>
   `;
 }
 
-fetch("manifest.json")
+// --- CARGA DEL MANIFEST ---
+fetch("manifest.json", {cache:"no-store"})
 .then(r => r.json())
 .then(manifest => {
   const nav = document.getElementById("nav");
   const content = document.getElementById("content");
 
-  function showCategory(catName, catData){
-    content.innerHTML = `<h2 class="section-title">${titleize(catName)}</h2>`;
-    if(catData.files.length === 0){
+  function showCategory(name, data){
+    content.innerHTML = `<h2 class="section-title">${normalize(name)}</h2>`;
+    if(!data.files || data.files.length === 0){
       content.innerHTML += "<p>No hay artículos.</p>";
+      return;
     }
-    catData.files.forEach(file => {
+    data.files.forEach(file => {
       const div = document.createElement("div");
       div.className = "item";
-      div.innerHTML = `
-        <button onclick="openArticle('${catName}/${file}','${titleize(file)}')">
-          ${titleize(file)}
-        </button>
-      `;
+      const btn = document.createElement("button");
+      btn.textContent = normalize(file);
+      btn.onclick = () => openArticle(name, file);
+      div.appendChild(btn);
       content.appendChild(div);
     });
   }
 
-  const entries = Object.entries(manifest.folders);
+  const entries = Object.entries(manifest.folders || {});
+  nav.innerHTML = "";
 
   entries.forEach(([name, data], i) => {
     const btn = document.createElement("button");
-    btn.textContent = titleize(name);
+    btn.textContent = normalize(name);
     btn.onclick = () => {
-      document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
       btn.classList.add("active");
       showCategory(name, data);
     };
     nav.appendChild(btn);
     if(i === 0) btn.click();
   });
-
 })
-.catch(() => {
+.catch(err => {
   document.getElementById("content").innerHTML =
     "<p>Error al cargar el contenido.</p>";
+  console.error(err);
 });
 </script>
 
 </body>
 </html>
+
