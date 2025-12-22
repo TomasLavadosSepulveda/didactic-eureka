@@ -204,6 +204,17 @@
 git add patches/patch-eureka.js
 git commit -m "Fix overlapping nav, article list, and YouTube video"
 git push
+document.querySelectorAll('#articulos a').forEach(link => {
+  const destino = link.getAttribute('data-path');
+
+  if (destino) {
+    link.setAttribute('href', destino);
+    link.setAttribute('target', '_self');
+  }
+});
+<a data-path="articulos/filosofia/verdad.html">
+  La verdad
+</a>
 
 
 
