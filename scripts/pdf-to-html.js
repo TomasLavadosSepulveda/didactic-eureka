@@ -59,4 +59,5 @@ async function convert(pdfPath) {
   const pdfs = walk(ROOT).filter(p => !p.includes("node_modules"));
   for (const p of pdfs) await convert(p);
 })();
+fs.readdirSync(dir, { withFileTypes: true })
 
