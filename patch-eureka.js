@@ -544,4 +544,90 @@ function normalizeAllArticleTitles() {
   }, 200);
 
 })();
+/* ==================================================
+   CORRECCIÓN FUNCIONAL UNIVERSAL (ROOT)
+   - Títulos legibles
+   - Artículo frontal
+   - Portada + publicidad visibles
+   Bloque aditivo irreversible
+   ================================================== */
+
+(function () {
+
+  /* ---------- NORMALIZAR TÍTULOS DE ARTÍCULOS ---------- */
+  function normalizeTitle(text) {
+    if (!text) return text;
+
+    let t = decodeURIComponent(text);
+    t = t.replace(/\.pdf$/i, "");
+    t = t.replace(/[_\-]+/g, " ");
+    t = t.replace(/([a-záéíóúñ])([A-ZÁÉÍÓÚÑ])/g, "$1 $2");
+    t = t.replace(/\s+/g, " ").trim();
+    t = t.replace(/\b\p{L}/gu, c => c.toUpperCase());
+    return t;
+  }
+
+  function fixTitles() {
+    document.querySelectorAll("article h1, article h2, article h3, article a")
+      .forEach(el => {
+        const t = el.textContent;
+        if (!t) return;
+        if (t.includes(".pdf") || t.includes("_") || /[a-z][A-Z]/.test(t)) {
+          el.textContent = normalizeTitle(t);
+        }
+      });
+  }
+
+  /* ---------- FORZAR ARTÍCULO FRONTAL ---------- */
+  function forceFrontalArticle() {
+    const article = document.querySelector("article");
+    if (!article) return;
+
+    article.style.maxWidth = "1000px";
+    article.style.margin = "0 auto";
+    article.style.float = "none";
+    article.style.display = "block";
+  }
+
+  /* ---------- PORTADA DEL ARTÍCULO ---------- */
+  function injectCover() {
+    const article = document.querySelector("article");
+    if (!article) return;
+    if (article.querySelector(".article-cover")) return;
+
+    const img = document.createElement("img");
+    img.className = "article-cover";
+    img.alt = "Didactic Eureka";
+    img.src =
+      "assets/images/cover.jpg?v=" + Date.now();
+
+    article.prepend(img);
+  }
+
+  /* ---------- PUBLICIDAD INSTITUCIONAL ---------- */
+  function forceAd() {
+    let ad = document.querySelector(".institutional-ad");
+    if (!ad) {
+      ad = document.createElement("div");
+      ad.className = "institutional-ad";
+      ad.innerHTML = `
+        <img src="assets/images/theoria-logo.png?v=${Date.now()}" alt="Theoria">
+        <p class="ad-text">Publicidad institucional</p>
+      `;
+      document.body.appendChild(ad);
+    }
+  }
+
+  /* ---------- EJECUCIÓN REITERADA ---------- */
+  let runs = 0;
+  const interval = setInterval(() => {
+    fixTitles();
+    forceFrontalArticle();
+    injectCover();
+    forceAd();
+    runs++;
+    if (runs > 40) clearInterval(interval);
+  }, 200);
+
+})();
 
