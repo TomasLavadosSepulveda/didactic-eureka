@@ -75,3 +75,53 @@ nav button.active{
   border-radius: 10px;
   border: 1px solid var(--line);
 }
+/* ==================================================
+   REPARACIÓN FINAL DE LECTURA — DIDACTIC EUREKA
+   Bloque aditivo y definitivo
+   ================================================== */
+
+/* --- ARTÍCULO COMO TEXTO, NO COMO ARCHIVO --- */
+article {
+  max-width: 860px !important;
+  margin: 0 auto !important;
+  padding: 2rem 1.5rem !important;
+  background: transparent !important;
+}
+
+/* --- TÍTULOS: MAYÚSCULAS INICIALES, LEGIBLES --- */
+article h1,
+article h2,
+article h3 {
+  text-transform: none !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* --- ELIMINAR SENSACIÓN DE DESCARGA --- */
+a[href$=".pdf"] {
+  pointer-events: auto;
+  text-decoration: none;
+}
+
+a[href$=".pdf"]::after {
+  content: "" !important;
+}
+
+/* --- IMÁGENES SIEMPRE VISIBLES --- */
+img,
+.cover-image,
+.article-img-top,
+.article-img-bottom {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* --- QUITAR MARCOS Y SOMBRAS DE VISOR --- */
+iframe,
+embed,
+object {
+  box-shadow: none !important;
+  background: transparent !important;
+}
