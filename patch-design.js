@@ -62,4 +62,29 @@
   document.head.appendChild(style);
 
 })();
+/* ==================================================
+   ESTILO ADITIVO — LECTURA PDF FRONTAL
+   ================================================== */
+
+(function () {
+
+  const style = document.createElement("style");
+  style.innerHTML = `
+    .pdf-reading-wrapper {
+      max-width: 1000px;
+      margin: 0 auto 3rem auto;
+      padding: 2rem;
+      background: #fafafa;
+    }
+
+    .pdf-reading-wrapper iframe,
+    .pdf-reading-wrapper embed,
+    .pdf-reading-wrapper object {
+      box-shadow: none !important;
+      background: transparent !important;
+    }
+  `;
+  document.head.appendChild(style);
+
+})();
 
