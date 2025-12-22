@@ -81,3 +81,8 @@ p { margin: 0 0 12px 0; line-height: 1.6; }
   border-radius: 10px;
   text-decoration: none;
 }
+.link-invalido{
+  opacity: .65;
+  outline: 2px dashed rgba(255,0,0,.35);
+  outline-offset: 2px;
+}
