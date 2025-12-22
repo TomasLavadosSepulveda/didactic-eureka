@@ -1,0 +1,34 @@
+name: Pages Guard — Didactic Eureka
+
+on:
+  push:
+    branches:
+      - main
+      - upgrade-index
+
+jobs:
+  validate-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate required files
+        run: |
+          echo "Validating core files..."
+
+          test -f index.html || (echo "❌ Missing index.html" && exit 1)
+          test -f patch-eureka.js || (echo "❌ Missing patch-eureka.js" && exit 1)
+          test -f patch-design.js || (echo "❌ Missing patch-design.js" && exit 1)
+          test -f seal-eureka.js || (echo "❌ Missing seal-eureka.js" && exit 1)
+
+          test -f assets/images/index.jpg || (echo "❌ Missing assets/images/index.jpg" && exit 1)
+          test -f assets/images/1.png || (echo "❌ Missing assets/images/1.png" && exit 1)
+
+          echo "✅ Core files present."
+
+      - name: Ready for GitHub Pages
+        run: |
+          echo "✔ Didactic Eureka is structurally valid."
+          echo "✔ GitHub Pages can safely serve this branch."
