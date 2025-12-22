@@ -298,4 +298,97 @@ function normalizeAllArticleTitles() {
   }, 200);
 
 })();
+/* ==================================================
+   MEJORA DE LECTURA DE ARTÍCULOS
+   - Título limpio
+   - Lectura frontal (no “visor PDF”)
+   - Dos imágenes por artículo
+   Bloque aditivo y seguro
+   ================================================== */
+
+(function () {
+
+  /* ---------- 1. NORMALIZAR TÍTULO DEL ARTÍCULO ABIERTO ---------- */
+  function normalizeTitle(text) {
+    if (!text) return text;
+
+    let t = decodeURIComponent(text);
+    t = t.replace(/\.pdf$/i, "");
+    t = t.replace(/[_\-]+/g, " ");
+    t = t.replace(/([a-záéíóúñ])([A-ZÁÉÍÓÚÑ])/g, "$1 $2");
+    t = t.replace(/\s+/g, " ").trim();
+    t = t.replace(/\b\p{L}/gu, c => c.toUpperCase());
+    return t;
+  }
+
+  function fixArticleTitle() {
+    const h2 = document.querySelector("article h2, article h1");
+    if (!h2) return;
+
+    h2.textContent = normalizeTitle(h2.textContent);
+  }
+
+  /* ---------- 2. FORZAR LECTURA FRONTAL DEL PDF ---------- */
+  function improvePdfReading() {
+    const iframe = document.querySelector("iframe, embed, object");
+    if (!iframe) return;
+
+    iframe.style.width = "100%";
+    iframe.style.height = "90vh";
+    iframe.style.border = "none";
+    iframe.style.boxShadow = "none";
+    iframe.style.display = "block";
+  }
+
+  /* ---------- 3. INSERTAR DOS IMÁGENES EN EL ARTÍCULO ---------- */
+  function insertArticleImages() {
+    const article = document.querySelector("article");
+    if (!article) return;
+
+    // Evitar duplicados
+    if (article.querySelector(".article-img-top")) return;
+
+    const topImg = document.createElement("img");
+    topImg.src =
+      "https://tomaslavadossepulveda.github.io/didactic-eureka/assets/images/cover-didactic-eureka.jpg";
+    topImg.className = "article-img-top";
+    topImg.alt = "Didactic Eureka";
+
+    const bottomImg = topImg.cloneNode();
+    bottomImg.className = "article-img-bottom";
+
+    article.prepend(topImg);
+    article.appendChild(bottomImg);
+  }
+
+  /* ---------- 4. ESTILO DE LECTURA EDITORIAL ---------- */
+  const style = document.createElement("style");
+  style.innerHTML = `
+    article {
+      max-width: 820px !important;
+      margin: 0 auto !important;
+    }
+
+    .article-img-top,
+    .article-img-bottom {
+      width: 100%;
+      max-height: 360px;
+      object-fit: cover;
+      margin: 2rem 0;
+      border-radius: 6px;
+    }
+  `;
+  document.head.appendChild(style);
+
+  /* ---------- EJECUCIÓN REITERADA (por render dinámico) ---------- */
+  let runs = 0;
+  const interval = setInterval(() => {
+    fixArticleTitle();
+    improvePdfReading();
+    insertArticleImages();
+    runs++;
+    if (runs > 25) clearInterval(interval);
+  }, 200);
+
+})();
 
