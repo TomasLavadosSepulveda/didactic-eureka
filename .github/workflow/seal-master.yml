@@ -1,0 +1,47 @@
+name: Didactic-Eureka — Master Seal
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  seal:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify signed commits
+        run: |
+          echo "Verificando firma del último commit..."
+          git log -1 --pretty=%G?
+          STATUS=$(git log -1 --pretty=%G?)
+          if [ "$STATUS" != "G" ] && [ "$STATUS" != "U" ]; then
+            echo "❌ Commit no firmado. Abortando."
+            exit 1
+          fi
+          echo "✅ Commit firmado correctamente."
+
+      - name: Seal repository state
+        run: |
+          echo "SELLO HYLÓTRAXICO APLICADO"
+          echo "Fecha: $(date -u)" > .seal
+          echo "Branch: $GITHUB_REF" >> .seal
+          echo "Commit: $(git rev-parse HEAD)" >> .seal
+
+      - name: Commit seal (if changed)
+        run: |
+          git config user.name "didactic-eureka-seal"
+          git config user.email "actions@github.com"
+          git add .seal
+          git diff --cached --quiet || git commit -S -m "seal: estado canónico hylotráxico"
+
+      - name: Push sealed state
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
