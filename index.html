@@ -804,6 +804,122 @@ init();
 
 })();
 </script>
+<script>
+/* =========================================================
+   PATCH · ÁRBOL CENTRAL + TÍTULOS + LEGIBILIDAD
+   Modular · Aditivo · Irreversible
+   ========================================================= */
+(function () {
+
+  /* ---------- Utilidades ---------- */
+  const toTitleCase = (s) =>
+    s.replace(/[:]/g, "")
+     .replace(/[-_]/g, " ")
+     .toLowerCase()
+     .replace(/\b\w/g, c => c.toUpperCase());
+
+  /* ======================================================
+     1) CORREGIR CATEGORÍAS A MAYÚSCULA INICIAL
+     ====================================================== */
+  const tabs = document.getElementById("tabs");
+  if (tabs) {
+    tabs.querySelectorAll("button").forEach(b => {
+      b.textContent = toTitleCase(b.textContent);
+      b.style.fontWeight = "600";
+    });
+  }
+
+  /* ======================================================
+     2) CORREGIR BAJADA DEL TÍTULO
+     ====================================================== */
+  const header = document.getElementById("site-title");
+  if (header) {
+    const p = header.querySelector("p");
+    if (p) p.textContent = "Productividad Bifásica";
+  }
+
+  /* ======================================================
+     3) CONTENEDOR CENTRAL TIPO ÁRBOL
+     ====================================================== */
+  let tree = document.getElementById("tree-center");
+  if (!tree) {
+    tree = document.createElement("div");
+    tree.id = "tree-center";
+    tree.style.position = "relative";
+    tree.style.maxWidth = "900px";
+    tree.style.margin = "60px auto";
+    tree.style.minHeight = "360px";
+    tree.style.display = "flex";
+    tree.style.flexWrap = "wrap";
+    tree.style.justifyContent = "center";
+    tree.style.alignItems = "center";
+    tree.style.gap = "22px";
+    tree.style.transition = "all .4s ease";
+    const app = document.getElementById("app");
+    if (app) app.insertBefore(tree, app.querySelector("#list"));
+  }
+
+  /* ======================================================
+     4) SUB-PESTAÑAS COMO ÍCONOS AUTÓNOMOS (NO SUPERPUESTOS)
+     ====================================================== */
+  const sub = document.getElementById("sub-tabs");
+  if (sub) {
+    sub.style.position = "static";        // elimina superposición
+    sub.style.opacity = "1";
+    sub.style.pointerEvents = "auto";
+    sub.style.background = "none";
+    sub.style.margin = "40px auto";
+    sub.style.display = "flex";
+    sub.style.flexWrap = "wrap";
+    sub.style.justifyContent = "center";
+    sub.style.gap = "20px";
+  }
+
+  /* Mover sub-pestañas al árbol central */
+  function moveSubTabsToTree() {
+    if (!sub || !tree) return;
+    tree.innerHTML = "";
+    Array.from(sub.children).forEach(btn => {
+      btn.style.minWidth = "180px";
+      btn.style.textAlign = "center";
+      btn.style.borderRadius = "16px";
+      btn.style.padding = "18px 16px";
+      btn.style.fontSize = "1rem";
+      btn.style.fontWeight = "500";
+      btn.style.background =
+        "linear-gradient(135deg,#0a2540,#020617)";
+      btn.style.border = "1px solid #1e3a8a";
+      btn.style.color = "#e5e7eb";
+      btn.style.cursor = "pointer";
+      btn.style.transition = "transform .3s ease, box-shadow .3s ease";
+      btn.onmouseenter = () =>
+        btn.style.transform = "scale(1.05)";
+      btn.onmouseleave = () =>
+        btn.style.transform = "scale(1)";
+      tree.appendChild(btn);
+    });
+  }
+
+  /* ======================================================
+     5) COLORES DIFERENCIADOS PARA ARTÍCULOS (HOJAS)
+     ====================================================== */
+  const observer = new MutationObserver(() => {
+    moveSubTabsToTree();
+    Array.from(tree.children).forEach((el, i) => {
+      el.style.background =
+        i % 2 === 0
+          ? "linear-gradient(135deg,#0a2540,#020617)"
+          : "linear-gradient(135deg,#111827,#020617)";
+    });
+  });
+
+  if (sub) {
+    observer.observe(sub, { childList: true });
+    moveSubTabsToTree();
+  }
+
+})();
+</script>
 
 
 
