@@ -448,5 +448,27 @@ h2, h3 { margin: 1.25rem 0 0.5rem; }
     <li><a href="articulos/teologia/revelacion.html">La revelación</a></li>
   </ul>
 </section>
+#tabs-categorias,
+#tabs-subcategorias {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+#tabs-categorias button,
+#tabs-subcategorias button {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #999;
+  background: white;
+  cursor: pointer;
+}
+
+#lista-articulos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
 
