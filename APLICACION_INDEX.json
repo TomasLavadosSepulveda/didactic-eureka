@@ -16,8 +16,11 @@
   "teologia": {
     "cristologia": [
       {
-        "titulo": "La encarnación como revelación universal del Logos",
-        "archivo": "teologia/cristologia/laencarnaciooncomorevelacioonuniversaldellogos.pdf"
+       {
+  "titulo": "Leibniz como prefiguración de Kant",
+  "archivo": "lector.html?doc=filosofia/epistemologia/leibnizcomoprefiguracióndekant.pdf"
+}
+
       }
     ]
   }
