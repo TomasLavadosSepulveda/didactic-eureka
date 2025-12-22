@@ -338,4 +338,40 @@ aside a:hover {
   document.head.appendChild(style);
 
 })();
+/* ==================================================
+   ESCALA EDITORIAL UNIVERSAL
+   + VISIBILIDAD DE IMÁGENES
+   Bloque aditivo
+   ================================================== */
+
+(function () {
+
+  const style = document.createElement("style");
+  style.innerHTML = `
+    article {
+      max-width: 980px !important;
+      margin: 0 auto !important;
+      padding: 3rem 2rem !important;
+      font-size: 1.15rem !important;
+      line-height: 1.8 !important;
+    }
+
+    .universal-cover {
+      display: block !important;
+      width: 100% !important;
+      max-height: 440px !important;
+      object-fit: cover !important;
+      margin: 2rem auto 3rem auto !important;
+      border-radius: 8px !important;
+    }
+
+    .institutional-ad img {
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+  `;
+  document.head.appendChild(style);
+
+})();
 
