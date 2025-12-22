@@ -31,3 +31,36 @@ p { margin: 0 0 12px 0; line-height: 1.6; }
   padding: 14px;
   margin: 14px 0;
 }
+/* =========================
+   PESTAÑAS SUPERIORES (CATEGORÍAS)
+   ========================= */
+#tabs-categorias{
+  display: flex;
+  gap: var(--gap);
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+#tabs-categorias a{
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid rgba(0,0,0,.15);
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+#tabs-categorias a.is-active{
+  font-weight: 700;
+  border-color: rgba(0,0,0,.35);
+}
+
+/* =========================
+   NO “:” EN TÍTULOS (correctivo visual)
+   ========================= */
+.titulo-categoria::after,
+.categoria-titulo::after{
+  content: "" !important;
+}
