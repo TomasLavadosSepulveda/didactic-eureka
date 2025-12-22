@@ -89,4 +89,18 @@ function humanizeTitle(filename) {
     .trim();
 }
 titleElement.textContent = humanizeTitle(file.name);
+function humanizeTitle(fileName) {
+  const s = fileName
+    .replace(/\.(pdf|docx|html)$/i, "")
+    // elimina variantes del nombre (con o sin tildes / doble nombre)
+    .replace(/tom[aá]s(\s+ignacio)?\s+lavados(\s+sep[uú]lveda)?/gi, "")
+    // separadores a espacio
+    .replace(/[_\-]+/g, " ")
+    // arreglos comunes de “pegado”
+    .replace(/\s+/g, " ")
+    .trim();
+
+  // Title Case simple (iniciales en mayúscula)
+  return s.replace(/\b([a-záéíóúñ])/gi, (m) => m.toUpperCase());
+}
 
