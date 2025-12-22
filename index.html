@@ -1,62 +1,96 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <title>Didactic-Eureka</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style-editorial.css" />
+  <meta charset="utf-8">
+  <title>Didactic-Eureka</a></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- ESTILO BASE -->
+  <link rel="stylesheet" href="style-editorial.css">
+
+  <!-- SELLO -->
+  <meta name="didactic-eureka" content="archivo-maestro">
 </head>
 
 <body>
 
-  <!-- NAV FIJA -->
-  <nav class="nav-tabs" id="nav-tabs">
-    <a class="brand" href="./" aria-label="Ir al inicio">Didactic-Eureka</a>
-    <div class="tabs" id="tabs"></div>
-  </nav>
+<!-- =========================
+     NAVEGACIÓN FIJA MAESTRA
+========================= -->
+<nav id="nav-master" class="nav-tabs">
+  <a href="./" class="brand">Didactic-Eureka</a>
+  <div id="nav-categories"></div>
+</nav>
 
-  <!-- PORTADA (INICIO) -->
-  <header class="site-cover" id="home">
-    <img class="cover-img" src="assets/images/index.jpg" alt="Didactic-Eureka (Portada)" />
-    <div class="cover-text">
-      <h1>Didactic-Eureka</h1>
-      <p class="tagline">La maravilla de aprender</p>
-      <p class="intro">
-        Este sitio opera en modo bifásico hylotráxico: (1) una fase de exploración y diseño —donde se ordenan
-        categorías, títulos y navegación— y (2) una fase de consolidación —donde lo hallado se preserva, se vuelve legible
-        como texto web y se publica sin violencia intelectual. La regla es simple: corregir sin destruir, integrar sin
-        olvidar, y mantener el progreso como patrimonio formal.
-      </p>
-    </div>
-  </header>
+<!-- =========================
+     PORTADA (INICIO)
+========================= -->
+<header id="home" class="site-cover">
+  <img src="assets/images/index.jpg"
+       alt="Didactic-Eureka"
+       class="cover-img">
 
-  <!-- CONTENIDO DINÁMICO -->
-  <main id="content" class="site-main"></main>
+  <div class="cover-text">
+    <h1>Didactic-Eureka</h1>
+    <h2>La maravilla de aprender</h2>
 
-  <!-- BANNER PUBLICIDAD + VISITAS -->
-  <footer class="site-ad" aria-label="Publicidad y contador">
-    <img class="ad-img" src="assets/images/1.png" alt="Publicidad"
-         onerror="this.src='assets/images/1.jpg';" />
-    <div class="visit-counter">
-      Visitas: <span id="visit-count">—</span>
-    </div>
-  </footer>
+    <p class="intro">
+      Didactic-Eureka es una plataforma editorial bifásica,
+      fundada sobre el principio hylotráxico de conservación informativa.
+      Su método articula dos fases inseparables: una fase de exploración,
+      donde el conocimiento se investiga y organiza, y una fase de
+      consolidación, donde ese conocimiento se preserva, se vuelve legible
+      como texto web y se publica sin violencia intelectual.
+      <br><br>
+      Nada aquí se destruye: todo se integra.
+    </p>
+  </div>
+</header>
 
-  <!-- SCRIPTS -->
-  <script src="boots.js"></script>
-  <script src="patch-eureka.js"></script>
-  <script src="patch-design.js"></script>
-  <script src="seal-eureka.js"></script>
+<!-- =========================
+     CONTENIDO DINÁMICO
+========================= -->
+<main id="content" class="site-main">
+  <noscript>
+    <p>Este sitio requiere JavaScript para mostrar los artículos.</p>
+  </noscript>
+</main>
 
-  <!-- CONTADOR LOCAL (FIJO) -->
-  <script>
-    const k = "visitas-eureka";
-    let n = Number(localStorage.getItem(k) || "0");
-    n++;
-    localStorage.setItem(k, String(n));
-    const el = document.getElementById("visit-count");
-    if (el) el.textContent = String(n);
-  </script>
+<!-- =========================
+     BANNER + CONTADOR
+========================= -->
+<footer class="site-ad">
+  <img src="assets/images/1.png"
+       class="ad-img"
+       alt="Publicidad"
+       onerror="this.src='assets/images/1.jpg'">
+
+  <div class="visit-counter">
+    Visitas: <span id="visit-count">—</span>
+  </div>
+</footer>
+
+<!-- =========================
+     SCRIPTS SUBORDINADOS
+========================= -->
+<script src="boots.js"></script>
+<script src="patch-eureka.js"></script>
+<script src="patch-design.js"></script>
+<script src="seal-eureka.js"></script>
+
+<!-- =========================
+     CONTADOR (SELLADO)
+========================= -->
+<script>
+(function(){
+  const KEY = "didactic-eureka-visits";
+  let n = Number(localStorage.getItem(KEY) || 0);
+  n++;
+  localStorage.setItem(KEY, n);
+  const el = document.getElementById("visit-count");
+  if (el) el.textContent = n;
+})();
+</script>
 
 </body>
 </html>
