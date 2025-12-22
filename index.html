@@ -1,4 +1,3 @@
-cat << 'EOF' > index.html
 <!doctype html>
 <html lang="es">
 <head>
@@ -10,12 +9,12 @@ cat << 'EOF' > index.html
 <body>
 
 <header class="site-cover">
-  <img src="assets/images/index.jpg" alt="Didactic Eureka" />
+  <img class="cover-img" src="assets/images/index.jpg" alt="Didactic Eureka" />
   <div class="cover-text">
     <h1>Didactic Eureka</h1>
     <p>
-      Plataforma editorial bifásica basada en el método hylotráxico:
-      conservación informativa, transducción consciente y publicación no violenta del conocimiento.
+      Método bifásico hylotráxico: conservación informativa,
+      transducción consciente y publicación no violenta del conocimiento.
     </p>
   </div>
 </header>
@@ -23,12 +22,14 @@ cat << 'EOF' > index.html
 <main id="content"></main>
 
 <footer class="site-ad">
-  <img src="assets/images/1.jpg" alt="Publicidad" />
+  <img class="ad-img" src="assets/images/1.png" alt="Publicidad"
+       onerror="this.src='assets/images/1.jpg';" />
   <div class="visit-counter">
     Visitas: <span id="visit-count">—</span>
   </div>
 </footer>
 
+<script src="boots.js"></script>
 <script src="patch-eureka.js"></script>
 <script src="patch-design.js"></script>
 <script src="seal-eureka.js"></script>
@@ -42,4 +43,3 @@ cat << 'EOF' > index.html
 
 </body>
 </html>
-EOF
