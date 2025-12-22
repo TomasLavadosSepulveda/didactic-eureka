@@ -1,0 +1,71 @@
+name: Restitutio UX (Final)
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  restitute:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Build restitutive site
+        run: |
+          mkdir -p _site
+
+          cat > _site/index.html <<'HTML'
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Didactic-Eureka</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{margin:0;font-family:system-ui,Arial,sans-serif}
+nav{display:flex;gap:12px;padding:12px;background:#111}
+nav a{color:#fff;text-decoration:none;padding:6px 10px;border:1px solid #444;border-radius:6px}
+nav a:hover{background:#222}
+iframe{width:100%;height:calc(100vh - 56px);border:0}
+</style>
+</head>
+<body>
+<nav>
+  <a href="#" onclick="load('index.html')">Inicio</a>
+  <a href="#" onclick="load('filosofia')">Filosofía</a>
+  <a href="#" onclick="load('teologia')">Teología</a>
+  <a href="#" onclick="load('ciencia')">Ciencia</a>
+</nav>
+
+<iframe id="view" src="index.html"></iframe>
+
+<script>
+function load(path){
+  document.getElementById('view').src = path;
+}
+</script>
+</body>
+</html>
+HTML
+
+          # copiar TODO tu repo como contenido interno
+          rsync -av --exclude _site ./ _site/content
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy
+        uses: actions/deploy-pages@v4
