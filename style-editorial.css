@@ -368,4 +368,34 @@ img.banner {
     height: 220px !important;
   }
 }
+/* === PARCHE VISIBILIDAD PESTAÑAS === */
+
+nav,
+#tabs,
+.tabs {
+  display: flex !important;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  flex-wrap: wrap;
+}
+
+nav a,
+#tabs a,
+.tabs a {
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  color: #000;
+  font-weight: 500;
+}
+
+nav a:hover,
+#tabs a:hover,
+.tabs a:hover {
+  background: #eaeaea;
+}
 
