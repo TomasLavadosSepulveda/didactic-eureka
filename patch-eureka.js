@@ -21,3 +21,26 @@ document.addEventListener("DOMContentLoaded", () => {
     el.textContent = limpiarTitulo(el.dataset.title);
   });
 });
+
+/* === Filtrado de pestañas === */
+const CARPETAS_EXCLUIDAS = [
+  "assets",
+  "scripts",
+  ".github",
+  "node_modules"
+];
+
+function esCategoriaValida(nombre, archivos) {
+  if (CARPETAS_EXCLUIDAS.includes(nombre)) return false;
+  return archivos.some(f => f.toLowerCase().endsWith(".pdf"));
+}
+
+/* Supone que tu lógica actual genera algo como:
+   categorias = [{ nombre: "filosofia", archivos: [...] }, ...]
+   Este filtro se aplica ANTES de renderizar pestañas */
+if (window.categorias && Array.isArray(window.categorias)) {
+  window.categorias = window.categorias.filter(c =>
+    esCategoriaValida(c.nombre, c.archivos || [])
+  );
+}
+
