@@ -236,3 +236,8 @@ fetch("manifest.json",{cache:"no-store"})
 
 </body>
 </html>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("seal-eureka.js");
+}
+</script>
