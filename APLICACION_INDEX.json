@@ -1,0 +1,18 @@
+paste \
+  <(grep -i '\.pdf$' REALIDAD_MATERIAL.txt | sort) \
+  <(cat TITULOS_ARTICULOS.txt | sort) \
+| awk '
+{
+  path=$1
+  title=$2
+  gsub(/^[ \t]+|[ \t]+$/, "", title)
+
+  split(path, a, "/")
+  category=a[1]
+  file=a[length(a)]
+
+  printf("{\"category\":\"%s\",\"file\":\"%s\",\"title\":\"%s\"}\n", category, path, title)
+}
+' \
+| jq -s '.' \
+| tee APLICACION_INDEX.json
