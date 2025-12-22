@@ -1,334 +1,201 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <title>Didactic-Eureka</a></title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Didactic-Eureka</title>
 
-  <!-- ESTILO BASE -->
-  <link rel="stylesheet" href="style-editorial.css">
+<style>
+/* ===== RESET ===== */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at center, #0a2540 0%, #020617 55%, #000 100%);
+  color: #e5e7eb;
+  overflow-x: hidden;
+}
 
-  <!-- SELLO -->
-  <meta name="didactic-eureka" content="archivo-maestro">
+/* ===== TABS ===== */
+#tabs {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding: 16px;
+  background: linear-gradient(90deg, #020617, #0a2540, #020617);
+  border-bottom: 1px solid #1e3a8a;
+}
+
+#tabs button {
+  background: #020617;
+  color: #e5e7eb;
+  border: 1px solid #1e3a8a;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+#tabs button.active {
+  background: #1e3a8a;
+}
+
+/* ===== MAIN ===== */
+#app {
+  padding-top: 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ===== MOSAIC / SPIRAL ===== */
+#list {
+  position: relative;
+  min-height: 70vh;
+}
+
+.card {
+  position: absolute;
+  width: 220px;
+  padding: 16px;
+  background: linear-gradient(135deg, #0a2540, #020617);
+  border: 1px solid #1e3a8a;
+  border-radius: 18px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0,0,0,.4);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 20px 50px rgba(0,0,0,.6);
+}
+
+/* ===== VIEWER ===== */
+#viewer {
+  width: 100%;
+  height: 80vh;
+  border: none;
+  margin-top: 40px;
+  border-radius: 12px;
+  background: #000;
+}
+</style>
 </head>
 
 <body>
-<header class="hero">
-  <h1>
-    <a href="index.html" style="text-decoration:none;color:inherit;">
-      Didactic-Eureka
-    </a>
-  </h1>
 
-  <p class="subtitle">
-    Plataforma didáctica bifásica
-  </p>
+<div id="tabs"></div>
 
-  <img 
-    src="assets/index.jpg" 
-    alt="Portada Didactic-Eureka"
-    class="hero-image"
-  >
-</header>
+<div id="app">
+  <div id="list"></div>
+  <iframe id="viewer"></iframe>
+</div>
 
-<!-- =========================
-     NAVEGACIÓN FIJA MAESTRA
-========================= -->
-<nav id="nav-master" class="nav-tabs">
-  <a href="./" class="brand">Didactic-Eureka</a>
-  <div id="nav-categories"></div>
-</nav>
-
-<!-- =========================
-     PORTADA (INICIO)
-========================= -->
-<header id="home" class="site-cover">
-  <img src="assets/images/index.jpg"
-       alt="Didactic-Eureka"
-       class="cover-img">
-
-  <div class="cover-text">
-    <h1>Didactic-Eureka</h1>
-    <h2>La maravilla de aprender</h2>
-
-    <p class="intro">
-      Didactic-Eureka es una plataforma editorial bifásica,
-      fundada sobre el principio hylotráxico de conservación informativa.
-      Su método articula dos fases inseparables: una fase de exploración,
-      donde el conocimiento se investiga y organiza, y una fase de
-      consolidación, donde ese conocimiento se preserva, se vuelve legible
-      como texto web y se publica sin violencia intelectual.
-      <br><br>
-      Nada aquí se destruye: todo se integra.
-    </p>
-  </div>
-</header>
-
-<!-- =========================
-     CONTENIDO DINÁMICO
-========================= -->
-<main id="content" class="site-main">
-  <noscript>
-    <p>Este sitio requiere JavaScript para mostrar los artículos.</p>
-  </noscript>
-</main>
-
-<!-- =========================
-     BANNER + CONTADOR
-========================= -->
-<footer class="site-ad">
-  <img src="assets/images/1.png"
-       class="ad-img"
-       alt="Publicidad"
-       onerror="this.src='assets/images/1.jpg'">
-
-  <div class="visit-counter">
-    Visitas: <span id="visit-count">—</span>
-  </div>
-</footer>
-
-<!-- =========================
-     SCRIPTS SUBORDINADOS
-========================= -->
-<script src="boots.js"></script>
-<script src="patch-eureka.js"></script>
-<script src="patch-design.js"></script>
-<script src="seal-eureka.js"></script>
-
-<!-- =========================
-     CONTADOR (SELLADO)
-========================= -->
 <script>
-(function(){
-  const KEY = "didactic-eureka-visits";
-  let n = Number(localStorage.getItem(KEY) || 0);
-  n++;
-  localStorage.setItem(KEY, n);
-  const el = document.getElementById("visit-count");
-  if (el) el.textContent = n;
-})();
-</script>
-<script src="script.js"></script>
-<script>
-  <script>
-/* =====================================================
-   UX PATCH — DIDACTIC-EUREKA (CAPA 4)
-   ===================================================== */
+/* ======================================================
+   DIDACTIC-EUREKA · AUTO-MANIFESTACIÓN FINAL
+   ====================================================== */
 
-/* 1. Paleta azul / negro */
-document.body.style.background =
-  "radial-gradient(circle at center, #0a2540 0%, #020617 60%, #000 100%)";
-document.body.style.color = "#e5e7eb";
+const OWNER  = "TomasLavadosSepulveda";
+const REPO   = "didactic-eureka";
+const BRANCH = "main";
 
-/* 2. Pestañas fijas arriba */
-tabs.style.position = "fixed";
-tabs.style.top = "0";
-tabs.style.left = "0";
-tabs.style.right = "0";
-tabs.style.zIndex = "999";
-tabs.style.background =
-  "linear-gradient(90deg, #020617, #0a2540, #020617)";
-tabs.style.padding = "16px";
-tabs.style.justifyContent = "center";
+const tabs   = document.getElementById("tabs");
+const list   = document.getElementById("list");
+const viewer = document.getElementById("viewer");
 
-/* Compensar altura del contenido */
-root.style.paddingTop = "100px";
-
-/* 3. Efecto espiral visual (mosaico orgánico) */
-list.style.display = "grid";
-list.style.gridTemplateColumns = "repeat(auto-fit, minmax(200px, 1fr))";
-list.style.gap = "20px";
-
-Array.from(list.children).forEach((el, i) => {
-  const angle = i * 18;
-  el.style.transform = `rotate(${angle}deg)`;
-  el.style.background =
-    "linear-gradient(135deg, #0a2540, #020617)";
-  el.style.border = "1px solid #1e3a8a";
-  el.style.borderRadius = "16px";
-  el.style.padding = "16px";
-});
-
-/* 4. Títulos en Mayúscula Inicial */
-function toTitleCase(str) {
+/* ---------- Helpers ---------- */
+function titleCase(str) {
   return str
+    .replace(/[-_]/g, " ")
     .toLowerCase()
     .replace(/\b\w/g, c => c.toUpperCase());
 }
 
-document.querySelectorAll("button, a").forEach(el => {
-  el.textContent = toTitleCase(el.textContent);
-});
-
-/* 5. Quitar tu nombre (defensivo) */
-document.body.innerHTML = document.body.innerHTML.replace(
-  /Tom[aá]s\s+Lavados[^<]*/gi,
-  ""
-);
-
-/* 6. Eliminar mensaje de error visible */
-document.querySelectorAll("p, div").forEach(el => {
-  if (el.textContent && el.textContent.toLowerCase().includes("error")) {
-    el.remove();
-  }
-});
-</script>
-  <script>
-/* ===============================
-   UX-5: Espiral real (layout)
-   =============================== */
-
-function applySpiralLayout() {
-  const items = Array.from(list.children);
-  if (!items.length) return;
-
-  // Contenedor en posición relativa
-  list.style.position = "relative";
-  list.style.minHeight = "60vh";
-  list.style.display = "block";
-
-  const centerX = list.clientWidth / 2;
-  const centerY = list.clientHeight / 2;
-
-  const a = 6;   // separación inicial
-  const b = 8;   // apertura de la espiral
-
-  items.forEach((el, i) => {
-    const theta = i * 0.55;           // ángulo
-    const r = a + b * theta;          // radio (espiral de Arquímedes)
-    const x = centerX + r * Math.cos(theta);
-    const y = centerY + r * Math.sin(theta);
-
-    el.style.position = "absolute";
-    el.style.left = `${x}px`;
-    el.style.top  = `${y}px`;
-    el.style.transform = "translate(-50%, -50%)";
-    el.style.transition = "transform .3s ease, box-shadow .3s ease";
-    el.style.boxShadow = "0 10px 30px rgba(0,0,0,.35)";
-  });
-}
-
-// Reaplicar cuando cambie la categoría o el tamaño
-const _showCategory = window.showCategory;
-if (typeof _showCategory === "function") {
-  window.showCategory = function(name) {
-    _showCategory(name);
-    setTimeout(applySpiralLayout, 50);
-  };
-}
-
-window.addEventListener("resize", () => setTimeout(applySpiralLayout, 50));
-setTimeout(applySpiralLayout, 100);
-</script>
-
-
-/* =====================================================
-   DIDACTIC-EUREKA · AUTO-MANIFESTACIÓN REAL
-   Fuente: GitHub API (repo público)
-   ===================================================== */
-
-const OWNER = "TomasLavadosSepulveda";
-const REPO  = "didactic-eureka";
-const BRANCH = "main";
-
-/* UI base */
-const root = document.createElement("div");
-root.style.maxWidth = "1100px";
-root.style.margin = "40px auto";
-root.style.fontFamily = "system-ui, sans-serif";
-
-const tabs = document.createElement("div");
-tabs.style.display = "flex";
-tabs.style.gap = "12px";
-tabs.style.marginBottom = "24px";
-tabs.style.flexWrap = "wrap";
-
-const list = document.createElement("div");
-list.style.marginBottom = "24px";
-
-const viewer = document.createElement("iframe");
-viewer.style.width = "100%";
-viewer.style.height = "70vh";
-viewer.style.border = "1px solid #ccc";
-
-root.appendChild(tabs);
-root.appendChild(list);
-root.appendChild(viewer);
-document.body.appendChild(root);
-
-/* Helpers */
-function button(label, onClick) {
-  const b = document.createElement("button");
-  b.textContent = label;
-  b.style.padding = "8px 14px";
-  b.style.border = "1px solid #ccc";
-  b.style.background = "#fff";
-  b.style.cursor = "pointer";
-  b.onclick = onClick;
-  return b;
-}
-
-function link(label, href) {
-  const a = document.createElement("a");
-  a.textContent = label;
-  a.href = "#";
-  a.style.display = "block";
-  a.style.marginBottom = "8px";
-  a.onclick = e => {
-    e.preventDefault();
-    viewer.src = href;
-  };
-  return a;
-}
-
-/* Auto-lectura de carpetas (categorías) */
-async function fetchDir(path = "") {
+async function fetchDir(path="") {
   const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${BRANCH}`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error("GitHub API error");
+  if (!res.ok) return [];
   return res.json();
 }
 
-/* Construcción dinámica */
-async function init() {
-  const rootContents = await fetchDir();
+/* ---------- Spiral Layout ---------- */
+function applySpiral() {
+  const cards = Array.from(list.children);
+  const cx = list.clientWidth / 2;
+  const cy = list.clientHeight / 2;
+  const a = 8;
+  const b = 14;
 
-  const categories = rootContents.filter(
-    item => item.type === "dir" && !item.name.startsWith(".")
-  );
+  cards.forEach((el, i) => {
+    const t = i * 0.55;
+    const r = a + b * t;
+    const x = cx + r * Math.cos(t);
+    const y = cy + r * Math.sin(t);
 
-  for (const cat of categories) {
-    const tab = button(cat.name, async () => {
-      list.innerHTML = "";
-      const files = await fetchDir(cat.path);
-
-      files
-        .filter(f => f.type === "file" && /\.(pdf|html)$/i.test(f.name))
-        .forEach(f => {
-          const rawUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${f.path}`;
-          list.appendChild(link(f.name.replace(/\.(pdf|html)$/i, ""), rawUrl));
-        });
-    });
-
-    tabs.appendChild(tab);
-  }
-
-  if (categories[0]) {
-    tabs.firstChild.click();
-  }
+    el.style.left = x + "px";
+    el.style.top  = y + "px";
+    el.style.transform = "translate(-50%, -50%)";
+  });
 }
 
-init().catch(err => {
-  root.innerHTML = "<p>Error al auto-leer el repositorio.</p>";
-  console.error(err);
-});
+/* ---------- Render ---------- */
+async function showCategory(dir, btn) {
+  document.querySelectorAll("#tabs button").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+
+  list.innerHTML = "";
+  viewer.src = "";
+
+  const files = await fetchDir(dir);
+
+  const docs = files.filter(f =>
+    f.type === "file" && /\.(pdf|html)$/i.test(f.name)
+  );
+
+  docs.forEach((f, i) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.textContent = titleCase(f.name.replace(/\.(pdf|html)$/i,""));
+
+    const raw = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${f.path}`;
+    card.onclick = () => viewer.src = raw;
+
+    list.appendChild(card);
+  });
+
+  setTimeout(applySpiral, 50);
+}
+
+/* ---------- Init ---------- */
+async function init() {
+  const root = await fetchDir();
+
+  const dirs = root.filter(d => d.type === "dir" && !d.name.startsWith("."));
+
+  if (!dirs.length) return;
+
+  dirs.forEach((d, i) => {
+    const b = document.createElement("button");
+    b.textContent = titleCase(d.name);
+    b.onclick = () => showCategory(d.path, b);
+    tabs.appendChild(b);
+    if (i === 0) showCategory(d.path, b);
+  });
+}
+
+window.addEventListener("resize", () => setTimeout(applySpiral, 50));
+
+init();
 </script>
 
 </body>
 </html>
-<section class="banner">
-  <img src="assets/banner.jpg" alt="Publicidad">
-</section>
-Add master script to show tabs and hide missing images
+
 
 
