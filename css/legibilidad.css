@@ -8,3 +8,21 @@ section {
   margin-bottom: 2rem;
 }
 <link rel="stylesheet" href="css/legibilidad.css">
+/* Oculta categorías duplicadas generadas dinámicamente */
+#articulos .categorias-dinamicas {
+  display: none;
+}
+/* Elimina visualmente los dos puntos añadidos */
+.categoria-titulo::after {
+  content: "";
+}
+.categoria-titulo {
+  text-transform: capitalize;
+}
+.subcategorias,
+.lista-subcategorias {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+}
