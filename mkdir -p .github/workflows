@@ -1,0 +1,38 @@
+name: Sello Hylotráxico Canónico
+
+on:
+  workflow_dispatch:
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main (canónico)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Verificación estructural
+        run: |
+          echo "Branch:" && git branch --show-current
+          echo "Último commit:" && git log -1 --oneline
+          test -f index.html && echo "✔ index.html"
+          test -d assets/images && echo "✔ imágenes"
+          test -f patch-eureka.js && echo "✔ capa correctiva"
+          test -f style-editorial.css && echo "✔ css editorial"
+
+      - name: Sello no destructivo
+        run: |
+          echo "SELLADO HYLOTRÁXICO" >> SELLO.log
+          echo "Fecha: $(date -u)" >> SELLO.log
+
+      - name: Commit del sello (si aplica)
+        run: |
+          git config user.name "hylotraxic-bot"
+          git config user.email "bot@didactic-eureka.local"
+          git add SELLO.log || true
+          git commit -m "Sello hylotráxico (verificación canónica)" || echo "Sin cambios"
+
+      - name: Push controlado
+        run: git push origin main || echo "Push no requerido"
