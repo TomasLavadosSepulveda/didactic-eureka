@@ -173,6 +173,54 @@ document.querySelectorAll("p, div").forEach(el => {
   }
 });
 </script>
+  <script>
+/* ===============================
+   UX-5: Espiral real (layout)
+   =============================== */
+
+function applySpiralLayout() {
+  const items = Array.from(list.children);
+  if (!items.length) return;
+
+  // Contenedor en posición relativa
+  list.style.position = "relative";
+  list.style.minHeight = "60vh";
+  list.style.display = "block";
+
+  const centerX = list.clientWidth / 2;
+  const centerY = list.clientHeight / 2;
+
+  const a = 6;   // separación inicial
+  const b = 8;   // apertura de la espiral
+
+  items.forEach((el, i) => {
+    const theta = i * 0.55;           // ángulo
+    const r = a + b * theta;          // radio (espiral de Arquímedes)
+    const x = centerX + r * Math.cos(theta);
+    const y = centerY + r * Math.sin(theta);
+
+    el.style.position = "absolute";
+    el.style.left = `${x}px`;
+    el.style.top  = `${y}px`;
+    el.style.transform = "translate(-50%, -50%)";
+    el.style.transition = "transform .3s ease, box-shadow .3s ease";
+    el.style.boxShadow = "0 10px 30px rgba(0,0,0,.35)";
+  });
+}
+
+// Reaplicar cuando cambie la categoría o el tamaño
+const _showCategory = window.showCategory;
+if (typeof _showCategory === "function") {
+  window.showCategory = function(name) {
+    _showCategory(name);
+    setTimeout(applySpiralLayout, 50);
+  };
+}
+
+window.addEventListener("resize", () => setTimeout(applySpiralLayout, 50));
+setTimeout(applySpiralLayout, 100);
+</script>
+
 
 /* =====================================================
    DIDACTIC-EUREKA · AUTO-MANIFESTACIÓN REAL
