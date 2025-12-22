@@ -218,4 +218,105 @@ article {
   color: #111;
   white-space: nowrap;
 }
+/* ===== ADITIVO-CORRECTIVO: NAV FIJA ===== */
+.nav-tabs{
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.nav-tabs .brand{
+  text-decoration: none;
+  color: #111;
+  font-weight: 800;
+  letter-spacing: .2px;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.nav-tabs .tabs{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ===== PORTADA ===== */
+.site-cover{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 26px 14px 10px;
+  text-align: center;
+}
+
+.cover-img{
+  width: 100%;
+  max-width: 980px;
+  height: auto;
+  border-radius: 10px;
+  display: block;
+  margin: 0 auto 14px;
+}
+
+.cover-text h1{
+  margin: 8px 0 4px;
+  font-size: 44px;
+  line-height: 1.05;
+}
+
+.cover-text .tagline{
+  margin: 0 0 10px;
+  font-size: 18px;
+  opacity: .8;
+}
+
+.cover-text .intro{
+  margin: 0 auto;
+  max-width: 900px;
+  font-size: 16px;
+  line-height: 1.6;
+  opacity: .9;
+}
+
+/* ===== CONTENIDO ===== */
+.site-main{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 18px 14px 120px; /* deja espacio para el banner fijo */
+}
+
+/* ===== BANNER PUBLICIDAD + VISITAS (FIJO) ===== */
+.site-ad{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1001;
+  background: #f7f7f7;
+  border-top: 1px solid #d9d9d9;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+.site-ad .ad-img{
+  height: 80px;         /* “mediano” */
+  max-width: 72vw;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.site-ad .visit-counter{
+  font-weight: 700;
+  color: #111;
+  white-space: nowrap;
+}
 
