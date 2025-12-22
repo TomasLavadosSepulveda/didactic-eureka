@@ -141,4 +141,83 @@ nav a:hover,
 aside a:hover {
   text-decoration: underline;
 }
+/* ==================================================
+   CORRECCIÓN FINAL SEGURA — VISIBILIDAD + PALETA
+   (bloque aditivo, no destructivo)
+   ================================================== */
+
+(function () {
+
+  /* ---------- CSS CORRECTIVO ADITIVO ---------- */
+  const correctiveStyle = document.createElement("style");
+  correctiveStyle.innerHTML = `
+    /* === CATEGORÍAS SIEMPRE VISIBLES === */
+    nav,
+    aside,
+    .sidebar,
+    .categories {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      pointer-events: auto !important;
+    }
+
+    nav a,
+    aside a,
+    .sidebar a,
+    .categories a {
+      color: #5a7fa6 !important;   /* azul sobrio permanente */
+      font-weight: 500;
+    }
+
+    nav a:hover,
+    aside a:hover {
+      text-decoration: underline;
+    }
+
+    /* === PALETA SUAVE: BLANCOS · GRISES · PIEL === */
+    body {
+      background: #f7f7f5 !important;   /* blanco cálido */
+      color: #2e2e2e !important;        /* gris texto */
+    }
+
+    main {
+      background: #ffffff !important;
+    }
+
+    h1, h2, h3 {
+      color: #1f1f1f !important;
+    }
+
+    p, li {
+      color: #3a3a3a !important;
+    }
+
+    a {
+      color: #5a7fa6 !important;
+    }
+
+    a:hover {
+      color: #2f4f6f !important;
+    }
+
+    /* === TONO PIEL / PAPEL === */
+    .institutional-ad {
+      background: #f3eee9 !important;
+      border-top: 1px solid #e2d9cf !important;
+    }
+
+    .institutional-ad .ad-text {
+      color: #6b5f55 !important;
+    }
+
+    /* === NEUTRALIZAR HOVERS / FADES HEREDADOS === */
+    * {
+      transition: none !important;
+      animation: none !important;
+    }
+  `;
+  document.head.appendChild(correctiveStyle);
+
+})();
 
