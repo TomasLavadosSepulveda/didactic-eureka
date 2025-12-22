@@ -319,4 +319,7 @@ article {
   color: #111;
   white-space: nowrap;
 }
+<section class="banner">
+  <img src="assets/banner.jpg" alt="Publicidad">
+</section>
 
