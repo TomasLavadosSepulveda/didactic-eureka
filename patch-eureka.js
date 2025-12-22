@@ -235,4 +235,30 @@
     });
   });
 })();
+function limpiarTitulo(nombreArchivo) {
+  let t = nombreArchivo
+    .replace(/\.(pdf|docx)$/i, "")
+    .replace(/[_\-]/g, " ")
+    .replace(/tom[aá]s\s+lavados?/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  // Correcciones frecuentes
+  const correcciones = {
+    "metafiisica": "metafísica",
+    "filosofiia": "filosofía",
+    "ontoloogica": "ontológica",
+    "concienciaa": "conciencia",
+    "teologiia": "teología",
+  };
+
+  for (let k in correcciones) {
+    t = t.replace(new RegExp(k, "gi"), correcciones[k]);
+  }
+
+  // Capitalizar iniciales
+  t = t.replace(/\b\w/g, l => l.toUpperCase());
+
+  return t;
+}
 
