@@ -3,97 +3,59 @@
 <head>
   <meta charset="utf-8" />
   <title>Didactic-Eureka</title>
-
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Didactic-Eureka — La maravilla de aprender. Plataforma bifásica hylotráxica para la publicación no violenta del conocimiento." />
-
   <link rel="stylesheet" href="style-editorial.css" />
-  <link rel="manifest" href="manifest.json" />
 </head>
 
 <body>
 
-  <!-- =========================
-       NAVEGACIÓN PRINCIPAL
-       ========================= -->
+  <!-- NAV FIJA -->
   <nav class="nav-tabs" id="nav-tabs">
-    <!-- Se llena dinámicamente vía patch-eureka.js -->
+    <a class="brand" href="./" aria-label="Ir al inicio">Didactic-Eureka</a>
+    <div class="tabs" id="tabs"></div>
   </nav>
 
-  <!-- =========================
-       PORTADA / IDENTIDAD
-       ========================= -->
-  <header class="site-cover">
-    <img
-      class="cover-img"
-      src="assets/images/index.jpg"
-      alt="Didactic-Eureka"
-      loading="eager"
-    />
-
+  <!-- PORTADA (INICIO) -->
+  <header class="site-cover" id="home">
+    <img class="cover-img" src="assets/images/index.jpg" alt="Didactic-Eureka (Portada)" />
     <div class="cover-text">
       <h1>Didactic-Eureka</h1>
-      <h2>La maravilla de aprender</h2>
-
-      <p>
-        Didactic-Eureka es una plataforma de publicación intelectual
-        fundada en el método bifásico hylotráxico: un proceso que distingue
-        entre la producción formal de los elementos y su integración
-        eidética final, resguardando la conservación informativa,
-        la claridad racional y la no-violencia del conocimiento.
-      </p>
-
-      <p>
-        Este espacio no presenta archivos: presenta ideas habitables.
-        No acumula información: la ordena para su comprensión humana,
-        libre y progresiva.
+      <p class="tagline">La maravilla de aprender</p>
+      <p class="intro">
+        Este sitio opera en modo bifásico hylotráxico: (1) una fase de exploración y diseño —donde se ordenan
+        categorías, títulos y navegación— y (2) una fase de consolidación —donde lo hallado se preserva, se vuelve legible
+        como texto web y se publica sin violencia intelectual. La regla es simple: corregir sin destruir, integrar sin
+        olvidar, y mantener el progreso como patrimonio formal.
       </p>
     </div>
   </header>
 
-  <!-- =========================
-       CONTENIDO DINÁMICO
-       ========================= -->
-  <main id="content">
-    <!-- Los artículos se cargan aquí -->
-  </main>
+  <!-- CONTENIDO DINÁMICO -->
+  <main id="content" class="site-main"></main>
 
-  <!-- =========================
-       PUBLICIDAD + CONTADOR
-       ========================= -->
-  <footer class="site-ad">
-    <img
-      class="ad-img"
-      src="assets/images/1.png"
-      alt="Publicidad"
-      loading="lazy"
-      onerror="this.src='assets/images/1.jpg';"
-    />
-
+  <!-- BANNER PUBLICIDAD + VISITAS -->
+  <footer class="site-ad" aria-label="Publicidad y contador">
+    <img class="ad-img" src="assets/images/1.png" alt="Publicidad"
+         onerror="this.src='assets/images/1.jpg';" />
     <div class="visit-counter">
       Visitas: <span id="visit-count">—</span>
     </div>
   </footer>
 
-  <!-- =========================
-       SCRIPTS
-       ========================= -->
+  <!-- SCRIPTS -->
   <script src="boots.js"></script>
   <script src="patch-eureka.js"></script>
   <script src="patch-design.js"></script>
   <script src="seal-eureka.js"></script>
 
-  <!-- =========================
-       CONTADOR LOCAL DE VISITAS
-       ========================= -->
+  <!-- CONTADOR LOCAL (FIJO) -->
   <script>
-    (function () {
-      let n = localStorage.getItem("visitas-eureka") || 0;
-      n++;
-      localStorage.setItem("visitas-eureka", n);
-      const el = document.getElementById("visit-count");
-      if (el) el.textContent = n;
-    })();
+    const k = "visitas-eureka";
+    let n = Number(localStorage.getItem(k) || "0");
+    n++;
+    localStorage.setItem(k, String(n));
+    const el = document.getElementById("visit-count");
+    if (el) el.textContent = String(n);
   </script>
 
 </body>
