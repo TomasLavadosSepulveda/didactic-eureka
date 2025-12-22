@@ -220,4 +220,66 @@ aside a:hover {
   document.head.appendChild(correctiveStyle);
 
 })();
+/* ==================================================
+   CORRECCIÓN SEGURA — VISIBILIDAD DE IMÁGENES
+   (cover + logo institucional)
+   Bloque aditivo, no destructivo
+   ================================================== */
+
+(function () {
+
+  /* ---------- CSS DE GARANTÍA VISUAL ---------- */
+  const imgStyle = document.createElement("style");
+  imgStyle.innerHTML = `
+    /* === GARANTIZAR QUE LAS IMÁGENES SE VEAN === */
+    img {
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      max-width: 100% !important;
+      height: auto !important;
+      filter: none !important;
+      mix-blend-mode: normal !important;
+    }
+
+    /* === IMAGEN DE PORTADA === */
+    .cover-image {
+      margin: 2rem auto 3rem auto !important;
+      max-height: 420px !important;
+      object-fit: cover !important;
+    }
+
+    /* === LOGO INSTITUCIONAL === */
+    .institutional-ad img {
+      display: block !important;
+      margin: 0 auto 1rem auto !important;
+      opacity: 1 !important;
+      filter: none !important;
+    }
+  `;
+  document.head.appendChild(imgStyle);
+
+  /* ---------- FALLBACK SI NO CARGA POR RUTA ---------- */
+  function forceImageReload(selector) {
+    const img = document.querySelector(selector);
+    if (!img) return;
+
+    // Si la imagen existe pero no tiene tamaño, forzar recarga
+    if (img.complete && img.naturalWidth === 0) {
+      const src = img.src;
+      img.src = "";
+      img.src = src + "?v=" + Date.now();
+    }
+  }
+
+  /* Reintentos suaves (por carga tardía) */
+  let tries = 0;
+  const retry = setInterval(() => {
+    forceImageReload(".cover-image");
+    forceImageReload(".institutional-ad img");
+    tries++;
+    if (tries > 10) clearInterval(retry);
+  }, 500);
+
+})();
 
