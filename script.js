@@ -42,3 +42,16 @@ document.addEventListener(
   },
   true
 );
+/* === UX-2: Humanizar títulos (Title Case) === */
+function toTitleCase(s) {
+  return s
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("[data-title], .title, h2, h3").forEach(el => {
+    const t = el.dataset?.title || el.textContent;
+    if (t) el.textContent = toTitleCase(t.trim());
+  });
+});
