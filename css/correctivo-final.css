@@ -1,0 +1,33 @@
+/* =========================
+   PRINCIPIO DE ENCUADRAMIENTO
+   ========================= */
+* { box-sizing: border-box; }
+
+:root{
+  --lectura-max: 980px;
+  --gap: 12px;
+}
+
+body{
+  margin: 0;
+  overflow-x: hidden; /* evita desbordes laterales */
+}
+
+/* Contenedor universal: si ya tienes uno, esto no rompe: se aplica a varios posibles IDs */
+#app, #contenido, main, .main, .container, #root{
+  max-width: var(--lectura-max);
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* Legibilidad */
+h1, h2, h3 { line-height: 1.15; margin: 0 0 10px 0; }
+p { margin: 0 0 12px 0; line-height: 1.6; }
+
+/* Bloques tipo “cuadro” para que todo se sienta dentro */
+.section-card{
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 14px;
+  padding: 14px;
+  margin: 14px 0;
+}
