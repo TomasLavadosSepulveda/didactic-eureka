@@ -476,4 +476,72 @@ function normalizeAllArticleTitles() {
   }, 200);
 
 })();
+/* ==================================================
+   UNIVERSALIZACIÓN DE LECTURA CORRECTA
+   (forzar comportamiento tipo ciencia/física)
+   Bloque aditivo
+   ================================================== */
+
+(function () {
+
+  function forceUniversalArticleMode() {
+    const article = document.querySelector("article");
+    if (!article) return;
+
+    // Forzar contenedor frontal único
+    article.style.maxWidth = "980px";
+    article.style.margin = "0 auto";
+    article.style.float = "none";
+    article.style.display = "block";
+  }
+
+  function killSideLayouts() {
+    const sideCandidates = document.querySelectorAll(
+      "aside, .sidebar, .side, .column, .pdf-container"
+    );
+
+    sideCandidates.forEach(el => {
+      el.style.display = "none";
+    });
+  }
+
+  function forceCoverImage() {
+    const article = document.querySelector("article");
+    if (!article) return;
+
+    if (article.querySelector(".universal-cover")) return;
+
+    const img = document.createElement("img");
+    img.className = "universal-cover";
+    img.alt = "Didactic Eureka";
+    img.src =
+      "https://tomaslavadossepulveda.github.io/didactic-eureka/assets/images/cover-didactic-eureka.jpg?v=" +
+      Date.now();
+
+    article.prepend(img);
+  }
+
+  function forceAdImage() {
+    const ad = document.querySelector(".institutional-ad");
+    if (!ad) return;
+
+    const img = ad.querySelector("img");
+    if (!img) return;
+
+    img.style.display = "block";
+    img.style.opacity = "1";
+    img.style.visibility = "visible";
+  }
+
+  let runs = 0;
+  const interval = setInterval(() => {
+    forceUniversalArticleMode();
+    killSideLayouts();
+    forceCoverImage();
+    forceAdImage();
+    runs++;
+    if (runs > 40) clearInterval(interval);
+  }, 200);
+
+})();
 
