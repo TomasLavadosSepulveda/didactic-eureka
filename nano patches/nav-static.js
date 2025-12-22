@@ -18,13 +18,20 @@
     if (text) e.textContent = text;
     return e;
   }
-
-  function titleCase(str) {
-    return str
-      .replace(/[:]/g, "")
-      .replace(/[-_]/g, " ")
-      .toLowerCase()
-      .replace(/\b\w/g, c => c.toUpperCase());
+function titleCase(str) {
+  return str
+    .replace(/[:]/g, "")              // elimina :
+    .replace(/[_-]+/g, " ")           // separadores
+    .replace(/\s+/g, " ")             // espacios dobles
+    .trim()
+    .toLowerCase()
+    .split(" ")
+    .map(w => {
+      if (["de","la","el","y","en","del"].includes(w)) return w;
+      return w.charAt(0).toUpperCase() + w.slice(1);
+    })
+    .join(" ");
+}
   }
 
   function hasArticles(node) {
