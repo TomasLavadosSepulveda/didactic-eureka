@@ -105,6 +105,52 @@ aside button:hover{color:#1f3cff}
 </head>
 <script src="patch-eureka.js"></script>
 <script src="patch-design.js"></script>
+<!-- ==================================================
+     ANCLA ETERNA DE PARCHES — DIDACTIC EUREKA
+     No borrar. No mover.
+     ================================================== -->
+
+<script>
+  /* Garantiza que los parches carguen SIEMPRE,
+     incluso si el DOM se re-renderiza */
+  window.__EUREKA_PATCHES__ = true;
+</script>
+
+<script src="./patch-eureka.js?v=eternal"></script>
+<script src="./patch-design.js?v=eternal"></script>
+
+<style>
+  /* ===============================
+     REPARACIÓN ESTRUCTURAL DE LECTURA
+     =============================== */
+
+  /* Evitar layout tipo visor */
+  iframe,
+  embed,
+  object {
+    display: block !important;
+    width: 100% !important;
+    height: 90vh !important;
+    border: none !important;
+    margin: 2rem auto !important;
+  }
+
+  /* Forzar lectura frontal */
+  main {
+    display: block !important;
+  }
+
+  article {
+    max-width: 860px !important;
+    margin: 0 auto !important;
+    float: none !important;
+  }
+
+  /* Eliminar columnas laterales internas del artículo */
+  article * {
+    float: none !important;
+  }
+</style>
 
 <body>
 
