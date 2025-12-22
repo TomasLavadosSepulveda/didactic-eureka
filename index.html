@@ -451,6 +451,181 @@ init();
   });
 })();
 </script>
+<script>
+/* =========================================================
+   PATCH · NAVEGACIÓN + LEGIBILIDAD + AUTO-IMAGEN
+   Respeta: index nuclear + irreversibilidad
+   ========================================================= */
+
+(function () {
+
+  /* =========================
+     UTILIDADES
+     ========================= */
+  const toTitleCase = s =>
+    s.replace(/[:]/g, "")
+     .replace(/[-_]/g, " ")
+     .toLowerCase()
+     .replace(/\b\w/g, c => c.toUpperCase());
+
+  const OWNER  = window.OWNER  || "TomasLavadosSepulveda";
+  const REPO   = window.REPO   || "didactic-eureka";
+  const BRANCH = window.BRANCH || "main";
+
+  /* =========================
+     1) PESTAÑAS GRANDES, LIMPIAS
+     ========================= */
+  const tabs = document.getElementById("tabs");
+  if (tabs) {
+    tabs.style.gap = "18px";
+    tabs.querySelectorAll("button").forEach(b => {
+      b.textContent = toTitleCase(b.textContent);
+      b.style.fontSize = "1.2rem";        // 2x más grandes
+      b.style.padding = "14px 26px";      // 2x área clic
+      b.style.borderRadius = "999px";
+      b.style.letterSpacing = ".03em";
+    });
+  }
+
+  /* =========================
+     2) FILTRAR PESTAÑAS
+        (solo carpetas con artículos)
+     ========================= */
+  async function hasArticles(dir) {
+    try {
+      const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${dir}?ref=${BRANCH}`;
+      const r = await fetch(url);
+      if (!r.ok) return false;
+      const items = await r.json();
+      return items.some(f => f.type === "file" && /\.(pdf|html|md)$/i.test(f.name));
+    } catch { return false; }
+  }
+
+  (async () => {
+    if (!tabs) return;
+    const buttons = Array.from(tabs.querySelectorAll("button"));
+    for (const b of buttons) {
+      const dir = b.textContent.toLowerCase().replace(/\s+/g, "-");
+      const ok = await hasArticles(dir);
+      if (!ok) b.style.display = "none";
+    }
+  })();
+
+  /* =========================
+     3) SUB-PESTAÑAS AL HOVER
+     ========================= */
+  let sub = document.getElementById("sub-tabs");
+  if (!sub) {
+    sub = document.createElement("div");
+    sub.id = "sub-tabs";
+    sub.style.position = "fixed";
+    sub.style.top = "84px";
+    sub.style.left = "0";
+    sub.style.right = "0";
+    sub.style.display = "flex";
+    sub.style.justifyContent = "center";
+    sub.style.gap = "12px";
+    sub.style.padding = "12px";
+    sub.style.background = "linear-gradient(90deg,#020617,#0a2540,#020617)";
+    sub.style.opacity = "0";
+    sub.style.pointerEvents = "none";
+    sub.style.zIndex = "950";
+    document.body.appendChild(sub);
+  }
+
+  async function loadSubTabs(dir) {
+    sub.innerHTML = "";
+    const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${dir}?ref=${BRANCH}`;
+    const r = await fetch(url);
+    if (!r.ok) return;
+    const items = await r.json();
+    items
+      .filter(f => f.type === "file" && /\.(html|md)$/i.test(f.name))
+      .forEach(f => {
+        const a = document.createElement("button");
+        a.textContent = toTitleCase(f.name.replace(/\.(html|md)$/i,""));
+        a.style.padding = "8px 18px";
+        a.style.borderRadius = "999px";
+        a.onclick = () => window.location.href =
+          `articles/${f.name.replace(/\.(md)$/i,".html")}`;
+        sub.appendChild(a);
+      });
+    sub.style.opacity = "1";
+    sub.style.pointerEvents = "auto";
+  }
+
+  if (tabs) {
+    tabs.querySelectorAll("button").forEach(b => {
+      const dir = b.textContent.toLowerCase().replace(/\s+/g, "-");
+      b.addEventListener("mouseenter", () => loadSubTabs(dir));
+      b.addEventListener("mouseleave", () => setTimeout(() => {
+        sub.style.opacity = "0"; sub.style.pointerEvents = "none";
+      }, 300));
+    });
+  }
+
+  /* =========================
+     4) LECTURA COMO HTML
+     ========================= */
+  const viewer = document.getElementById("viewer");
+  if (viewer) {
+    viewer.style.display = "block";
+    viewer.style.margin = "40px auto";
+    viewer.style.maxWidth = "900px";   // CENTRALIDAD
+    viewer.style.background = "#fff";
+  }
+
+  /* =========================
+     5) IMAGEN MADRE / PORTADA
+        (auto-descubrimiento)
+     ========================= */
+  (async () => {
+    const app = document.getElementById("app");
+    if (!app) return;
+
+    const coverNames = ["cover.jpg","cover.png","portada.jpg","portada.png","index.jpg","index.png"];
+    for (const name of coverNames) {
+      const url = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${name}`;
+      const r = await fetch(url, { method: "HEAD" });
+      if (r.ok) {
+        const img = document.createElement("img");
+        img.src = url;
+        img.alt = "Portada";
+        img.style.display = "block";
+        img.style.maxWidth = "900px";   // CENTRALIDAD
+        img.style.margin = "40px auto";
+        img.style.borderRadius = "18px";
+        app.prepend(img);
+        break;
+      }
+    }
+  })();
+
+  /* =========================
+     6) PRINCIPIO DE LEGIBILIDAD
+        (centralidad del texto)
+     ========================= */
+  const style = document.createElement("style");
+  style.textContent = `
+    #app, #viewer {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .card, article, iframe {
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    article, iframe {
+      background: #ffffff;
+      color: #111827;
+      padding: 32px;
+      border-radius: 16px;
+      line-height: 1.75;
+    }
+  `;
+  document.head.appendChild(style);
 
 
 
