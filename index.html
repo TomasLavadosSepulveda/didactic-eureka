@@ -109,6 +109,108 @@
 })();
 </script>
 <script src="script.js"></script>
+<script>
+/* =====================================================
+   DIDACTIC-EUREKA · AUTO-MANIFESTACIÓN REAL
+   Fuente: GitHub API (repo público)
+   ===================================================== */
+
+const OWNER = "TomasLavadosSepulveda";
+const REPO  = "didactic-eureka";
+const BRANCH = "main";
+
+/* UI base */
+const root = document.createElement("div");
+root.style.maxWidth = "1100px";
+root.style.margin = "40px auto";
+root.style.fontFamily = "system-ui, sans-serif";
+
+const tabs = document.createElement("div");
+tabs.style.display = "flex";
+tabs.style.gap = "12px";
+tabs.style.marginBottom = "24px";
+tabs.style.flexWrap = "wrap";
+
+const list = document.createElement("div");
+list.style.marginBottom = "24px";
+
+const viewer = document.createElement("iframe");
+viewer.style.width = "100%";
+viewer.style.height = "70vh";
+viewer.style.border = "1px solid #ccc";
+
+root.appendChild(tabs);
+root.appendChild(list);
+root.appendChild(viewer);
+document.body.appendChild(root);
+
+/* Helpers */
+function button(label, onClick) {
+  const b = document.createElement("button");
+  b.textContent = label;
+  b.style.padding = "8px 14px";
+  b.style.border = "1px solid #ccc";
+  b.style.background = "#fff";
+  b.style.cursor = "pointer";
+  b.onclick = onClick;
+  return b;
+}
+
+function link(label, href) {
+  const a = document.createElement("a");
+  a.textContent = label;
+  a.href = "#";
+  a.style.display = "block";
+  a.style.marginBottom = "8px";
+  a.onclick = e => {
+    e.preventDefault();
+    viewer.src = href;
+  };
+  return a;
+}
+
+/* Auto-lectura de carpetas (categorías) */
+async function fetchDir(path = "") {
+  const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${BRANCH}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("GitHub API error");
+  return res.json();
+}
+
+/* Construcción dinámica */
+async function init() {
+  const rootContents = await fetchDir();
+
+  const categories = rootContents.filter(
+    item => item.type === "dir" && !item.name.startsWith(".")
+  );
+
+  for (const cat of categories) {
+    const tab = button(cat.name, async () => {
+      list.innerHTML = "";
+      const files = await fetchDir(cat.path);
+
+      files
+        .filter(f => f.type === "file" && /\.(pdf|html)$/i.test(f.name))
+        .forEach(f => {
+          const rawUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${f.path}`;
+          list.appendChild(link(f.name.replace(/\.(pdf|html)$/i, ""), rawUrl));
+        });
+    });
+
+    tabs.appendChild(tab);
+  }
+
+  if (categories[0]) {
+    tabs.firstChild.click();
+  }
+}
+
+init().catch(err => {
+  root.innerHTML = "<p>Error al auto-leer el repositorio.</p>";
+  console.error(err);
+});
+</script>
 
 </body>
 </html>
