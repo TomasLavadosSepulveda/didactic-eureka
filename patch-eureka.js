@@ -155,4 +155,25 @@ function normalizeTitle(text) {
 
   return t;
 }
+function normalizeAllArticleTitles() {
+  const candidates = document.querySelectorAll("a, h2, h3, li");
+
+  candidates.forEach(el => {
+    // Evita tocar navegación general
+    if (el.closest("nav")) return;
+
+    // Texto visible
+    const text = el.textContent;
+    if (!text) return;
+
+    // Heurística: títulos sospechosos
+    if (
+      text.includes(".pdf") ||
+      /[a-z][A-Z]/.test(text) ||
+      text.includes("_")
+    ) {
+      el.textContent = normalizeTitle(text);
+    }
+  });
+}
 
