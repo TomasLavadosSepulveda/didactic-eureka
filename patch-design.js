@@ -123,4 +123,18 @@
   document.head.appendChild(style);
 
 })();
+document.addEventListener("click", e => {
+  const a = e.target.closest("a");
+  if (!a) return;
+  if (a.href.endsWith(".pdf")) {
+    e.preventDefault();
+    alert("Este artículo se presenta en formato de lectura web.");
+  }
+});
+const s = document.createElement("style");
+s.textContent = `
+a[href$=".pdf"]::after { content: ""; }
+a[href$=".pdf"] { pointer-events: auto; }
+`;
+document.head.appendChild(s);
 
