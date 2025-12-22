@@ -60,4 +60,6 @@ async function convert(pdfPath) {
   for (const p of pdfs) await convert(p);
 })();
 fs.readdirSync(dir, { withFileTypes: true })
+const htmlPath = pdfPath.replace(/\.pdf$/i, ".html");
+fs.writeFileSync(htmlPath, htmlContent);
 
