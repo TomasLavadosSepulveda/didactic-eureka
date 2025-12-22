@@ -201,6 +201,9 @@
   MAIN.appendChild(video);
 
 })();
+git add patches/patch-eureka.js
+git commit -m "Fix overlapping nav, article list, and YouTube video"
+git push
 
 
 
