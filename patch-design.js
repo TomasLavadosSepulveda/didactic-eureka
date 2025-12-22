@@ -117,3 +117,28 @@
   });
 
 })();
+/* ===============================
+   CATEGORÍAS SIEMPRE VISIBLES
+   =============================== */
+
+nav,
+aside,
+.categories,
+.sidebar {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+}
+
+nav a,
+aside a,
+.categories a {
+  color: #3a6ea5 !important;   /* azul sobrio */
+  font-weight: 500;
+}
+
+nav a:hover,
+aside a:hover {
+  text-decoration: underline;
+}
+
