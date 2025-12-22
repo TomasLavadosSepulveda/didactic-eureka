@@ -138,3 +138,12 @@ a[href$=".pdf"] { pointer-events: auto; }
 `;
 document.head.appendChild(s);
 
+cat << 'EOF' > patch-design.js
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("a[href$='.pdf']").forEach(a => {
+    a.removeAttribute("download");
+    a.href = "#";
+    a.style.cursor = "default";
+  });
+});
+EOF
