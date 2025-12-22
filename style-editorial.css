@@ -136,3 +136,44 @@ object {
   max-width: 320px;
   opacity: 0.95;
 }
+cat << 'EOF' > style-editorial.css
+body {
+  font-family: system-ui, serif;
+  margin: 0;
+  background: #fafafa;
+  color: #111;
+}
+
+.site-cover {
+  text-align: center;
+  padding: 2rem;
+  background: #fff;
+}
+
+.site-cover img {
+  max-width: 100%;
+  height: auto;
+}
+
+.cover-text {
+  max-width: 800px;
+  margin: auto;
+}
+
+.site-ad {
+  margin-top: 4rem;
+  padding: 2rem;
+  text-align: center;
+  border-top: 1px solid #ccc;
+}
+
+.site-ad img {
+  max-width: 300px;
+}
+
+.visit-counter {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+EOF
