@@ -424,4 +424,14 @@ nav a.active, #tabs a.active, .tabs a.active {
   color: #fff;
   border-color: #111;
 }
+/* === UX-3: Layout legible === */
+main, .content, #content {
+  max-width: 1100px;
+  margin: 1.25rem auto;
+  padding: 0 1rem;
+  line-height: 1.6;
+}
+
+h1 { margin: 1rem 0; }
+h2, h3 { margin: 1.25rem 0 0.5rem; }
 
