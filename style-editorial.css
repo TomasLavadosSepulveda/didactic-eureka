@@ -343,4 +343,29 @@ article {
   height: auto;
   border-radius: 12px;
 }
+/* === PARCHE ADITIVO BANNER — NO BORRAR === */
+
+.banner img,
+.banner-image,
+img.banner {
+  width: 100% !important;
+  height: 320px !important;   /* x2 aprox */
+  object-fit: cover;
+  display: block;
+}
+
+/* Variante x3 (más protagónica) */
+.banner.xl img,
+.banner-xl img {
+  height: 480px !important;
+}
+
+/* Ajuste móvil conservador */
+@media (max-width: 768px) {
+  .banner img,
+  .banner-image,
+  img.banner {
+    height: 220px !important;
+  }
+}
 
