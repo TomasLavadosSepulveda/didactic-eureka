@@ -217,4 +217,22 @@
   }, 200);
 
 })();
+/* ==================================================
+   PREFERIR HTML SOBRE PDF (FALLBACK LIMPIO)
+   ================================================== */
+
+(function () {
+  document.querySelectorAll("a[href$='.pdf']").forEach(link => {
+    const htmlHref = link.getAttribute("href").replace(/\.pdf$/i, ".html");
+    link.addEventListener("click", async (e) => {
+      e.preventDefault();
+      try {
+        const r = await fetch(htmlHref, { method: "HEAD" });
+        window.location.href = r.ok ? htmlHref : link.href;
+      } catch {
+        window.location.href = link.href;
+      }
+    });
+  });
+})();
 
