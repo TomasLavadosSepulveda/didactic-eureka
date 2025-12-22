@@ -282,4 +282,60 @@ aside a:hover {
   }, 500);
 
 })();
+/* ==================================================
+   CORRECCIÓN FINAL DE LECTURA
+   - Artículo grande y centrado
+   - Imagen visible
+   - Escala editorial
+   Bloque aditivo irreversible
+   ================================================== */
+
+(function () {
+
+  const style = document.createElement("style");
+  style.innerHTML = `
+    /* --- ARTÍCULO COMO PÁGINA --- */
+    article {
+      max-width: 920px !important;
+      margin: 0 auto !important;
+      padding: 2.5rem 2rem !important;
+      font-size: 1.1rem !important;
+      line-height: 1.75 !important;
+      text-align: left !important;
+    }
+
+    /* --- TÍTULOS LEGIBLES --- */
+    article h1,
+    article h2 {
+      font-size: 2.2rem !important;
+      margin-bottom: 1.8rem !important;
+    }
+
+    article h3 {
+      font-size: 1.6rem !important;
+      margin-top: 2.5rem !important;
+    }
+
+    /* --- IMAGEN DEL ARTÍCULO --- */
+    .article-force-image {
+      display: block !important;
+      width: 100% !important;
+      max-height: 420px !important;
+      object-fit: cover !important;
+      margin: 2rem auto 3rem auto !important;
+      border-radius: 6px !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    /* --- ELIMINAR LAYOUT LATERAL --- */
+    article *,
+    article *::before,
+    article *::after {
+      float: none !important;
+    }
+  `;
+  document.head.appendChild(style);
+
+})();
 
