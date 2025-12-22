@@ -399,4 +399,29 @@ nav a:hover,
   background: #eaeaea;
 }
 Parche UX: visibilidad de pestañas
+/* === UX-1: Tabs visibles y estado activo === */
+nav, #tabs, .tabs {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #f6f7f9;
+  border-bottom: 1px solid #e3e5ea;
+  flex-wrap: wrap;
+}
+
+nav a, #tabs a, .tabs a {
+  padding: 0.45rem 0.75rem;
+  border: 1px solid #d7dae0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+nav a.active, #tabs a.active, .tabs a.active {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
 
