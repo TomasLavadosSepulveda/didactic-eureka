@@ -1,0 +1,9 @@
+body {
+  max-width: 960px;
+  margin: auto;
+  line-height: 1.6;
+}
+
+section {
+  margin-bottom: 2rem;
+}
