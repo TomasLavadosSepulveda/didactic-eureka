@@ -88,4 +88,5 @@ function humanizeTitle(filename) {
     .replace(/\b\w/g, l => l.toUpperCase())
     .trim();
 }
+titleElement.textContent = humanizeTitle(file.name);
 
