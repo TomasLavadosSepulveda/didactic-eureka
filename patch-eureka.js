@@ -132,4 +132,27 @@
   });
 
 })();
+function normalizeTitle(text) {
+  if (!text) return text;
+
+  // Decodifica URL (%20, etc.)
+  let t = decodeURIComponent(text);
+
+  // Quita extensión .pdf
+  t = t.replace(/\.pdf$/i, "");
+
+  // Inserta espacio antes de mayúsculas internas (camelCase)
+  t = t.replace(/([a-záéíóúñ])([A-ZÁÉÍÓÚÑ])/g, "$1 $2");
+
+  // Reemplaza guiones bajos y guiones por espacio
+  t = t.replace(/[_\-]+/g, " ");
+
+  // Colapsa espacios múltiples
+  t = t.replace(/\s+/g, " ").trim();
+
+  // Capitaliza primera letra de cada palabra (respetando tildes)
+  t = t.replace(/\b\p{L}/gu, c => c.toUpperCase());
+
+  return t;
+}
 
