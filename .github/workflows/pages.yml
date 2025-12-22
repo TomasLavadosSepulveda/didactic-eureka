@@ -1,4 +1,4 @@
-name: Deploy Didactic-Eureka (Final)
+name: Deploy Pages with UX Fix
 
 on:
   push:
@@ -15,7 +15,6 @@ jobs:
 
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout
@@ -23,15 +22,14 @@ jobs:
         with:
           submodules: false
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+      - name: Prepare site
+        run: |
+          mkdir -p _site
+          cp -r . _site
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
+      - name: UX post-process
+        run: |
+          cd _site
 
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
-Fix definitivo: Pages environment github-pages
+          # 1. Insert NAV if not present
+
