@@ -64,3 +64,20 @@ p { margin: 0 0 12px 0; line-height: 1.6; }
 .categoria-titulo::after{
   content: "" !important;
 }
+/* =========================
+   SUBCATEGORÍAS SIN SOBREPOSICIÓN
+   ========================= */
+.subcategorias, .lista-subcategorias, .subcats, .subcategorias-container{
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  position: relative !important;
+}
+
+.subcategorias a, .lista-subcategorias a{
+  display: block;
+  padding: 8px 10px;
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 10px;
+  text-decoration: none;
+}
