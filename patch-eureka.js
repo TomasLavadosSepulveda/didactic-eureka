@@ -80,4 +80,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
+function humanizeTitle(filename) {
+  return filename
+    .replace(/\.(pdf|docx)$/i, "")
+    .replace(/tom[aá]s(\s+ignacio)?\s+lavados(\s+sep[uú]lveda)?/gi, "")
+    .replace(/[_\-]+/g, " ")
+    .replace(/\b\w/g, l => l.toUpperCase())
+    .trim();
+}
 
