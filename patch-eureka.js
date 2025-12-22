@@ -72,4 +72,47 @@
   });
 
 })();
+/* ==================================================
+   CORRECCIÓN ADITIVA DE LECTURA PDF (INDEX)
+   - No borra iframes ni embeds
+   - Mejora la lectura cuando se abre un PDF
+   - Reversible y no destructiva
+   ================================================== */
+
+(function () {
+
+  function enhancePdfReading() {
+    const viewers = document.querySelectorAll(
+      "iframe[src$='.pdf'], embed[src$='.pdf'], object[data$='.pdf']"
+    );
+
+    viewers.forEach(viewer => {
+      // Evitar reaplicar
+      if (viewer.dataset.eurekaEnhanced) return;
+      viewer.dataset.eurekaEnhanced = "true";
+
+      // Crear contenedor editorial si no existe
+      let wrapper = document.createElement("div");
+      wrapper.className = "pdf-reading-wrapper";
+
+      viewer.parentNode.insertBefore(wrapper, viewer);
+      wrapper.appendChild(viewer);
+
+      // Ajustes de lectura (no destructivos)
+      viewer.style.width = "100%";
+      viewer.style.height = "85vh";
+      viewer.style.border = "none";
+      viewer.style.display = "block";
+    });
+  }
+
+  // Ejecutar repetidamente por render dinámico
+  let runs = 0;
+  const interval = setInterval(() => {
+    enhancePdfReading();
+    runs++;
+    if (runs > 30) clearInterval(interval);
+  }, 200);
+
+})();
 
