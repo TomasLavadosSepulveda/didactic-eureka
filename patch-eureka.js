@@ -391,4 +391,89 @@ function normalizeAllArticleTitles() {
   }, 200);
 
 })();
+/* ==================================================
+   CORRECCIÓN FINAL DE ARTÍCULOS
+   - Títulos correctos
+   - Lectura frontal y centrada
+   - Imagen siempre visible
+   Bloque aditivo irreversible
+   ================================================== */
+
+(function () {
+
+  /* -------- NORMALIZADOR DEFINITIVO DE TÍTULOS -------- */
+  function normalizeTitle(text) {
+    if (!text) return text;
+
+    let t = decodeURIComponent(text);
+
+    t = t.replace(/\.pdf$/i, "");
+    t = t.replace(/[_\-]+/g, " ");
+    t = t.replace(/([a-záéíóúñ])([A-ZÁÉÍÓÚÑ])/g, "$1 $2");
+    t = t.replace(/\s+/g, " ").trim();
+
+    // Capitalización correcta Unicode
+    t = t.replace(/\b\p{L}/gu, c => c.toUpperCase());
+
+    return t;
+  }
+
+  function fixAllArticleTitles() {
+    const candidates = document.querySelectorAll(
+      "article h1, article h2, article h3, article a"
+    );
+
+    candidates.forEach(el => {
+      const txt = el.textContent;
+      if (!txt) return;
+
+      if (
+        txt.includes(".pdf") ||
+        txt.includes("_") ||
+        /[a-z][A-Z]/.test(txt)
+      ) {
+        el.textContent = normalizeTitle(txt);
+      }
+    });
+  }
+
+  /* -------- FORZAR ARTÍCULO FRONTAL -------- */
+  function forceFrontalArticle() {
+    const article = document.querySelector("article");
+    if (!article) return;
+
+    article.style.maxWidth = "920px";
+    article.style.margin = "0 auto";
+    article.style.float = "none";
+    article.style.display = "block";
+  }
+
+  /* -------- IMAGEN SUPERIOR DEL ARTÍCULO -------- */
+  function forceArticleImage() {
+    const article = document.querySelector("article");
+    if (!article) return;
+
+    if (article.querySelector(".article-force-image")) return;
+
+    const img = document.createElement("img");
+    img.className = "article-force-image";
+    img.alt = "Didactic Eureka";
+    img.src =
+      "https://tomaslavadossepulveda.github.io/didactic-eureka/assets/images/cover-didactic-eureka.jpg?v=" +
+      Date.now();
+
+    article.prepend(img);
+  }
+
+  /* -------- EJECUCIÓN REITERADA (DOM DINÁMICO) -------- */
+  let runs = 0;
+  const interval = setInterval(() => {
+    fixAllArticleTitles();
+    forceFrontalArticle();
+    forceArticleImage();
+    runs++;
+    if (runs > 30) clearInterval(interval);
+  }, 200);
+
+})();
 
