@@ -2,7 +2,8 @@ name: Deploy Didactic-Eureka to GitHub Pages
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -17,32 +18,53 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout (NO submodules)
+      - name: Checkout repository (no submodules)
         uses: actions/checkout@v4
         with:
           submodules: false
+          fetch-depth: 0
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      - name: Generate manifest (auto-lectura)
-        run: node scripts/generate-manifest.mjs
+      - name: Install dependencies (none required)
+        run: echo "No dependencies"
 
-      - name: Upload artifact
+      - name: Generate manifest.json
+        run: |
+          if [ -f scripts/generate-manifest.mjs ]; then
+            node scripts/generate-manifest.mjs
+          else
+            echo "No manifest generator found, skipping"
+          fi
+
+      - name: Generate article HTML pages
+        run: |
+          if [ -f scripts/generate-articles.mjs ]; then
+            node scripts/generate-articles.mjs
+          else
+            echo "No article generator found, skipping"
+          fi
+
+      - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "."
+          path: .
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
