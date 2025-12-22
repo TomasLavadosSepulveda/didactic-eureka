@@ -374,4 +374,82 @@ aside a:hover {
   document.head.appendChild(style);
 
 })();
+/* ==================================================
+   DISEÑO EDITORIAL ESTRIDENTE
+   Blanco · Negro · Rojo · Gris · Piel
+   Bloque aditivo irreversible
+   ================================================== */
+
+(function () {
+
+  const style = document.createElement("style");
+  style.innerHTML = `
+    /* --- BASE --- */
+    body {
+      background: #ffffff !important;
+      color: #111111 !important;
+    }
+
+    /* --- ARTÍCULO --- */
+    article {
+      max-width: 1000px !important;
+      margin: 0 auto !important;
+      padding: 3rem 2.5rem !important;
+      font-size: 1.2rem !important;
+      line-height: 1.85 !important;
+      background: #fafafa !important;
+    }
+
+    /* --- TÍTULOS --- */
+    article h1,
+    article h2 {
+      color: #000000 !important;
+      border-left: 6px solid #b00020 !important;
+      padding-left: 1rem !important;
+    }
+
+    /* --- IMAGEN PORTADA --- */
+    .article-cover {
+      display: block !important;
+      width: 100% !important;
+      max-height: 460px !important;
+      object-fit: cover !important;
+      margin: 0 auto 3rem auto !important;
+      border-bottom: 6px solid #b00020 !important;
+    }
+
+    /* --- PUBLICIDAD --- */
+    .institutional-ad {
+      margin: 4rem auto !important;
+      padding: 2rem !important;
+      max-width: 1000px !important;
+      background: #f3eee9 !important;
+      border: 2px solid #000000 !important;
+      text-align: center !important;
+    }
+
+    .institutional-ad img {
+      max-width: 220px !important;
+      display: block !important;
+      margin: 0 auto 1rem auto !important;
+    }
+
+    .institutional-ad .ad-text {
+      color: #b00020 !important;
+      font-weight: bold !important;
+      letter-spacing: 0.05em !important;
+    }
+
+    /* --- LINKS --- */
+    a {
+      color: #b00020 !important;
+    }
+
+    a:hover {
+      color: #000000 !important;
+    }
+  `;
+  document.head.appendChild(style);
+
+})();
 
