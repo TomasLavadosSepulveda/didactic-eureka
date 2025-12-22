@@ -176,4 +176,91 @@ function normalizeAllArticleTitles() {
     }
   });
 }
+/* ==================================================
+   CORRECCIÓN FINAL DEFINITIVA
+   - Forzar carga de imágenes
+   - Normalizar títulos SIEMPRE
+   Bloque aditivo, no destructivo
+   ================================================== */
+
+(function () {
+
+  /* ---------- 1. NORMALIZADOR ROBUSTO DE TÍTULOS ---------- */
+  function normalizeTitle(text) {
+    if (!text) return text;
+
+    let t = decodeURIComponent(text);
+
+    // quitar extensión pdf
+    t = t.replace(/\.pdf$/i, "");
+
+    // separar camelCase
+    t = t.replace(/([a-záéíóúñ])([A-ZÁÉÍÓÚÑ])/g, "$1 $2");
+
+    // reemplazar _ y -
+    t = t.replace(/[_\-]+/g, " ");
+
+    // colapsar espacios
+    t = t.replace(/\s+/g, " ").trim();
+
+    // capitalizar palabras (unicode)
+    t = t.replace(/\b\p{L}/gu, c => c.toUpperCase());
+
+    return t;
+  }
+
+  function normalizeAllTitles() {
+    const nodes = document.querySelectorAll("a, h2, h3, li, span");
+
+    nodes.forEach(el => {
+      if (el.closest("nav")) return;
+
+      const txt = el.textContent;
+      if (!txt) return;
+
+      if (
+        txt.includes(".pdf") ||
+        txt.includes("_") ||
+        /[a-z][A-Z]/.test(txt)
+      ) {
+        el.textContent = normalizeTitle(txt);
+      }
+    });
+  }
+
+  /* repetir porque el sitio re-renderiza */
+  let runs = 0;
+  const titleInterval = setInterval(() => {
+    normalizeAllTitles();
+    runs++;
+    if (runs > 30) clearInterval(titleInterval);
+  }, 150);
+
+  /* ---------- 2. FORZAR IMAGEN DE PORTADA (REAL) ---------- */
+  function forceCoverImage() {
+    if (document.querySelector(".cover-image")) return;
+
+    const main = document.querySelector("main");
+    if (!main) return;
+
+    const img = document.createElement("img");
+    img.className = "cover-image";
+    img.alt = "Didactic Eureka";
+
+    /* RUTA ABSOLUTA + CACHE BUSTER */
+    img.src =
+      "https://tomaslavadossepulveda.github.io/didactic-eureka/assets/images/cover-didactic-eureka.jpg?v=" +
+      Date.now();
+
+    main.prepend(img);
+  }
+
+  let imgTries = 0;
+  const imgInterval = setInterval(() => {
+    forceCoverImage();
+    imgTries++;
+    if (imgTries > 20) clearInterval(imgInterval);
+  }, 300);
+
+})();
 
