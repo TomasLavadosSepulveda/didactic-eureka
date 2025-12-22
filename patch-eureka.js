@@ -43,4 +43,41 @@ if (window.categorias && Array.isArray(window.categorias)) {
     esCategoriaValida(c.nombre, c.archivos || [])
   );
 }
+/* ======================================================
+   CAPA HYLOTRÁXICA CORRECTIVA (IRREVERSIBLE)
+   - Fallback de navegación
+   - Fallback de títulos
+   - Exclusión suave de carpetas técnicas
+====================================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  /* --- 1. Navegación siempre visible --- */
+  const nav = document.querySelector(".nav-tabs") || document.getElementById("nav-tabs");
+  if (nav) {
+    nav.style.position = "sticky";
+    nav.style.top = "0";
+    nav.style.zIndex = "999";
+    nav.style.background = "#fff";
+  }
+
+  /* --- 2. Exclusión suave de carpetas técnicas --- */
+  const EXCLUIR = new Set(["assets","scripts",".github","node_modules"]);
+  document.querySelectorAll(".nav-tabs a").forEach(a => {
+    const t = (a.textContent || "").toLowerCase().trim();
+    if (EXCLUIR.has(t)) a.remove();
+  });
+
+  /* --- 3. Fallback de títulos legibles --- */
+  document.querySelectorAll("[data-title]").forEach(el => {
+    if (!el.textContent || el.textContent.trim().length < 3) {
+      el.textContent = el.dataset.title
+        .replace(/\.(pdf|docx)$/i,"")
+        .replace(/[_\-]+/g," ")
+        .replace(/tom[aá]s(\s+ignacio)?\s+lavados(\s+sep[uú]lveda)?/gi,"")
+        .replace(/\b\w/g,l=>l.toUpperCase());
+    }
+  });
+
+});
 
