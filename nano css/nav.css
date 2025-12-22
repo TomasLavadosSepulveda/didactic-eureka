@@ -21,10 +21,13 @@
   align-items: flex-start;
 }
 
-.de-nav-cat {
+.de-nav-inner {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  gap: 48px;
+  align-items: flex-start;
+}
+
 }
 
 .de-nav-cat-title {
