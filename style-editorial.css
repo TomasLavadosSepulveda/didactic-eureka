@@ -441,4 +441,12 @@ main, .content, #content {
 
 h1 { margin: 1rem 0; }
 h2, h3 { margin: 1.25rem 0 0.5rem; }
+<section id="lista-articulos-estable">
+  <h2>Artículos disponibles</h2>
+  <ul>
+    <li><a href="articulos/filosofia/verdad.html">La verdad</a></li>
+    <li><a href="articulos/teologia/revelacion.html">La revelación</a></li>
+  </ul>
+</section>
+
 
