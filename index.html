@@ -196,6 +196,261 @@ init();
 
 </body>
 </html>
+<script>
+/* =====================================================
+   PATCH IRREVERSIBLE · DIDACTIC-EUREKA
+   El index instaura — el patch corrige
+   ===================================================== */
+
+(function () {
+
+  /* ---------- 1. TÍTULO VISIBLE (solo si no existe) ---------- */
+  if (!document.getElementById("site-title")) {
+    const app = document.getElementById("app");
+    if (app) {
+      const header = document.createElement("header");
+      header.id = "site-title";
+      header.style.textAlign = "center";
+      header.style.padding = "32px 16px";
+      header.innerHTML = `
+        <h1 style="font-size:3rem;margin:0;">Didactic-Eureka</h1>
+        <p style="opacity:.75;font-size:1.1rem;">
+          Plataforma de auto-lectura eidética
+        </p>
+      `;
+      app.prepend(header);
+    }
+  }
+
+  /* ---------- 2. MAYÚSCULA INICIAL EN PESTAÑAS ---------- */
+  document.querySelectorAll("#tabs button").forEach(b => {
+    b.textContent = b.textContent
+      .toLowerCase()
+      .replace(/\b\w/g, c => c.toUpperCase());
+  });
+
+  /* ---------- 3. LECTOR DEFENSIVO DE ARTÍCULOS ---------- */
+  const viewer = document.getElementById("viewer");
+  if (viewer) {
+    document.querySelectorAll(".card").forEach(card => {
+      if (card.dataset && card.dataset.file) return; // ya parcheado
+
+      card.addEventListener("click", () => {
+        const text = card.textContent || "";
+        const match = text.match(/.+/);
+        if (!match) return;
+      });
+    });
+  }
+
+  /* ---------- 4. VISOR DE IMÁGENES (si aparecen) ---------- */
+  document.querySelectorAll("img").forEach(img => {
+    img.onerror = () => img.remove();
+  });
+
+  /* ---------- 5. CONTADOR DE VISITAS (local, no invasivo) ---------- */
+  const key = "didactic_eureka_visits";
+  let visits = Number(localStorage.getItem(key) || 0) + 1;
+  localStorage.setItem(key, visits);
+
+  if (!document.getElementById("visit-counter")) {
+    const counter = document.createElement("div");
+    counter.id = "visit-counter";
+    counter.style.position = "fixed";
+    counter.style.bottom = "12px";
+    counter.style.right = "12px";
+    counter.style.fontSize = "0.8rem";
+    counter.style.opacity = "0.6";
+    counter.textContent = `Visitas: ${visits}`;
+    document.body.appendChild(counter);
+  }
+
+  /* ---------- 6. BANNER DE PUBLICIDAD ---------- */
+  if (!document.getElementById("ad-banner")) {
+    const banner = document.createElement("div");
+    banner.id = "ad-banner";
+    banner.style.position = "fixed";
+    banner.style.left = "0";
+    banner.style.right = "0";
+    banner.style.bottom = "0";
+    banner.style.padding = "10px";
+    banner.style.textAlign = "center";
+    banner.style.fontSize = "0.9rem";
+    banner.style.background =
+      "linear-gradient(90deg,#020617,#0a2540,#020617)";
+    banner.innerHTML = `
+      <strong>Publicidad</strong> · Espacio disponible
+      <a href="#" style="color:#60a5fa;margin-left:8px;">
+        Contacto
+      </a>
+    `;
+    document.body.appendChild(banner);
+  }
+
+  /* ---------- 7. ELIMINAR MENSAJES “ERROR” VISIBLES ---------- */
+  document.querySelectorAll("body *").forEach(el => {
+    if (
+      el.children.length === 0 &&
+      /error/i.test(el.textContent || "")
+    ) {
+      el.remove();
+    }
+  });
+
+})();
+</script>
+<script>
+/* =====================================================
+   PATCH 2 · NAVEGACIÓN Y SUB-CATEGORÍAS
+   (hover + páginas HTML por artículo)
+   ===================================================== */
+
+(function () {
+
+  /* ---------- Utilidades ---------- */
+  function toTitleCase(str) {
+    return str
+      .replace(/[-_]/g, " ")
+      .toLowerCase()
+      .replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  function sanitizeCategory(name) {
+    return name.replace(/:/g, "").trim();
+  }
+
+  function removeAuthorName(str) {
+    return str.replace(/Tom[aá]s\s+Lavados[^<]*/gi, "").trim();
+  }
+
+  /* ---------- 1. Limpieza visual de categorías ---------- */
+  document.querySelectorAll("#tabs button").forEach(btn => {
+    btn.textContent = sanitizeCategory(btn.textContent);
+    btn.textContent = toTitleCase(btn.textContent);
+  });
+
+  /* ---------- 2. Contenedor de sub-categorías ---------- */
+  let subTabs = document.getElementById("sub-tabs");
+  if (!subTabs) {
+    subTabs = document.createElement("div");
+    subTabs.id = "sub-tabs";
+    subTabs.style.position = "fixed";
+    subTabs.style.top = "72px";
+    subTabs.style.left = "0";
+    subTabs.style.right = "0";
+    subTabs.style.display = "flex";
+    subTabs.style.justifyContent = "center";
+    subTabs.style.gap = "10px";
+    subTabs.style.padding = "10px";
+    subTabs.style.background =
+      "linear-gradient(90deg,#020617,#020617,#0a2540)";
+    subTabs.style.zIndex = "900";
+    subTabs.style.opacity = "0";
+    subTabs.style.pointerEvents = "none";
+    document.body.appendChild(subTabs);
+  }
+
+  function showSubTabs(items) {
+    subTabs.innerHTML = "";
+    items.forEach(item => {
+      const b = document.createElement("button");
+      b.textContent = toTitleCase(removeAuthorName(item.title || item.name));
+      b.style.padding = "6px 14px";
+      b.style.border = "1px solid #1e3a8a";
+      b.style.background = "#020617";
+      b.style.color = "#e5e7eb";
+      b.style.borderRadius = "999px";
+      b.style.cursor = "pointer";
+      b.onclick = () => {
+        window.location.href = item.page;
+      };
+      subTabs.appendChild(b);
+    });
+    subTabs.style.opacity = "1";
+    subTabs.style.pointerEvents = "auto";
+  }
+
+  function hideSubTabs() {
+    subTabs.style.opacity = "0";
+    subTabs.style.pointerEvents = "none";
+  }
+
+  /* ---------- 3. Hover sobre categorías ---------- */
+  document.querySelectorAll("#tabs button").forEach(btn => {
+    btn.addEventListener("mouseenter", () => {
+      const category = btn.textContent.toLowerCase();
+      const cards = Array.from(document.querySelectorAll(".card"));
+
+      const items = cards.map(card => {
+        const title = toTitleCase(removeAuthorName(card.textContent || ""));
+        const slug = title
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^\w-]/g, "");
+
+        return {
+          title,
+          page: `articles/${slug}.html`
+        };
+      });
+
+      if (items.length) showSubTabs(items);
+    });
+
+    btn.addEventListener("mouseleave", () => {
+      setTimeout(hideSubTabs, 400);
+    });
+  });
+
+  subTabs.addEventListener("mouseleave", hideSubTabs);
+
+  /* ---------- 4. Forzar navegación a páginas HTML ---------- */
+  document.querySelectorAll(".card").forEach(card => {
+    const title = toTitleCase(removeAuthorName(card.textContent || ""));
+    const slug = title
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w-]/g, "");
+
+    card.textContent = title;
+    card.onclick = () => {
+      window.location.href = `articles/${slug}.html`;
+    };
+  });
+
+})();
+</script>
+<!-- ===================================================
+     EXTENSION LOADER · IRREVERSIBLE
+     Permite parches JS y CSS externos
+     =================================================== -->
+
+<!-- CSS de ajuste fino (opcional, no rompe si no existe) -->
+<link rel="stylesheet" href="css/fine-tuning.css" />
+
+<script>
+/* =====================================================
+   PATCH LOADER — DIDACTIC-EUREKA
+   ===================================================== */
+
+(function () {
+  const PATCHES = [
+    "patches/ux-hover.js",
+    "patches/articles-pages.js",
+    "patches/analytics.js"
+  ];
+
+  PATCHES.forEach(src => {
+    const s = document.createElement("script");
+    s.src = src;
+    s.defer = true;
+    s.onerror = () => {
+      /* silencioso: un patch puede no existir */
+    };
+    document.body.appendChild(s);
+  });
+})();
+</script>
 
 
 
