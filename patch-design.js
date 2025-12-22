@@ -87,4 +87,40 @@
   document.head.appendChild(style);
 
 })();
+/* ==================================================
+   SOPORTE WEB DE LECTURA Y PUBLICIDAD
+   ================================================== */
+
+(function () {
+
+  const style = document.createElement("style");
+  style.innerHTML = `
+    .article-cover {
+      width: 100%;
+      max-height: 420px;
+      object-fit: cover;
+      margin: 2rem 0;
+    }
+
+    .article-text {
+      font-size: 1.15rem;
+      line-height: 1.85;
+      margin-top: 2rem;
+    }
+
+    .eureka-footer-ad {
+      margin: 4rem auto 2rem;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .eureka-footer-ad img {
+      max-width: 260px;
+      display: block;
+      margin: 0 auto;
+    }
+  `;
+  document.head.appendChild(style);
+
+})();
 
