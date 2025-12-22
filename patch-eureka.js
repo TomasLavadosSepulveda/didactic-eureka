@@ -141,5 +141,8 @@
   }
 
 })();
+git add patches/patch-eureka.js index.html
+git commit -m "Link index to patch-eureka and fix nav + article rendering"
+git push
 
 
