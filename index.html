@@ -110,6 +110,70 @@
 </script>
 <script src="script.js"></script>
 <script>
+  <script>
+/* =====================================================
+   UX PATCH — DIDACTIC-EUREKA (CAPA 4)
+   ===================================================== */
+
+/* 1. Paleta azul / negro */
+document.body.style.background =
+  "radial-gradient(circle at center, #0a2540 0%, #020617 60%, #000 100%)";
+document.body.style.color = "#e5e7eb";
+
+/* 2. Pestañas fijas arriba */
+tabs.style.position = "fixed";
+tabs.style.top = "0";
+tabs.style.left = "0";
+tabs.style.right = "0";
+tabs.style.zIndex = "999";
+tabs.style.background =
+  "linear-gradient(90deg, #020617, #0a2540, #020617)";
+tabs.style.padding = "16px";
+tabs.style.justifyContent = "center";
+
+/* Compensar altura del contenido */
+root.style.paddingTop = "100px";
+
+/* 3. Efecto espiral visual (mosaico orgánico) */
+list.style.display = "grid";
+list.style.gridTemplateColumns = "repeat(auto-fit, minmax(200px, 1fr))";
+list.style.gap = "20px";
+
+Array.from(list.children).forEach((el, i) => {
+  const angle = i * 18;
+  el.style.transform = `rotate(${angle}deg)`;
+  el.style.background =
+    "linear-gradient(135deg, #0a2540, #020617)";
+  el.style.border = "1px solid #1e3a8a";
+  el.style.borderRadius = "16px";
+  el.style.padding = "16px";
+});
+
+/* 4. Títulos en Mayúscula Inicial */
+function toTitleCase(str) {
+  return str
+    .toLowerCase()
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+document.querySelectorAll("button, a").forEach(el => {
+  el.textContent = toTitleCase(el.textContent);
+});
+
+/* 5. Quitar tu nombre (defensivo) */
+document.body.innerHTML = document.body.innerHTML.replace(
+  /Tom[aá]s\s+Lavados[^<]*/gi,
+  ""
+);
+
+/* 6. Eliminar mensaje de error visible */
+document.querySelectorAll("p, div").forEach(el => {
+  if (el.textContent && el.textContent.toLowerCase().includes("error")) {
+    el.remove();
+  }
+});
+</script>
+
 /* =====================================================
    DIDACTIC-EUREKA · AUTO-MANIFESTACIÓN REAL
    Fuente: GitHub API (repo público)
