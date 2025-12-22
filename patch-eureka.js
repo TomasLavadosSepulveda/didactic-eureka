@@ -117,4 +117,13 @@ function humanizeTitle(fileName) {
   // Title Case simple (iniciales en mayúscula)
   return s.replace(/\b([a-záéíóúñ])/gi, (m) => m.toUpperCase());
 }
+function preferHtml(filePath) {
+  const htmlPath = filePath.replace(/\.pdf$/i, ".html");
+  return fetch(htmlPath, { method: "HEAD" })
+    .then(r => r.ok ? htmlPath : filePath)
+    .catch(() => filePath);
+}
+preferHtml(file.path).then(finalPath => {
+  iframe.src = finalPath;
+});
 
