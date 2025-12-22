@@ -1,129 +1,144 @@
-function limpiarTitulo(nombre) {
-  let t = nombre
-    .replace(/\.(pdf|docx)$/i, "")
-    .replace(/[_\-]/g, " ")
-    .replace(/tom[aá]s\s+lavados?/gi, "")
-    .replace(/\s+/g, " ")
-    .trim();
+/* =========================================================
+   PATCH-EUREKA.JS
+   Orquestador final · Iteración 2
+   ========================================================= */
 
-  const corr = {
-    "metafiisica":"metafísica","filosofiia":"filosofía",
-    "ontoloogica":"ontológica","teologiia":"teología",
-    "concienciaa":"conciencia"
+(async function () {
+
+  const NAV = document.getElementById("eureka-nav");
+  const MAIN = document.getElementById("eureka-main");
+  if (!NAV || !MAIN) return;
+
+  /* ---------- utilidades ---------- */
+  const cleanTitle = (str) =>
+    str
+      .replace(/[:]/g, "")
+      .replace(/[_-]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase()
+      .split(" ")
+      .map(w => {
+        if (["de","la","el","y","en","del"].includes(w)) return w;
+        return w.charAt(0).toUpperCase() + w.slice(1);
+      })
+      .join(" ");
+
+  const el = (tag, cls, text) => {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text) e.textContent = text;
+    return e;
   };
-  for (let k in corr) t = t.replace(new RegExp(k,"gi"), corr[k]);
 
-  return t.replace(/\b\w/g, l => l.toUpperCase());
-}
+  const hasArticles = (node) =>
+    (node.pdfs && node.pdfs.length) ||
+    (node.children && node.children.some(hasArticles));
 
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll("[data-title]").forEach(el => {
-    el.textContent = limpiarTitulo(el.dataset.title);
-  });
-});
-
-/* === Filtrado de pestañas === */
-const CARPETAS_EXCLUIDAS = [
-  "assets",
-  "scripts",
-  ".github",
-  "node_modules"
-];
-
-function esCategoriaValida(nombre, archivos) {
-  if (CARPETAS_EXCLUIDAS.includes(nombre)) return false;
-  return archivos.some(f => f.toLowerCase().endsWith(".pdf"));
-}
-
-/* Supone que tu lógica actual genera algo como:
-   categorias = [{ nombre: "filosofia", archivos: [...] }, ...]
-   Este filtro se aplica ANTES de renderizar pestañas */
-if (window.categorias && Array.isArray(window.categorias)) {
-  window.categorias = window.categorias.filter(c =>
-    esCategoriaValida(c.nombre, c.archivos || [])
-  );
-}
-/* ======================================================
-   CAPA HYLOTRÁXICA CORRECTIVA (IRREVERSIBLE)
-   - Fallback de navegación
-   - Fallback de títulos
-   - Exclusión suave de carpetas técnicas
-====================================================== */
-
-document.addEventListener("DOMContentLoaded", () => {
-
-  /* --- 1. Navegación siempre visible --- */
-  const nav = document.querySelector(".nav-tabs") || document.getElementById("nav-tabs");
-  if (nav) {
-    nav.style.position = "sticky";
-    nav.style.top = "0";
-    nav.style.zIndex = "999";
-    nav.style.background = "#fff";
+  /* ---------- cargar manifest ---------- */
+  let manifest;
+  try {
+    const r = await fetch("manifest.json", { cache: "no-store" });
+    manifest = await r.json();
+  } catch {
+    return;
   }
 
-  /* --- 2. Exclusión suave de carpetas técnicas --- */
-  const EXCLUIR = new Set(["assets","scripts",".github","node_modules"]);
-  document.querySelectorAll(".nav-tabs a").forEach(a => {
-    const t = (a.textContent || "").toLowerCase().trim();
-    if (EXCLUIR.has(t)) a.remove();
-  });
+  /* ======================================================
+     NAVEGACIÓN SUPERIOR (COLUMNAS REALES)
+     ====================================================== */
 
-  /* --- 3. Fallback de títulos legibles --- */
-  document.querySelectorAll("[data-title]").forEach(el => {
-    if (!el.textContent || el.textContent.trim().length < 3) {
-      el.textContent = el.dataset.title
-        .replace(/\.(pdf|docx)$/i,"")
-        .replace(/[_\-]+/g," ")
-        .replace(/tom[aá]s(\s+ignacio)?\s+lavados(\s+sep[uú]lveda)?/gi,"")
-        .replace(/\b\w/g,l=>l.toUpperCase());
-    }
-  });
+  NAV.innerHTML = "";
+  NAV.style.display = "flex";
+  NAV.style.gap = "48px";
+  NAV.style.padding = "16px 24px";
+  NAV.style.position = "fixed";
+  NAV.style.top = "0";
+  NAV.style.width = "100%";
+  NAV.style.background = "#020617";
+  NAV.style.zIndex = "1000";
 
-});
-function humanizeTitle(filename) {
-  return filename
-    .replace(/\.(pdf|docx)$/i, "")
-    .replace(/tom[aá]s(\s+ignacio)?\s+lavados(\s+sep[uú]lveda)?/gi, "")
-    .replace(/[_\-]+/g, " ")
-    .replace(/\b\w/g, l => l.toUpperCase())
-    .trim();
-}
-titleElement.textContent = humanizeTitle(file.name);
-function humanizeTitle(fileName) {
-  const s = fileName
-    .replace(/\.(pdf|docx|html)$/i, "")
-    // elimina variantes del nombre (con o sin tildes / doble nombre)
-    .replace(/tom[aá]s(\s+ignacio)?\s+lavados(\s+sep[uú]lveda)?/gi, "")
-    // separadores a espacio
-    .replace(/[_\-]+/g, " ")
-    // arreglos comunes de “pegado”
-    .replace(/\s+/g, " ")
-    .trim();
+  manifest.tree.children
+    .filter(hasArticles)
+    .forEach(category => {
 
-  // Title Case simple (iniciales en mayúscula)
-  return s.replace(/\b([a-záéíóúñ])/gi, (m) => m.toUpperCase());
-}
-function humanizeTitle(fileName) {
-  const s = fileName
-    .replace(/\.(pdf|docx|html)$/i, "")
-    // elimina variantes del nombre (con o sin tildes / doble nombre)
-    .replace(/tom[aá]s(\s+ignacio)?\s+lavados(\s+sep[uú]lveda)?/gi, "")
-    // separadores a espacio
-    .replace(/[_\-]+/g, " ")
-    // arreglos comunes de “pegado”
-    .replace(/\s+/g, " ")
-    .trim();
+      const col = el("div", "eureka-col");
+      col.style.display = "flex";
+      col.style.flexDirection = "column";
+      col.style.gap = "8px";
+      col.style.minWidth = "160px";
 
-  // Title Case simple (iniciales en mayúscula)
-  return s.replace(/\b([a-záéíóúñ])/gi, (m) => m.toUpperCase());
-}
-function preferHtml(filePath) {
-  const htmlPath = filePath.replace(/\.pdf$/i, ".html");
-  return fetch(htmlPath, { method: "HEAD" })
-    .then(r => r.ok ? htmlPath : filePath)
-    .catch(() => filePath);
-}
-preferHtml(file.path).then(finalPath => {
-  iframe.src = finalPath;
-});
+      const cat = el("div", "eureka-cat", cleanTitle(category.name));
+      cat.style.fontWeight = "600";
+      cat.style.cursor = "pointer";
+
+      col.appendChild(cat);
+
+      (category.children || [])
+        .filter(hasArticles)
+        .forEach(sub => {
+          const subEl = el("div", "eureka-sub", cleanTitle(sub.name));
+          subEl.style.fontSize = "0.85rem";
+          subEl.style.cursor = "pointer";
+          subEl.onclick = () => renderArticles(sub);
+          col.appendChild(subEl);
+        });
+
+      cat.onclick = () => renderArticles(category);
+      NAV.appendChild(col);
+    });
+
+  /* ======================================================
+     RENDER DE ARTÍCULOS (LISTA VERTICAL, CLICKEABLE)
+     ====================================================== */
+
+  function renderArticles(node) {
+    MAIN.innerHTML = "";
+    MAIN.style.marginTop = "120px";
+    MAIN.style.maxWidth = "900px";
+    MAIN.style.marginLeft = "auto";
+    MAIN.style.marginRight = "auto";
+    MAIN.style.display = "flex";
+    MAIN.style.flexDirection = "column";
+    MAIN.style.gap = "16px";
+
+    const title = el("h2", null, cleanTitle(node.name));
+    MAIN.appendChild(title);
+
+    const list = el("div", "eureka-article-list");
+    list.style.display = "flex";
+    list.style.flexDirection = "column";
+    list.style.gap = "12px";
+
+    /* subcategorías */
+    (node.children || []).filter(hasArticles).forEach(sub => {
+      const btn = el("button", "eureka-sub-btn", "↳ " + cleanTitle(sub.name));
+      btn.style.textAlign = "left";
+      btn.onclick = () => renderArticles(sub);
+      list.appendChild(btn);
+    });
+
+    /* artículos */
+    (node.pdfs || []).forEach(pdf => {
+      const slug = pdf.file
+        .split("/")
+        .pop()
+        .replace(/\.pdf$/i, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-");
+
+      const link = el("a", "eureka-article-link", pdf.title);
+      link.href = `articles/${slug}.html`;
+      link.style.textDecoration = "none";
+      link.style.padding = "12px 16px";
+      link.style.borderRadius = "10px";
+      link.style.background = "#020617";
+      link.style.color = "#e5e7eb";
+      list.appendChild(link);
+    });
+
+    MAIN.appendChild(list);
+  }
+
+})();
 
