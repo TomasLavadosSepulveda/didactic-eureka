@@ -928,6 +928,192 @@ init();
 <img src="index.png" alt="Portada" />
 <div class="de-banner"><img src="publicidad.png" alt="Publicidad" /></div>
 <div>Visitas: <span data-de-visits>0</span></div>
+<script>
+/* =========================================================
+   PATCH MAESTRO · RESTITUCIÓN TOTAL DEL ORGANISMO
+   Didactic-Eureka · Producto 1
+   ========================================================= */
+(async function () {
+
+  /* ========= CONFIG ========= */
+  const CONTACT_EMAIL = "tomaslavados@gmail.com"; // <-- cambia si deseas
+  const YOUTUBE_ID = "dQw4w9WgXcQ"; // <-- cambia por tu video real
+
+  /* ========= UTIL ========= */
+  const toTitleCase = s =>
+    s.replace(/[:]/g, "")
+     .replace(/[-_]/g, " ")
+     .toLowerCase()
+     .replace(/\b\w/g, c => c.toUpperCase());
+
+  function el(tag, attrs = {}, html = "") {
+    const e = document.createElement(tag);
+    Object.entries(attrs).forEach(([k,v]) => e.setAttribute(k,v));
+    if (html) e.innerHTML = html;
+    return e;
+  }
+
+  /* ========= CARGAR MANIFEST ========= */
+  let manifest;
+  try {
+    const r = await fetch("manifest.json", { cache: "no-store" });
+    manifest = await r.json();
+  } catch (e) {
+    console.warn("manifest.json no disponible");
+    return;
+  }
+
+  /* ========= ESTRUCTURA BASE DEFENSIVA ========= */
+  const body = document.body;
+
+  let nav = document.querySelector(".de-nav");
+  if (!nav) {
+    nav = el("nav", { class: "de-nav" });
+    body.prepend(nav);
+  }
+
+  let tabs = nav.querySelector("[data-de-tabs]");
+  if (!tabs) {
+    tabs = el("div", { "data-de-tabs": "" });
+    nav.appendChild(tabs);
+  }
+
+  let main = document.querySelector("[data-de-center]");
+  if (!main) {
+    main = el("main", { "data-de-center": "" });
+    body.appendChild(main);
+  }
+
+  /* ========= TÍTULO + BAJADA ========= */
+  let hero = document.querySelector(".de-hero");
+  if (!hero) {
+    hero = el("section", { class: "de-hero" });
+    hero.innerHTML = `
+      <h1 class="de-hero-title">Didactic-Eureka</h1>
+      <p class="de-hero-sub">Productividad Bifásica</p>
+    `;
+    body.insertBefore(hero, nav.nextSibling);
+  }
+
+  /* ========= NAV: SOLO CATEGORÍAS CON ARTÍCULOS ========= */
+  tabs.innerHTML = "";
+
+  function hasArticles(node) {
+    if (node.pdfs && node.pdfs.length) return true;
+    if (node.children) return node.children.some(hasArticles);
+    return false;
+  }
+
+  manifest.tree.children
+    .filter(hasArticles)
+    .forEach(cat => {
+      const wrap = el("div", { class: "de-tabwrap" });
+      const tab = el("button", { class: "de-tab" }, toTitleCase(cat.name));
+      const dropdown = el("div", { class: "de-dropdown" });
+
+      /* subcategorías */
+      (cat.children || []).filter(hasArticles).forEach(sub => {
+        const subBtn = el("div", { class: "de-subcat" }, "▸ " + toTitleCase(sub.name));
+        subBtn.onclick = () => renderTree(sub);
+        dropdown.appendChild(subBtn);
+      });
+
+      /* artículos directos */
+      (cat.pdfs || []).forEach(pdf => {
+        const a = el("a", {
+          class: "de-article",
+          href: pdf.file
+        }, "📄 " + pdf.title);
+        dropdown.appendChild(a);
+      });
+
+      wrap.appendChild(tab);
+      wrap.appendChild(dropdown);
+      tabs.appendChild(wrap);
+
+      tab.onclick = () => renderTree(cat);
+    });
+
+  /* ========= ÁRBOL CENTRAL ========= */
+  function renderTree(node) {
+    main.innerHTML = "";
+    const h = el("h2", {}, toTitleCase(node.name));
+    main.appendChild(h);
+
+    const grid = el("div", { class: "de-tree" });
+
+    (node.children || []).filter(hasArticles).forEach(sub => {
+      const box = el("div", { class: "de-node subcat" }, toTitleCase(sub.name));
+      box.onclick = () => renderTree(sub);
+      grid.appendChild(box);
+    });
+
+    (node.pdfs || []).forEach(pdf => {
+      const art = el("a", {
+        class: "de-node article",
+        href: pdf.file,
+        target: "_self"
+      }, pdf.title);
+      grid.appendChild(art);
+    });
+
+    main.appendChild(grid);
+  }
+
+  /* ========= BANNER PUBLICITARIO ========= */
+  let banner = document.getElementById("de-banner");
+  if (!banner) {
+    banner = el("div", { id: "de-banner" });
+    banner.innerHTML = `
+      <strong>Espacio Publicitario</strong> ·
+      <span>Próximamente</span> ·
+      <a href="mailto:${CONTACT_EMAIL}">Contacto</a>
+    `;
+    body.appendChild(banner);
+  }
+
+  /* ========= VIDEO YOUTUBE LOOP ========= */
+  let video = document.getElementById("de-video");
+  if (!video) {
+    video = el("div", { id: "de-video" });
+    video.innerHTML = `
+      <iframe
+        src="https://www.youtube.com/embed/${YOUTUBE_ID}?loop=1&playlist=${YOUTUBE_ID}&mute=1&controls=1"
+        allow="autoplay; encrypted-media"
+        allowfullscreen
+      ></iframe>
+    `;
+    body.appendChild(video);
+  }
+
+})();
+</script>
+
+<style>
+/* ====== ESTILOS DEFENSIVOS ====== */
+.de-nav { position: sticky; top:0; background:#020617; z-index:999; }
+.de-tab { font-size:1.25rem; padding:14px 24px; border-radius:16px; }
+.de-tabwrap { position:relative; display:inline-block; margin:6px; }
+.de-dropdown { display:none; position:absolute; top:100%; left:0;
+  background:#020617; padding:12px; border-radius:16px; }
+.de-tabwrap:hover .de-dropdown { display:block; }
+
+.de-subcat { padding:8px; cursor:pointer; color:#93c5fd; }
+.de-article { display:block; padding:8px; color:#e5e7eb; }
+
+.de-tree { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:16px; margin-top:24px; }
+
+.de-node { padding:20px; border-radius:16px; text-align:center; }
+.de-node.subcat { background:#0a2540; cursor:pointer; }
+.de-node.article { background:#111827; text-decoration:none; color:white; }
+
+#de-banner { position:fixed; bottom:0; width:100%; background:#020617;
+  padding:12px; text-align:center; }
+
+#de-video { max-width:900px; margin:40px auto; }
+#de-video iframe { width:100%; height:400px; border-radius:16px; }
+</style>
 
 
 
