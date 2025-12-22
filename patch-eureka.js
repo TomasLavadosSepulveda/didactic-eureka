@@ -263,4 +263,39 @@ function normalizeAllArticleTitles() {
   }, 300);
 
 })();
+/* ==================================================
+   BAJADA DE PRESENTACIÓN — MÉTODO BIFÁSICO HYLÓTRAXICO
+   Bloque aditivo, no destructivo
+   ================================================== */
+
+(function () {
+
+  function insertSiteSubtitle() {
+    const h1 = document.querySelector("h1");
+    if (!h1) return;
+
+    // Evitar duplicados
+    if (document.querySelector(".site-subtitle")) return;
+
+    const subtitle = document.createElement("p");
+    subtitle.className = "site-subtitle";
+    subtitle.textContent =
+      "Didactic Eureka es una plataforma editorial experimental basada en una praxis bifásica: " +
+      "una fase eidética de formulación conceptual y una fase material de realización técnica. " +
+      "Su marco hylotráxico articula pensamiento, forma y ejecución en un sistema coherente, " +
+      "donde la idea se preserva, se prueba y se encarna sin perder unidad.";
+
+    // Insertar inmediatamente después del título
+    h1.insertAdjacentElement("afterend", subtitle);
+  }
+
+  // Reintentos suaves por render dinámico
+  let tries = 0;
+  const interval = setInterval(() => {
+    insertSiteSubtitle();
+    tries++;
+    if (tries > 20) clearInterval(interval);
+  }, 200);
+
+})();
 
