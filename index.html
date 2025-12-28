@@ -68,7 +68,8 @@ nav button {
   transition: background .2s;
 }
 
-nav button:hover {
+nav button:hover,
+nav button.active {
   background: #1e3a8a;
 }
 
@@ -135,73 +136,60 @@ main {
 </section>
 
 <script>
-/* ========= CONFIG ========= */
-const OWNER  = "TomasLavadosSepulveda";
-const REPO   = "didactic-eureka";
-const BRANCH = "main";
+/* ======================================================
+   MANIFEST DE NAVEGACIÓN (ESTABLE)
+   ====================================================== */
 
+const MANIFEST = {
+  "Antropología": [
+    "antropologia/intuicion-intelectual-libertad.html",
+    "antropologia/el-cuerpo-astral-la-persona-humana.html"
+  ],
+  "Filosofía": [
+    "filosofia/leibniz-como-prefiguracion-de-kant.html"
+  ],
+  "Teología": [
+    "teologia/la-encarnacion-como-revelacion-universal.html"
+  ]
+};
+
+/* ========= UTIL ========= */
 const tabs = document.getElementById("tabs");
 const content = document.getElementById("content");
 
-/* ========= UTIL ========= */
 const titleCase = s =>
   s.replace(/[-_]/g," ")
    .toLowerCase()
    .replace(/\b\w/g,c=>c.toUpperCase());
 
-async function fetchDir(path="") {
-  const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${BRANCH}`;
-  const r = await fetch(url);
-  return r.ok ? r.json() : [];
-}
-
-/* ========= CARGAR ARTÍCULOS ========= */
-async function loadCategory(dir) {
+function loadCategory(name) {
   content.innerHTML = "";
-  const items = await fetchDir(dir);
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
 
-  const pdfs = items.filter(f => f.type==="file" && f.name.endsWith(".pdf"));
+  const btn = [...tabs.children].find(b=>b.textContent===name);
+  if (btn) btn.classList.add("active");
 
-  if (!pdfs.length) {
-    content.innerHTML = "<p>No hay artículos en esta categoría.</p>";
-    return;
-  }
-
-  pdfs.forEach(f => {
+  MANIFEST[name].forEach(path=>{
     const a = document.createElement("a");
-    a.href = f.path;
-    a.target = "_blank";
-    a.textContent = titleCase(f.name.replace(".pdf",""));
+    a.href = path;
+    a.textContent = titleCase(
+      path.split("/").pop().replace(".html","")
+    );
     content.appendChild(a);
   });
 }
 
 /* ========= INIT ========= */
-(async ()=>{
-  const root = await fetchDir("");
-
-  const dirs = [];
-  for (const d of root) {
-    if (d.type === "dir") {
-      const items = await fetchDir(d.name);
-      if (items.some(f => f.type==="file" && f.name.endsWith(".pdf"))) {
-        dirs.push(d.name);
-      }
-    }
-  }
-
-  dirs.forEach(dir => {
-    const b = document.createElement("button");
-    b.textContent = titleCase(dir);
-    b.onclick = ()=>loadCategory(dir);
-    tabs.appendChild(b);
-  });
-})();
+Object.keys(MANIFEST).forEach(name=>{
+  const b = document.createElement("button");
+  b.textContent = name;
+  b.onclick = ()=>loadCategory(name);
+  tabs.appendChild(b);
+});
 </script>
 
 </body>
 </html>
-
 
 
 
