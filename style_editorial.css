@@ -470,5 +470,23 @@ h2, h3 { margin: 1.25rem 0 0.5rem; }
   flex-direction: column;
   gap: 6px;
 }
+.nav { position: relative; }
+
+.has-submenu { position: relative; }
+
+.has-submenu .submenu{
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  z-index: 9999;
+  min-width: 260px;
+  border: 1px solid rgba(0,0,0,.08);
+}
+
+.has-submenu:hover .submenu{
+  display: block;
+}
 
 
