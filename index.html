@@ -50,7 +50,8 @@ body {
 /* ========= NAV ========= */
 nav {
   display: flex;
-  gap: 16px;
+  gap: 14px;
+  flex-wrap: wrap;
   justify-content: center;
   padding: 16px;
   background: #020617;
@@ -64,6 +65,11 @@ nav button {
   padding: 8px 18px;
   border-radius: 999px;
   cursor: pointer;
+  transition: background .2s;
+}
+
+nav button:hover {
+  background: #1e3a8a;
 }
 
 /* ========= CONTENIDO ========= */
@@ -75,13 +81,19 @@ main {
 
 .article-list a {
   display: block;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  border-radius: 14px;
   background: linear-gradient(135deg,#0a2540,#020617);
   text-decoration: none;
   color: #e5e7eb;
   border: 1px solid #1e3a8a;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.article-list a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,.4);
 }
 
 /* ========= VIDEO ========= */
@@ -123,8 +135,7 @@ main {
 </section>
 
 <script>
-/* ========= NAVEGACIÓN PDF-FIRST ========= */
-
+/* ========= CONFIG ========= */
 const OWNER  = "TomasLavadosSepulveda";
 const REPO   = "didactic-eureka";
 const BRANCH = "main";
@@ -132,35 +143,24 @@ const BRANCH = "main";
 const tabs = document.getElementById("tabs");
 const content = document.getElementById("content");
 
-function titleCase(str) {
-  return str.replace(/[-_]/g," ")
-            .toLowerCase()
-            .replace(/\b\w/g,c=>c.toUpperCase());
-}
+/* ========= UTIL ========= */
+const titleCase = s =>
+  s.replace(/[-_]/g," ")
+   .toLowerCase()
+   .replace(/\b\w/g,c=>c.toUpperCase());
 
 async function fetchDir(path="") {
-  const r = await fetch(
-    `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${BRANCH}`
-  );
+  const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${BRANCH}`;
+  const r = await fetch(url);
   return r.ok ? r.json() : [];
 }
 
-/* ---- verifica si una carpeta contiene PDFs ---- */
-async function hasPDF(dir) {
-  const items = await fetchDir(dir);
-  return items.some(
-    f => f.type === "file" && f.name.toLowerCase().endsWith(".pdf")
-  );
-}
-
-/* ---- carga artículos PDF ---- */
+/* ========= CARGAR ARTÍCULOS ========= */
 async function loadCategory(dir) {
   content.innerHTML = "";
   const items = await fetchDir(dir);
 
-  const pdfs = items.filter(
-    f => f.type === "file" && f.name.toLowerCase().endsWith(".pdf")
-  );
+  const pdfs = items.filter(f => f.type==="file" && f.name.endsWith(".pdf"));
 
   if (!pdfs.length) {
     content.innerHTML = "<p>No hay artículos en esta categoría.</p>";
@@ -169,35 +169,38 @@ async function loadCategory(dir) {
 
   pdfs.forEach(f => {
     const a = document.createElement("a");
-    a.href = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${f.path}`;
+    a.href = f.path;
     a.target = "_blank";
-    a.rel = "noopener";
     a.textContent = titleCase(f.name.replace(".pdf",""));
     content.appendChild(a);
   });
 }
 
-/* ---- inicialización ---- */
+/* ========= INIT ========= */
 (async ()=>{
-  const root = await fetchDir();
+  const root = await fetchDir("");
 
+  const dirs = [];
   for (const d of root) {
-    if (d.type !== "dir") continue;
-    if (d.name.startsWith(".")) continue;
-
-    if (await hasPDF(d.name)) {
-      const b = document.createElement("button");
-      b.textContent = titleCase(d.name);
-      b.onclick = ()=>loadCategory(d.name);
-      tabs.appendChild(b);
+    if (d.type === "dir") {
+      const items = await fetchDir(d.name);
+      if (items.some(f => f.type==="file" && f.name.endsWith(".pdf"))) {
+        dirs.push(d.name);
+      }
     }
   }
+
+  dirs.forEach(dir => {
+    const b = document.createElement("button");
+    b.textContent = titleCase(dir);
+    b.onclick = ()=>loadCategory(dir);
+    tabs.appendChild(b);
+  });
 })();
 </script>
 
 </body>
 </html>
-
 
 
 
