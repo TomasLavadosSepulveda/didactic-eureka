@@ -1,157 +1,116 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Didactic-Eureka · Artículo</title>
-  <style>
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color:#e5e7eb;
-      background: radial-gradient(circle at center, #0a2540 0%, #020617 55%, #000 100%);
-    }
-    a{color:inherit;text-decoration:none}
-    .top{
-      position:sticky; top:0; z-index:1000;
-      padding:12px 16px;
-      background: linear-gradient(90deg,#020617,#0a2540,#020617);
-      border-bottom:1px solid #1e3a8a;
-      display:flex; gap:12px; align-items:center; justify-content:space-between;
-    }
-    .btn{
-      display:inline-block;
-      padding:10px 14px;
-      border-radius:999px;
-      border:1px solid #1e3a8a;
-      background:#020617;
-      font-weight:650;
-      cursor:pointer;
-    }
-    .wrap{max-width:1200px;margin:0 auto;padding:18px}
-    .grid{
-      display:grid;
-      grid-template-columns: 320px 1fr;
-      gap:18px;
-      align-items:start;
-    }
-    @media (max-width:960px){ .grid{grid-template-columns:1fr} }
-    .panel{
-      border:1px solid #1e3a8a;
-      border-radius:18px;
-      background: linear-gradient(135deg,#0a2540,#020617);
-      box-shadow:0 16px 48px rgba(0,0,0,.45);
-      overflow:hidden;
-    }
-    .panel h2{margin:0;padding:14px 16px;border-bottom:1px solid rgba(30,58,138,.65);font-size:1.02rem}
-    .panel .body{padding:14px 16px}
-    .side a{
-      display:block;
-      padding:10px 10px;
-      border-radius:14px;
-      border:1px solid rgba(30,58,138,.55);
-      background:#020617;
-      margin-bottom:10px;
-    }
-    .side a:hover{background:#0b1220}
-    iframe{
-      width:100%;
-      height:78vh;
-      border:0;
-      border-radius:16px;
-      background:#000;
-    }
-    .meta{opacity:.8;font-size:.95rem;line-height:1.5}
-  </style>
+<meta charset="UTF-8">
+<title>Didactic-Eureka · Artículo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at center, #0a2540 0%, #020617 55%, #000 100%);
+  color: #e5e7eb;
+}
+
+header {
+  text-align: center;
+  padding: 32px 16px;
+}
+
+header h1 {
+  font-size: 2.2rem;
+  margin: 0;
+}
+
+header p {
+  opacity: .75;
+  margin-top: 8px;
+}
+
+nav {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+nav a {
+  color: #93c5fd;
+  margin: 0 12px;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+iframe {
+  width: 100%;
+  height: 85vh;
+  border: none;
+  border-radius: 14px;
+  background: #000;
+}
+
+footer {
+  text-align: center;
+  padding: 24px;
+  font-size: 0.85rem;
+  opacity: .6;
+}
+</style>
 </head>
+
 <body>
-  <div class="top">
-    <a class="btn" id="backBtn" href="index.html">← Volver</a>
-    <div style="font-weight:800;letter-spacing:.02em">Didactic-Eureka</div>
-    <a class="btn" href="index.html">Inicio</a>
-  </div>
 
-  <div class="wrap">
-    <div class="grid">
-      <section class="panel side">
-        <h2>Más artículos de la categoría</h2>
-        <div class="body">
-          <div class="meta" id="context"></div>
-          <div id="siblings"></div>
-        </div>
-      </section>
+<header>
+  <h1 id="title">Cargando artículo…</h1>
+  <p id="subtitle">Didactic-Eureka · La maravilla de aprender</p>
+</header>
 
-      <section class="panel">
-        <h2 id="title">Artículo</h2>
-        <div class="body">
-          <iframe id="viewer" title="PDF"></iframe>
-          <div class="meta" style="margin-top:10px" id="path"></div>
-        </div>
-      </section>
-    </div>
-  </div>
+<nav>
+  <a href="index.html">⟵ Inicio</a>
+  <a href="#" onclick="history.back()">⟵ Volver</a>
+</nav>
 
-  <script>
-    const qs = (k) => new URLSearchParams(location.search).get(k) || "";
-    const file = qs("file");
-    const cat  = qs("cat");
-    const sub  = qs("sub");
+<main>
+  <iframe id="viewer"></iframe>
+</main>
 
-    function titleCase(s){
-      return (s||"")
-        .replace(/[:]/g,"")
-        .replace(/[_-]/g," ")
-        .replace(/\s+/g," ")
-        .trim()
-        .toLowerCase()
-        .replace(/\b\w/g, c => c.toUpperCase());
-    }
+<footer>
+  Didactic-Eureka · Lectura progresiva · Producto 1
+</footer>
 
-    async function loadManifest(){
-      const r = await fetch("manifest.json", {cache:"no-store"});
-      if(!r.ok) throw new Error("manifest.json no disponible");
-      return r.json();
-    }
+<script>
+/* ===============================
+   UTILIDADES
+   =============================== */
+function titleCase(str) {
+  return str
+    .replace(/[-_]/g, " ")
+    .replace(/\s+/g, " ")
+    .toLowerCase()
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
 
-    (async ()=>{
-      if(!file){
-        location.href = "index.html";
-        return;
-      }
+/* ===============================
+   CARGA DEL PDF
+   =============================== */
+const params = new URLSearchParams(window.location.search);
+const file = params.get("file");
 
-      // visor: sirve el PDF desde el mismo sitio (GitHub Pages)
-      document.getElementById("viewer").src = file;
-      document.getElementById("path").textContent = file;
+if (!file) {
+  document.getElementById("title").textContent =
+    "Artículo no especificado";
+} else {
+  const name = file.split("/").pop().replace(".pdf", "");
+  document.getElementById("title").textContent = titleCase(name);
+  document.getElementById("viewer").src = file;
+}
+</script>
 
-      // volver preservando contexto
-      const back = `index.html?cat=${encodeURIComponent(cat)}&sub=${encodeURIComponent(sub)}`;
-      document.getElementById("backBtn").href = back;
-
-      const m = await loadManifest();
-      const tree = (m.tree || {});
-      const items = (((tree[cat]||{})[sub]||[])).slice();
-
-      // título (mejor que el nombre de archivo)
-      const current = items.find(x => x.file === file);
-      document.getElementById("title").textContent = current ? current.title : "Artículo";
-      document.getElementById("context").innerHTML =
-        `<strong>${titleCase(cat)}</strong>${sub ? ` · <span style="opacity:.85">${titleCase(sub)}</span>` : ""}`;
-
-      const sib = document.getElementById("siblings");
-      sib.innerHTML = "";
-      items.forEach(it=>{
-        const a = document.createElement("a");
-        a.href = `article.html?file=${encodeURIComponent(it.file)}&cat=${encodeURIComponent(cat)}&sub=${encodeURIComponent(sub)}`;
-        a.textContent = "📄 " + it.title;
-        if(it.file === file) a.style.outline = "2px solid rgba(147,197,253,.55)";
-        sib.appendChild(a);
-      });
-    })().catch(err=>{
-      console.error(err);
-      document.getElementById("context").textContent =
-        "Error: no se pudo cargar manifest.json.";
-    });
-  </script>
 </body>
 </html>
+
