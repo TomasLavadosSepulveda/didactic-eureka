@@ -1,36 +1,157 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Artículo · Didactic-Eureka</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Didactic-Eureka · Artículo</title>
   <style>
-    body{ margin:0; font-family: system-ui,-apple-system,"Segoe UI",sans-serif; background:#020617; color:#e5e7eb; }
-    header{ padding:14px 14px; border-bottom:1px solid #1e3a8a; background:linear-gradient(90deg,#020617,#0a2540,#020617); }
-    header a{ color:#93c5fd; text-decoration:none; font-weight:700; }
-    .wrap{ max-width:1100px; margin:0 auto; padding:14px; }
-    h1{ margin:14px 0 10px; font-size:1.2rem; }
-    iframe{ width:100%; height:82vh; border:1px solid #1e3a8a; border-radius:16px; background:#000; }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:#e5e7eb;
+      background: radial-gradient(circle at center, #0a2540 0%, #020617 55%, #000 100%);
+    }
+    a{color:inherit;text-decoration:none}
+    .top{
+      position:sticky; top:0; z-index:1000;
+      padding:12px 16px;
+      background: linear-gradient(90deg,#020617,#0a2540,#020617);
+      border-bottom:1px solid #1e3a8a;
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+    }
+    .btn{
+      display:inline-block;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid #1e3a8a;
+      background:#020617;
+      font-weight:650;
+      cursor:pointer;
+    }
+    .wrap{max-width:1200px;margin:0 auto;padding:18px}
+    .grid{
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      gap:18px;
+      align-items:start;
+    }
+    @media (max-width:960px){ .grid{grid-template-columns:1fr} }
+    .panel{
+      border:1px solid #1e3a8a;
+      border-radius:18px;
+      background: linear-gradient(135deg,#0a2540,#020617);
+      box-shadow:0 16px 48px rgba(0,0,0,.45);
+      overflow:hidden;
+    }
+    .panel h2{margin:0;padding:14px 16px;border-bottom:1px solid rgba(30,58,138,.65);font-size:1.02rem}
+    .panel .body{padding:14px 16px}
+    .side a{
+      display:block;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid rgba(30,58,138,.55);
+      background:#020617;
+      margin-bottom:10px;
+    }
+    .side a:hover{background:#0b1220}
+    iframe{
+      width:100%;
+      height:78vh;
+      border:0;
+      border-radius:16px;
+      background:#000;
+    }
+    .meta{opacity:.8;font-size:.95rem;line-height:1.5}
   </style>
 </head>
 <body>
-  <header class="wrap">
-    <a href="./index.html">← Volver a Didactic-Eureka</a>
-  </header>
-  <main class="wrap">
-    <h1 id="t"></h1>
-    <iframe id="pdf" title="Visor PDF"></iframe>
-  </main>
+  <div class="top">
+    <a class="btn" id="backBtn" href="index.html">← Volver</a>
+    <div style="font-weight:800;letter-spacing:.02em">Didactic-Eureka</div>
+    <a class="btn" href="index.html">Inicio</a>
+  </div>
+
+  <div class="wrap">
+    <div class="grid">
+      <section class="panel side">
+        <h2>Más artículos de la categoría</h2>
+        <div class="body">
+          <div class="meta" id="context"></div>
+          <div id="siblings"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2 id="title">Artículo</h2>
+        <div class="body">
+          <iframe id="viewer" title="PDF"></iframe>
+          <div class="meta" style="margin-top:10px" id="path"></div>
+        </div>
+      </section>
+    </div>
+  </div>
 
   <script>
-    const p = new URLSearchParams(location.search);
-    const file = p.get("file") || "";
-    const title = p.get("title") || "Artículo";
-    document.getElementById("t").textContent = title;
+    const qs = (k) => new URLSearchParams(location.search).get(k) || "";
+    const file = qs("file");
+    const cat  = qs("cat");
+    const sub  = qs("sub");
 
-    // “intento” de reducir UI de descarga (no es 100% bloqueable)
-    const src = file ? (file + "#toolbar=0&navpanes=0&view=FitH") : "";
-    document.getElementById("pdf").src = src;
+    function titleCase(s){
+      return (s||"")
+        .replace(/[:]/g,"")
+        .replace(/[_-]/g," ")
+        .replace(/\s+/g," ")
+        .trim()
+        .toLowerCase()
+        .replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    async function loadManifest(){
+      const r = await fetch("manifest.json", {cache:"no-store"});
+      if(!r.ok) throw new Error("manifest.json no disponible");
+      return r.json();
+    }
+
+    (async ()=>{
+      if(!file){
+        location.href = "index.html";
+        return;
+      }
+
+      // visor: sirve el PDF desde el mismo sitio (GitHub Pages)
+      document.getElementById("viewer").src = file;
+      document.getElementById("path").textContent = file;
+
+      // volver preservando contexto
+      const back = `index.html?cat=${encodeURIComponent(cat)}&sub=${encodeURIComponent(sub)}`;
+      document.getElementById("backBtn").href = back;
+
+      const m = await loadManifest();
+      const tree = (m.tree || {});
+      const items = (((tree[cat]||{})[sub]||[])).slice();
+
+      // título (mejor que el nombre de archivo)
+      const current = items.find(x => x.file === file);
+      document.getElementById("title").textContent = current ? current.title : "Artículo";
+      document.getElementById("context").innerHTML =
+        `<strong>${titleCase(cat)}</strong>${sub ? ` · <span style="opacity:.85">${titleCase(sub)}</span>` : ""}`;
+
+      const sib = document.getElementById("siblings");
+      sib.innerHTML = "";
+      items.forEach(it=>{
+        const a = document.createElement("a");
+        a.href = `article.html?file=${encodeURIComponent(it.file)}&cat=${encodeURIComponent(cat)}&sub=${encodeURIComponent(sub)}`;
+        a.textContent = "📄 " + it.title;
+        if(it.file === file) a.style.outline = "2px solid rgba(147,197,253,.55)";
+        sib.appendChild(a);
+      });
+    })().catch(err=>{
+      console.error(err);
+      document.getElementById("context").textContent =
+        "Error: no se pudo cargar manifest.json.";
+    });
   </script>
 </body>
 </html>
