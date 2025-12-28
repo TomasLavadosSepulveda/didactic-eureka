@@ -123,10 +123,10 @@ main {
 </section>
 
 <script>
-/* ========= NAVEGACIÓN ========= */
+/* ========= NAVEGACIÓN PDF-FIRST ========= */
 
-const OWNER = "TomasLavadosSepulveda";
-const REPO  = "didactic-eureka";
+const OWNER  = "TomasLavadosSepulveda";
+const REPO   = "didactic-eureka";
 const BRANCH = "main";
 
 const tabs = document.getElementById("tabs");
@@ -145,30 +145,59 @@ async function fetchDir(path="") {
   return r.ok ? r.json() : [];
 }
 
+/* ---- verifica si una carpeta contiene PDFs ---- */
+async function hasPDF(dir) {
+  const items = await fetchDir(dir);
+  return items.some(
+    f => f.type === "file" && f.name.toLowerCase().endsWith(".pdf")
+  );
+}
+
+/* ---- carga artículos PDF ---- */
 async function loadCategory(dir) {
   content.innerHTML = "";
   const items = await fetchDir(dir);
-  items.filter(f=>f.name.endsWith(".html")).forEach(f=>{
+
+  const pdfs = items.filter(
+    f => f.type === "file" && f.name.toLowerCase().endsWith(".pdf")
+  );
+
+  if (!pdfs.length) {
+    content.innerHTML = "<p>No hay artículos en esta categoría.</p>";
+    return;
+  }
+
+  pdfs.forEach(f => {
     const a = document.createElement("a");
-    a.href = f.path;
-    a.textContent = titleCase(f.name.replace(".html",""));
+    a.href = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${f.path}`;
+    a.target = "_blank";
+    a.rel = "noopener";
+    a.textContent = titleCase(f.name.replace(".pdf",""));
     content.appendChild(a);
   });
 }
 
+/* ---- inicialización ---- */
 (async ()=>{
-  const root = await fetchDir("didactic-eureka");
-  root.filter(d=>d.type==="dir").forEach(d=>{
-    const b = document.createElement("button");
-    b.textContent = titleCase(d.name);
-    b.onclick = ()=>loadCategory(`didactic-eureka/${d.name}`);
-    tabs.appendChild(b);
-  });
+  const root = await fetchDir();
+
+  for (const d of root) {
+    if (d.type !== "dir") continue;
+    if (d.name.startsWith(".")) continue;
+
+    if (await hasPDF(d.name)) {
+      const b = document.createElement("button");
+      b.textContent = titleCase(d.name);
+      b.onclick = ()=>loadCategory(d.name);
+      tabs.appendChild(b);
+    }
+  }
 })();
 </script>
 
 </body>
 </html>
+
 
 
 
