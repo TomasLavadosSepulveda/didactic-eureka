@@ -58,8 +58,139 @@
   </noscript>
 
   <script src="app.js"></script>
+</body><body>
+
+<nav id="tabs"></nav>
+
+<header id="hero">
+  <img src="assets/images/index.jpg" alt="Portada">
+  <div class="hero-text">
+    <h1>Didactic-Eureka</h1>
+    <p>La maravilla de aprender</p>
+  </div>
+</header>
+
+<main id="content"></main>
+
+<section id="video">
+  <!-- iframe youtube -->
+</section>
+
 </body>
-</html>
+<script>
+const OWNER = "TomasLavadosSepulveda";
+const REPO = "didactic-eureka";
+const BRANCH = "main";
+
+const tabs = document.getElementById("tabs");
+const content = document.getElementById("content");
+
+function titleCase(s) {
+  return s.replace(/[-_]/g," ")
+          .toLowerCase()
+          .replace(/\b\w/g,c=>c.toUpperCase());
+}
+
+async function fetchDir(path="") {
+  const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${BRANCH}`;
+  const r = await fetch(url);
+  if (!r.ok) return [];
+  return r.json();
+}
+
+async function showCategory(dir) {
+  content.innerHTML = "";
+  const files = await fetchDir(dir);
+
+  files
+    .filter(f => f.name.endsWith(".html"))
+    .forEach(f => {
+      const a = document.createElement("a");
+      a.href = f.path;
+      a.textContent = titleCase(f.name.replace(".html",""));
+      a.className = "article-link";
+      a.target = "_self";
+      content.appendChild(a);
+    });
+}
+
+(async () => {
+  const root = await fetchDir("");
+  root
+    .filter(d => d.type === "dir" && !d.name.startsWith("."))
+    .forEach(d => {
+      const b = document.createElement("button");
+      b.textContent = titleCase(d.name);
+      b.onclick = () => showCategory(d.name);
+      tabs.appendChild(b);
+    });
+})();
+</script>
+  </html>
+<section id="video">
+  <h2>Video</h2>
+  <div class="video-wrap">
+    <iframe
+      src="https://www.youtube.com/embed/Qz1BU-FPkU8?start=21"
+      allowfullscreen>
+    </iframe>
+  </div>
+</section>
+#hero {
+  position: relative;
+  text-align: center;
+}
+#hero img {
+  width: 100%;
+  max-height: 70vh;
+  object-fit: cover;
+}
+.hero-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+.hero-text h1 {
+  font-size: 3rem;
+}
+.hero-text p {
+  font-size: 1.2rem;
+  opacity: .85;
+}
+.article-link {
+  display: block;
+  margin: 12px 0;
+  font-size: 1.1rem;
+}
+#hero {
+  position: relative;
+  text-align: center;
+}
+#hero img {
+  width: 100%;
+  max-height: 70vh;
+  object-fit: cover;
+}
+.hero-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+.hero-text h1 {
+  font-size: 3rem;
+}
+.hero-text p {
+  font-size: 1.2rem;
+  opacity: .85;
+}
+.article-link {
+  display: block;
+  margin: 12px 0;
+  font-size: 1.1rem;
+}
+
 
 
 
