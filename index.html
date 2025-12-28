@@ -1,196 +1,174 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Didactic-Eureka</title>
-  <meta name="description" content="Didactic-Eureka: plataforma bifásica de conservación informativa y lectura estructurada."/>
-  <link rel="stylesheet" href="style.css"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Didactic-Eureka</title>
+
+<style>
+/* ========= BASE ========= */
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+  background: radial-gradient(circle at top, #0a2540, #020617);
+  color: #e5e7eb;
+}
+
+/* ========= PORTADA ========= */
+.hero {
+  position: relative;
+  height: 70vh;
+  background: url("assets/images/index.jpg") center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(2,6,23,0.65);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+  margin: 0;
+}
+
+.hero p {
+  font-size: 1.3rem;
+  opacity: 0.85;
+}
+
+/* ========= NAV ========= */
+nav {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  padding: 16px;
+  background: #020617;
+  border-bottom: 1px solid #1e3a8a;
+}
+
+nav button {
+  background: none;
+  border: 1px solid #1e3a8a;
+  color: #e5e7eb;
+  padding: 8px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+/* ========= CONTENIDO ========= */
+main {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+.article-list a {
+  display: block;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  background: linear-gradient(135deg,#0a2540,#020617);
+  text-decoration: none;
+  color: #e5e7eb;
+  border: 1px solid #1e3a8a;
+}
+
+/* ========= VIDEO ========= */
+.video {
+  max-width: 900px;
+  margin: 60px auto;
+}
+.video iframe {
+  width: 100%;
+  height: 500px;
+  border-radius: 16px;
+  border: none;
+}
+</style>
 </head>
 
 <body>
-  <!-- NAV PRINCIPAL -->
-  <header class="topbar">
-    <nav class="tabs" id="tabs"></nav>
-  </header>
 
-  <!-- PORTADA -->
-  <section class="hero" id="inicio">
-    <div class="hero-media">
-      <img id="cover" src="index.png" alt="Portada Didactic-Eureka" onerror="this.src='assets/images/index.jpg';" />
-      <div class="hero-overlay">
-        <h1 class="hero-title">Didactic-Eureka</h1>
-        <p class="hero-sub">La maravilla de aprender</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- CONTENIDO -->
-  <main class="container">
-    <section class="panel">
-      <h2 class="panel-title" id="categoria-titulo">Categorías</h2>
-
-      <!-- Subcategorías (aparecen “en el lugar” al hover/click de la categoría) -->
-      <div class="subtabs" id="subtabs"></div>
-
-      <!-- Artículos (PDFs) -->
-      <div class="articles" id="articles"></div>
-    </section>
-
-    <!-- VIDEO ABAJO -->
-    <section class="panel" id="video">
-      <h2 class="panel-title">Video</h2>
-      <div class="video">
-        <iframe
-          src="https://www.youtube.com/embed/Qz1BU-FPkU8?start=21"
-          title="Didactic-Eureka Video"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen></iframe>
-      </div>
-    </section>
-  </main>
-
-  <noscript>
-    <section class="container panel">
-      <h2 class="panel-title">Modo lectura básica</h2>
-      <p>Este sitio funciona mejor con JavaScript. Aun así, los PDFs permanecen accesibles desde el repositorio.</p>
-    </section>
-  </noscript>
-
-  <script src="app.js"></script>
-</body><body>
-
-<nav id="tabs"></nav>
-
-<header id="hero">
-  <img src="assets/images/index.jpg" alt="Portada">
-  <div class="hero-text">
+<section class="hero">
+  <div class="hero-content">
     <h1>Didactic-Eureka</h1>
     <p>La maravilla de aprender</p>
   </div>
-</header>
-
-<main id="content"></main>
-
-<section id="video">
-  <!-- iframe youtube -->
 </section>
 
-</body>
+<nav id="tabs"></nav>
+
+<main>
+  <div id="content" class="article-list">
+    <p>Selecciona una categoría.</p>
+  </div>
+</main>
+
+<section class="video">
+  <iframe
+    src="https://www.youtube.com/embed/Qz1BU-FPkU8?start=21"
+    allowfullscreen>
+  </iframe>
+</section>
+
 <script>
+/* ========= NAVEGACIÓN ========= */
+
 const OWNER = "TomasLavadosSepulveda";
-const REPO = "didactic-eureka";
+const REPO  = "didactic-eureka";
 const BRANCH = "main";
 
 const tabs = document.getElementById("tabs");
 const content = document.getElementById("content");
 
-function titleCase(s) {
-  return s.replace(/[-_]/g," ")
-          .toLowerCase()
-          .replace(/\b\w/g,c=>c.toUpperCase());
+function titleCase(str) {
+  return str.replace(/[-_]/g," ")
+            .toLowerCase()
+            .replace(/\b\w/g,c=>c.toUpperCase());
 }
 
 async function fetchDir(path="") {
-  const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${BRANCH}`;
-  const r = await fetch(url);
-  if (!r.ok) return [];
-  return r.json();
+  const r = await fetch(
+    `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${BRANCH}`
+  );
+  return r.ok ? r.json() : [];
 }
 
-async function showCategory(dir) {
+async function loadCategory(dir) {
   content.innerHTML = "";
-  const files = await fetchDir(dir);
-
-  files
-    .filter(f => f.name.endsWith(".html"))
-    .forEach(f => {
-      const a = document.createElement("a");
-      a.href = f.path;
-      a.textContent = titleCase(f.name.replace(".html",""));
-      a.className = "article-link";
-      a.target = "_self";
-      content.appendChild(a);
-    });
+  const items = await fetchDir(dir);
+  items.filter(f=>f.name.endsWith(".html")).forEach(f=>{
+    const a = document.createElement("a");
+    a.href = f.path;
+    a.textContent = titleCase(f.name.replace(".html",""));
+    content.appendChild(a);
+  });
 }
 
-(async () => {
-  const root = await fetchDir("");
-  root
-    .filter(d => d.type === "dir" && !d.name.startsWith("."))
-    .forEach(d => {
-      const b = document.createElement("button");
-      b.textContent = titleCase(d.name);
-      b.onclick = () => showCategory(d.name);
-      tabs.appendChild(b);
-    });
+(async ()=>{
+  const root = await fetchDir("didactic-eureka");
+  root.filter(d=>d.type==="dir").forEach(d=>{
+    const b = document.createElement("button");
+    b.textContent = titleCase(d.name);
+    b.onclick = ()=>loadCategory(`didactic-eureka/${d.name}`);
+    tabs.appendChild(b);
+  });
 })();
 </script>
-  </html>
-<section id="video">
-  <h2>Video</h2>
-  <div class="video-wrap">
-    <iframe
-      src="https://www.youtube.com/embed/Qz1BU-FPkU8?start=21"
-      allowfullscreen>
-    </iframe>
-  </div>
-</section>
-#hero {
-  position: relative;
-  text-align: center;
-}
-#hero img {
-  width: 100%;
-  max-height: 70vh;
-  object-fit: cover;
-}
-.hero-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-}
-.hero-text h1 {
-  font-size: 3rem;
-}
-.hero-text p {
-  font-size: 1.2rem;
-  opacity: .85;
-}
-.article-link {
-  display: block;
-  margin: 12px 0;
-  font-size: 1.1rem;
-}
-#hero {
-  position: relative;
-  text-align: center;
-}
-#hero img {
-  width: 100%;
-  max-height: 70vh;
-  object-fit: cover;
-}
-.hero-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-}
-.hero-text h1 {
-  font-size: 3rem;
-}
-.hero-text p {
-  font-size: 1.2rem;
-  opacity: .85;
-}
-.article-link {
-  display: block;
-  margin: 12px 0;
-  font-size: 1.1rem;
-}
 
+</body>
+</html>
 
 
 
