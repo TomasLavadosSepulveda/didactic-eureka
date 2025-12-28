@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Didactic-Eureka</title>
 
+<meta name="description"
+      content="Didactic-Eureka · Plataforma bifásica de conservación informativa y lectura estructurada">
+
 <style>
-/* ===== RESET ===== */
+/* ===================== RESET ===================== */
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -16,16 +19,14 @@ body {
   overflow-x: hidden;
 }
 
-/* ===== TABS ===== */
+/* ===================== NAV TABS ===================== */
 #tabs {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0; left: 0; right: 0;
   z-index: 1000;
   display: flex;
-  gap: 12px;
   justify-content: center;
+  gap: 16px;
   padding: 16px;
   background: linear-gradient(90deg, #020617, #0a2540, #020617);
   border-bottom: 1px solid #1e3a8a;
@@ -35,24 +36,49 @@ body {
   background: #020617;
   color: #e5e7eb;
   border: 1px solid #1e3a8a;
-  padding: 8px 16px;
+  padding: 12px 26px;
   border-radius: 999px;
   cursor: pointer;
-  font-weight: 500;
+  font-size: 1.05rem;
+  letter-spacing: .03em;
 }
 
 #tabs button.active {
   background: #1e3a8a;
 }
 
-/* ===== MAIN ===== */
+/* ===================== MAIN ===================== */
 #app {
-  padding-top: 100px;
+  padding-top: 120px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-/* ===== MOSAIC / SPIRAL ===== */
+/* ===================== HERO ===================== */
+#hero {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+#hero img {
+  max-width: 900px;
+  width: 100%;
+  border-radius: 18px;
+  margin: 0 auto 24px;
+  display: block;
+}
+
+#hero h1 {
+  font-size: 3rem;
+  margin: 0;
+}
+
+#hero p {
+  opacity: .75;
+  font-size: 1.1rem;
+}
+
+/* ===================== SPIRAL ===================== */
 #list {
   position: relative;
   min-height: 70vh;
@@ -74,1102 +100,114 @@ body {
 .card:hover {
   box-shadow: 0 20px 50px rgba(0,0,0,.6);
 }
-
-/* ===== VIEWER ===== */
-#viewer {
-  width: 100%;
-  height: 80vh;
-  border: none;
-  margin-top: 40px;
-  border-radius: 12px;
-  background: #000;
-}
 </style>
 </head>
-  <link rel="stylesheet" href="css/nav.css">
-
-<script src="patches/patch-eureka.js"></script>
 
 <body>
-<nav id="eureka-nav"></nav>
 
-<main id="eureka-main"></main>
+<nav id="tabs"></nav>
 
-<div id="tabs"></div>
+<main id="app">
 
-<div id="app">
-  <div id="list"></div>
-  <iframe id="viewer"></iframe>
-</div>
+  <section id="hero">
+    <img src="assets/images/index.jpg" alt="Didactic-Eureka">
+    <h1>Didactic-Eureka</h1>
+    <p>Plataforma bifásica de lectura eidética y conservación informativa</p>
+  </section>
+
+  <section id="list"></section>
+
+</main>
 
 <script>
 /* ======================================================
-   DIDACTIC-EUREKA · AUTO-MANIFESTACIÓN FINAL
+   DIDACTIC-EUREKA · NÚCLEO FUNCIONAL
    ====================================================== */
 
 const OWNER  = "TomasLavadosSepulveda";
 const REPO   = "didactic-eureka";
 const BRANCH = "main";
 
-const tabs   = document.getElementById("tabs");
-const list   = document.getElementById("list");
-const viewer = document.getElementById("viewer");
+const tabs = document.getElementById("tabs");
+const list = document.getElementById("list");
 
-/* ---------- Helpers ---------- */
-function titleCase(str) {
-  return str
-    .replace(/[-_]/g, " ")
-    .toLowerCase()
-    .replace(/\b\w/g, c => c.toUpperCase());
-}
+/* ---------- Utils ---------- */
+const toTitle = s =>
+  s.replace(/[:]/g,"")
+   .replace(/[-_]/g," ")
+   .toLowerCase()
+   .replace(/\b\w/g,c=>c.toUpperCase());
 
 async function fetchDir(path="") {
   const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${BRANCH}`;
-  const res = await fetch(url);
-  if (!res.ok) return [];
-  return res.json();
+  const r = await fetch(url);
+  if (!r.ok) return [];
+  return r.json();
 }
 
-/* ---------- Spiral Layout ---------- */
-function applySpiral() {
-  const cards = Array.from(list.children);
+/* ---------- Spiral ---------- */
+function spiralLayout() {
+  const cards = [...list.children];
   const cx = list.clientWidth / 2;
   const cy = list.clientHeight / 2;
-  const a = 8;
-  const b = 14;
+  const a = 8, b = 14;
 
-  cards.forEach((el, i) => {
+  cards.forEach((el,i)=>{
     const t = i * 0.55;
     const r = a + b * t;
-    const x = cx + r * Math.cos(t);
-    const y = cy + r * Math.sin(t);
-
-    el.style.left = x + "px";
-    el.style.top  = y + "px";
-    el.style.transform = "translate(-50%, -50%)";
+    el.style.left = (cx + r*Math.cos(t))+"px";
+    el.style.top  = (cy + r*Math.sin(t))+"px";
+    el.style.transform = "translate(-50%,-50%)";
   });
 }
 
 /* ---------- Render ---------- */
 async function showCategory(dir, btn) {
-  document.querySelectorAll("#tabs button").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
 
   list.innerHTML = "";
-  viewer.src = "";
 
-  const files = await fetchDir(dir);
+  const items = await fetchDir(`didactic-eureka/${dir}`);
 
-  const docs = files.filter(f =>
-    f.type === "file" && /\.(pdf|html)$/i.test(f.name)
-  );
+  items
+    .filter(f=>f.type==="file" && f.name.endsWith(".html"))
+    .forEach((f,i)=>{
+      const card = document.createElement("div");
+      card.className = "card";
+      card.textContent = toTitle(f.name.replace(".html",""));
+      card.onclick = ()=>location.href = f.path;
+      list.appendChild(card);
+    });
 
-  docs.forEach((f, i) => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.textContent = titleCase(f.name.replace(/\.(pdf|html)$/i,""));
-
-    const raw = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${f.path}`;
-    card.onclick = () => viewer.src = raw;
-
-    list.appendChild(card);
-  });
-
-  setTimeout(applySpiral, 50);
+  setTimeout(spiralLayout,50);
 }
 
 /* ---------- Init ---------- */
-async function init() {
-  const root = await fetchDir();
+(async ()=>{
+  const root = await fetchDir("didactic-eureka");
+  root
+    .filter(d=>d.type==="dir" && !d.name.startsWith("."))
+    .forEach((d,i)=>{
+      const b = document.createElement("button");
+      b.textContent = toTitle(d.name);
+      b.onclick = ()=>showCategory(d.name,b);
+      tabs.appendChild(b);
+      if(i===0) showCategory(d.name,b);
+    });
+})();
 
-  const dirs = root.filter(d => d.type === "dir" && !d.name.startsWith("."));
-
-  if (!dirs.length) return;
-
-  dirs.forEach((d, i) => {
-    const b = document.createElement("button");
-    b.textContent = titleCase(d.name);
-    b.onclick = () => showCategory(d.path, b);
-    tabs.appendChild(b);
-    if (i === 0) showCategory(d.path, b);
-  });
-}
-
-window.addEventListener("resize", () => setTimeout(applySpiral, 50));
-
-init();
+window.addEventListener("resize",()=>setTimeout(spiralLayout,50));
 </script>
-<section id="intro-estable">
-  <h1>Didactic-Eureka</h1>
-  <p>
-    Plataforma didáctica bifásica orientada a la conservación informativa,
-    navegación no destructiva y lectura progresiva del conocimiento.
+
+<noscript>
+  <p style="text-align:center;opacity:.6">
+    Este sitio funciona mejor con JavaScript.
   </p>
-</section>
-
-</body>
-  <nav id="nav-orientativa">
-  <a href="#intro-estable">Inicio</a>
-  <a href="#categorias">Categorías</a>
-  <a href="#articulos">Artículos</a>
-</nav>
-
-  <noscript>
-  <section>
-    <h2>Modo lectura básica</h2>
-    <p>
-      Este sitio funciona mejor con JavaScript, pero su contenido
-      permanece accesible de forma progresiva.
-    </p>
-  </section>
 </noscript>
 
+</body>
 </html>
-<script>
-/* =====================================================
-   PATCH IRREVERSIBLE · DIDACTIC-EUREKA
-   El index instaura — el patch corrige
-   ===================================================== */
 
-(function () {
-
-  /* ---------- 1. TÍTULO VISIBLE (solo si no existe) ---------- */
-  if (!document.getElementById("site-title")) {
-    const app = document.getElementById("app");
-    if (app) {
-      const header = document.createElement("header");
-      header.id = "site-title";
-      header.style.textAlign = "center";
-      header.style.padding = "32px 16px";
-      header.innerHTML = `
-        <h1 style="font-size:3rem;margin:0;">Didactic-Eureka</h1>
-        <p style="opacity:.75;font-size:1.1rem;">
-          Plataforma de auto-lectura eidética
-        </p>
-      `;
-      app.prepend(header);
-    }
-  }
-
-  /* ---------- 2. MAYÚSCULA INICIAL EN PESTAÑAS ---------- */
-  document.querySelectorAll("#tabs button").forEach(b => {
-    b.textContent = b.textContent
-      .toLowerCase()
-      .replace(/\b\w/g, c => c.toUpperCase());
-  });
-
-  /* ---------- 3. LECTOR DEFENSIVO DE ARTÍCULOS ---------- */
-  const viewer = document.getElementById("viewer");
-  if (viewer) {
-    document.querySelectorAll(".card").forEach(card => {
-      if (card.dataset && card.dataset.file) return; // ya parcheado
-
-      card.addEventListener("click", () => {
-        const text = card.textContent || "";
-        const match = text.match(/.+/);
-        if (!match) return;
-      });
-    });
-  }
-
-  /* ---------- 4. VISOR DE IMÁGENES (si aparecen) ---------- */
-  document.querySelectorAll("img").forEach(img => {
-    img.onerror = () => img.remove();
-  });
-
-  /* ---------- 5. CONTADOR DE VISITAS (local, no invasivo) ---------- */
-  const key = "didactic_eureka_visits";
-  let visits = Number(localStorage.getItem(key) || 0) + 1;
-  localStorage.setItem(key, visits);
-
-  if (!document.getElementById("visit-counter")) {
-    const counter = document.createElement("div");
-    counter.id = "visit-counter";
-    counter.style.position = "fixed";
-    counter.style.bottom = "12px";
-    counter.style.right = "12px";
-    counter.style.fontSize = "0.8rem";
-    counter.style.opacity = "0.6";
-    counter.textContent = `Visitas: ${visits}`;
-    document.body.appendChild(counter);
-  }
-
-  /* ---------- 6. BANNER DE PUBLICIDAD ---------- */
-  if (!document.getElementById("ad-banner")) {
-    const banner = document.createElement("div");
-    banner.id = "ad-banner";
-    banner.style.position = "fixed";
-    banner.style.left = "0";
-    banner.style.right = "0";
-    banner.style.bottom = "0";
-    banner.style.padding = "10px";
-    banner.style.textAlign = "center";
-    banner.style.fontSize = "0.9rem";
-    banner.style.background =
-      "linear-gradient(90deg,#020617,#0a2540,#020617)";
-    banner.innerHTML = `
-      <strong>Publicidad</strong> · Espacio disponible
-      <a href="#" style="color:#60a5fa;margin-left:8px;">
-        Contacto
-      </a>
-    `;
-    document.body.appendChild(banner);
-  }
-
-  /* ---------- 7. ELIMINAR MENSAJES “ERROR” VISIBLES ---------- */
-  document.querySelectorAll("body *").forEach(el => {
-    if (
-      el.children.length === 0 &&
-      /error/i.test(el.textContent || "")
-    ) {
-      el.remove();
-    }
-  });
-
-})();
-</script>
-<script>
-/* =====================================================
-   PATCH 2 · NAVEGACIÓN Y SUB-CATEGORÍAS
-   (hover + páginas HTML por artículo)
-   ===================================================== */
-
-(function () {
-
-  /* ---------- Utilidades ---------- */
-  function toTitleCase(str) {
-    return str
-      .replace(/[-_]/g, " ")
-      .toLowerCase()
-      .replace(/\b\w/g, c => c.toUpperCase());
-  }
-
-  function sanitizeCategory(name) {
-    return name.replace(/:/g, "").trim();
-  }
-
-  function removeAuthorName(str) {
-    return str.replace(/Tom[aá]s\s+Lavados[^<]*/gi, "").trim();
-  }
-
-  /* ---------- 1. Limpieza visual de categorías ---------- */
-  document.querySelectorAll("#tabs button").forEach(btn => {
-    btn.textContent = sanitizeCategory(btn.textContent);
-    btn.textContent = toTitleCase(btn.textContent);
-  });
-
-  /* ---------- 2. Contenedor de sub-categorías ---------- */
-  let subTabs = document.getElementById("sub-tabs");
-  if (!subTabs) {
-    subTabs = document.createElement("div");
-    subTabs.id = "sub-tabs";
-    subTabs.style.position = "fixed";
-    subTabs.style.top = "72px";
-    subTabs.style.left = "0";
-    subTabs.style.right = "0";
-    subTabs.style.display = "flex";
-    subTabs.style.justifyContent = "center";
-    subTabs.style.gap = "10px";
-    subTabs.style.padding = "10px";
-    subTabs.style.background =
-      "linear-gradient(90deg,#020617,#020617,#0a2540)";
-    subTabs.style.zIndex = "900";
-    subTabs.style.opacity = "0";
-    subTabs.style.pointerEvents = "none";
-    document.body.appendChild(subTabs);
-  }
-
-  function showSubTabs(items) {
-    subTabs.innerHTML = "";
-    items.forEach(item => {
-      const b = document.createElement("button");
-      b.textContent = toTitleCase(removeAuthorName(item.title || item.name));
-      b.style.padding = "6px 14px";
-      b.style.border = "1px solid #1e3a8a";
-      b.style.background = "#020617";
-      b.style.color = "#e5e7eb";
-      b.style.borderRadius = "999px";
-      b.style.cursor = "pointer";
-      b.onclick = () => {
-        window.location.href = item.page;
-      };
-      subTabs.appendChild(b);
-    });
-    subTabs.style.opacity = "1";
-    subTabs.style.pointerEvents = "auto";
-  }
-
-  function hideSubTabs() {
-    subTabs.style.opacity = "0";
-    subTabs.style.pointerEvents = "none";
-  }
-
-  /* ---------- 3. Hover sobre categorías ---------- */
-  document.querySelectorAll("#tabs button").forEach(btn => {
-    btn.addEventListener("mouseenter", () => {
-      const category = btn.textContent.toLowerCase();
-      const cards = Array.from(document.querySelectorAll(".card"));
-
-      const items = cards.map(card => {
-        const title = toTitleCase(removeAuthorName(card.textContent || ""));
-        const slug = title
-          .toLowerCase()
-          .replace(/\s+/g, "-")
-          .replace(/[^\w-]/g, "");
-
-        return {
-          title,
-          page: `articles/${slug}.html`
-        };
-      });
-
-      if (items.length) showSubTabs(items);
-    });
-
-    btn.addEventListener("mouseleave", () => {
-      setTimeout(hideSubTabs, 400);
-    });
-  });
-
-  subTabs.addEventListener("mouseleave", hideSubTabs);
-
-  /* ---------- 4. Forzar navegación a páginas HTML ---------- */
-  document.querySelectorAll(".card").forEach(card => {
-    const title = toTitleCase(removeAuthorName(card.textContent || ""));
-    const slug = title
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^\w-]/g, "");
-
-    card.textContent = title;
-    card.onclick = () => {
-      window.location.href = `articles/${slug}.html`;
-    };
-  });
-
-})();
-</script>
-<!-- ===================================================
-     EXTENSION LOADER · IRREVERSIBLE
-     Permite parches JS y CSS externos
-     =================================================== -->
-
-<!-- CSS de ajuste fino (opcional, no rompe si no existe) -->
-<link rel="stylesheet" href="css/fine-tuning.css" />
-
-<script>
-/* =====================================================
-   PATCH LOADER — DIDACTIC-EUREKA
-   ===================================================== */
-
-(function () {
-  const PATCHES = [
-    "patches/ux-hover.js",
-    "patches/articles-pages.js",
-    "patches/analytics.js"
-  ];
-
-  PATCHES.forEach(src => {
-    const s = document.createElement("script");
-    s.src = src;
-    s.defer = true;
-    s.onerror = () => {
-      /* silencioso: un patch puede no existir */
-    };
-    document.body.appendChild(s);
-  });
-})();
-</script>
-<script>
-/* =========================================================
-   PATCH · NAVEGACIÓN + LEGIBILIDAD + AUTO-IMAGEN
-   Respeta: index nuclear + irreversibilidad
-   ========================================================= */
-
-(function () {
-
-  /* =========================
-     UTILIDADES
-     ========================= */
-  const toTitleCase = s =>
-    s.replace(/[:]/g, "")
-     .replace(/[-_]/g, " ")
-     .toLowerCase()
-     .replace(/\b\w/g, c => c.toUpperCase());
-
-  const OWNER  = window.OWNER  || "TomasLavadosSepulveda";
-  const REPO   = window.REPO   || "didactic-eureka";
-  const BRANCH = window.BRANCH || "main";
-
-  /* =========================
-     1) PESTAÑAS GRANDES, LIMPIAS
-     ========================= */
-  const tabs = document.getElementById("tabs");
-  if (tabs) {
-    tabs.style.gap = "18px";
-    tabs.querySelectorAll("button").forEach(b => {
-      b.textContent = toTitleCase(b.textContent);
-      b.style.fontSize = "1.2rem";        // 2x más grandes
-      b.style.padding = "14px 26px";      // 2x área clic
-      b.style.borderRadius = "999px";
-      b.style.letterSpacing = ".03em";
-    });
-  }
-
-  /* =========================
-     2) FILTRAR PESTAÑAS
-        (solo carpetas con artículos)
-     ========================= */
-  async function hasArticles(dir) {
-    try {
-      const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${dir}?ref=${BRANCH}`;
-      const r = await fetch(url);
-      if (!r.ok) return false;
-      const items = await r.json();
-      return items.some(f => f.type === "file" && /\.(pdf|html|md)$/i.test(f.name));
-    } catch { return false; }
-  }
-
-  (async () => {
-    if (!tabs) return;
-    const buttons = Array.from(tabs.querySelectorAll("button"));
-    for (const b of buttons) {
-      const dir = b.textContent.toLowerCase().replace(/\s+/g, "-");
-      const ok = await hasArticles(dir);
-      if (!ok) b.style.display = "none";
-    }
-  })();
-
-  /* =========================
-     3) SUB-PESTAÑAS AL HOVER
-     ========================= */
-  let sub = document.getElementById("sub-tabs");
-  if (!sub) {
-    sub = document.createElement("div");
-    sub.id = "sub-tabs";
-    sub.style.position = "fixed";
-    sub.style.top = "84px";
-    sub.style.left = "0";
-    sub.style.right = "0";
-    sub.style.display = "flex";
-    sub.style.justifyContent = "center";
-    sub.style.gap = "12px";
-    sub.style.padding = "12px";
-    sub.style.background = "linear-gradient(90deg,#020617,#0a2540,#020617)";
-    sub.style.opacity = "0";
-    sub.style.pointerEvents = "none";
-    sub.style.zIndex = "950";
-    document.body.appendChild(sub);
-  }
-
-  async function loadSubTabs(dir) {
-    sub.innerHTML = "";
-    const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${dir}?ref=${BRANCH}`;
-    const r = await fetch(url);
-    if (!r.ok) return;
-    const items = await r.json();
-    items
-      .filter(f => f.type === "file" && /\.(html|md)$/i.test(f.name))
-      .forEach(f => {
-        const a = document.createElement("button");
-        a.textContent = toTitleCase(f.name.replace(/\.(html|md)$/i,""));
-        a.style.padding = "8px 18px";
-        a.style.borderRadius = "999px";
-        a.onclick = () => window.location.href =
-          `articles/${f.name.replace(/\.(md)$/i,".html")}`;
-        sub.appendChild(a);
-      });
-    sub.style.opacity = "1";
-    sub.style.pointerEvents = "auto";
-  }
-
-  if (tabs) {
-    tabs.querySelectorAll("button").forEach(b => {
-      const dir = b.textContent.toLowerCase().replace(/\s+/g, "-");
-      b.addEventListener("mouseenter", () => loadSubTabs(dir));
-      b.addEventListener("mouseleave", () => setTimeout(() => {
-        sub.style.opacity = "0"; sub.style.pointerEvents = "none";
-      }, 300));
-    });
-  }
-
-  /* =========================
-     4) LECTURA COMO HTML
-     ========================= */
-  const viewer = document.getElementById("viewer");
-  if (viewer) {
-    viewer.style.display = "block";
-    viewer.style.margin = "40px auto";
-    viewer.style.maxWidth = "900px";   // CENTRALIDAD
-    viewer.style.background = "#fff";
-  }
-
-  /* =========================
-     5) IMAGEN MADRE / PORTADA
-        (auto-descubrimiento)
-     ========================= */
-  (async () => {
-    const app = document.getElementById("app");
-    if (!app) return;
-
-    const coverNames = ["cover.jpg","cover.png","portada.jpg","portada.png","index.jpg","index.png"];
-    for (const name of coverNames) {
-      const url = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${name}`;
-      const r = await fetch(url, { method: "HEAD" });
-      if (r.ok) {
-        const img = document.createElement("img");
-        img.src = url;
-        img.alt = "Portada";
-        img.style.display = "block";
-        img.style.maxWidth = "900px";   // CENTRALIDAD
-        img.style.margin = "40px auto";
-        img.style.borderRadius = "18px";
-        app.prepend(img);
-        break;
-      }
-    }
-  })();
-
-  /* =========================
-     6) PRINCIPIO DE LEGIBILIDAD
-        (centralidad del texto)
-     ========================= */
-  const style = document.createElement("style");
-  style.textContent = `
-    #app, #viewer {
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .card, article, iframe {
-      max-width: 900px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    article, iframe {
-      background: #ffffff;
-      color: #111827;
-      padding: 32px;
-      border-radius: 16px;
-      line-height: 1.75;
-    }
-  `;
-  document.head.appendChild(style);
-<script>
-/* =========================================================
-   PATCH · NAVEGACIÓN + LEGIBILIDAD + AUTO-IMAGEN
-   Respeta: index nuclear + irreversibilidad
-   ========================================================= */
-
-(function () {
-
-  /* =========================
-     UTILIDADES
-     ========================= */
-  const toTitleCase = s =>
-    s.replace(/[:]/g, "")
-     .replace(/[-_]/g, " ")
-     .toLowerCase()
-     .replace(/\b\w/g, c => c.toUpperCase());
-
-  const OWNER  = window.OWNER  || "TomasLavadosSepulveda";
-  const REPO   = window.REPO   || "didactic-eureka";
-  const BRANCH = window.BRANCH || "main";
-
-  /* =========================
-     1) PESTAÑAS GRANDES, LIMPIAS
-     ========================= */
-  const tabs = document.getElementById("tabs");
-  if (tabs) {
-    tabs.style.gap = "18px";
-    tabs.querySelectorAll("button").forEach(b => {
-      b.textContent = toTitleCase(b.textContent);
-      b.style.fontSize = "1.2rem";        // 2x más grandes
-      b.style.padding = "14px 26px";      // 2x área clic
-      b.style.borderRadius = "999px";
-      b.style.letterSpacing = ".03em";
-    });
-  }
-
-  /* =========================
-     2) FILTRAR PESTAÑAS
-        (solo carpetas con artículos)
-     ========================= */
-  async function hasArticles(dir) {
-    try {
-      const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${dir}?ref=${BRANCH}`;
-      const r = await fetch(url);
-      if (!r.ok) return false;
-      const items = await r.json();
-      return items.some(f => f.type === "file" && /\.(pdf|html|md)$/i.test(f.name));
-    } catch { return false; }
-  }
-
-  (async () => {
-    if (!tabs) return;
-    const buttons = Array.from(tabs.querySelectorAll("button"));
-    for (const b of buttons) {
-      const dir = b.textContent.toLowerCase().replace(/\s+/g, "-");
-      const ok = await hasArticles(dir);
-      if (!ok) b.style.display = "none";
-    }
-  })();
-
-  /* =========================
-     3) SUB-PESTAÑAS AL HOVER
-     ========================= */
-  let sub = document.getElementById("sub-tabs");
-  if (!sub) {
-    sub = document.createElement("div");
-    sub.id = "sub-tabs";
-    sub.style.position = "fixed";
-    sub.style.top = "84px";
-    sub.style.left = "0";
-    sub.style.right = "0";
-    sub.style.display = "flex";
-    sub.style.justifyContent = "center";
-    sub.style.gap = "12px";
-    sub.style.padding = "12px";
-    sub.style.background = "linear-gradient(90deg,#020617,#0a2540,#020617)";
-    sub.style.opacity = "0";
-    sub.style.pointerEvents = "none";
-    sub.style.zIndex = "950";
-    document.body.appendChild(sub);
-  }
-
-  async function loadSubTabs(dir) {
-    sub.innerHTML = "";
-    const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${dir}?ref=${BRANCH}`;
-    const r = await fetch(url);
-    if (!r.ok) return;
-    const items = await r.json();
-    items
-      .filter(f => f.type === "file" && /\.(html|md)$/i.test(f.name))
-      .forEach(f => {
-        const a = document.createElement("button");
-        a.textContent = toTitleCase(f.name.replace(/\.(html|md)$/i,""));
-        a.style.padding = "8px 18px";
-        a.style.borderRadius = "999px";
-        a.onclick = () => window.location.href =
-          `articles/${f.name.replace(/\.(md)$/i,".html")}`;
-        sub.appendChild(a);
-      });
-    sub.style.opacity = "1";
-    sub.style.pointerEvents = "auto";
-  }
-
-  if (tabs) {
-    tabs.querySelectorAll("button").forEach(b => {
-      const dir = b.textContent.toLowerCase().replace(/\s+/g, "-");
-      b.addEventListener("mouseenter", () => loadSubTabs(dir));
-      b.addEventListener("mouseleave", () => setTimeout(() => {
-        sub.style.opacity = "0"; sub.style.pointerEvents = "none";
-      }, 300));
-    });
-  }
-
-  /* =========================
-     4) LECTURA COMO HTML
-     ========================= */
-  const viewer = document.getElementById("viewer");
-  if (viewer) {
-    viewer.style.display = "block";
-    viewer.style.margin = "40px auto";
-    viewer.style.maxWidth = "900px";   // CENTRALIDAD
-    viewer.style.background = "#fff";
-  }
-
-  /* =========================
-     5) IMAGEN MADRE / PORTADA
-        (auto-descubrimiento)
-     ========================= */
-  (async () => {
-    const app = document.getElementById("app");
-    if (!app) return;
-
-    const coverNames = ["cover.jpg","cover.png","portada.jpg","portada.png","index.jpg","index.png"];
-    for (const name of coverNames) {
-      const url = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${name}`;
-      const r = await fetch(url, { method: "HEAD" });
-      if (r.ok) {
-        const img = document.createElement("img");
-        img.src = url;
-        img.alt = "Portada";
-        img.style.display = "block";
-        img.style.maxWidth = "900px";   // CENTRALIDAD
-        img.style.margin = "40px auto";
-        img.style.borderRadius = "18px";
-        app.prepend(img);
-        break;
-      }
-    }
-  })();
-
-  /* =========================
-     6) PRINCIPIO DE LEGIBILIDAD
-        (centralidad del texto)
-     ========================= */
-  const style = document.createElement("style");
-  style.textContent = `
-    #app, #viewer {
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .card, article, iframe {
-      max-width: 900px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    article, iframe {
-      background: #ffffff;
-      color: #111827;
-      padding: 32px;
-      border-radius: 16px;
-      line-height: 1.75;
-    }
-  `;
-  document.head.appendChild(style);
-
-})();
-</script>
-<script>
-/* =========================================================
-   PATCH · ÁRBOL CENTRAL + TÍTULOS + LEGIBILIDAD
-   Modular · Aditivo · Irreversible
-   ========================================================= */
-(function () {
-
-  /* ---------- Utilidades ---------- */
-  const toTitleCase = (s) =>
-    s.replace(/[:]/g, "")
-     .replace(/[-_]/g, " ")
-     .toLowerCase()
-     .replace(/\b\w/g, c => c.toUpperCase());
-
-  /* ======================================================
-     1) CORREGIR CATEGORÍAS A MAYÚSCULA INICIAL
-     ====================================================== */
-  const tabs = document.getElementById("tabs");
-  if (tabs) {
-    tabs.querySelectorAll("button").forEach(b => {
-      b.textContent = toTitleCase(b.textContent);
-      b.style.fontWeight = "600";
-    });
-  }
-
-  /* ======================================================
-     2) CORREGIR BAJADA DEL TÍTULO
-     ====================================================== */
-  const header = document.getElementById("site-title");
-  if (header) {
-    const p = header.querySelector("p");
-    if (p) p.textContent = "Productividad Bifásica";
-  }
-
-  /* ======================================================
-     3) CONTENEDOR CENTRAL TIPO ÁRBOL
-     ====================================================== */
-  let tree = document.getElementById("tree-center");
-  if (!tree) {
-    tree = document.createElement("div");
-    tree.id = "tree-center";
-    tree.style.position = "relative";
-    tree.style.maxWidth = "900px";
-    tree.style.margin = "60px auto";
-    tree.style.minHeight = "360px";
-    tree.style.display = "flex";
-    tree.style.flexWrap = "wrap";
-    tree.style.justifyContent = "center";
-    tree.style.alignItems = "center";
-    tree.style.gap = "22px";
-    tree.style.transition = "all .4s ease";
-    const app = document.getElementById("app");
-    if (app) app.insertBefore(tree, app.querySelector("#list"));
-  }
-
-  /* ======================================================
-     4) SUB-PESTAÑAS COMO ÍCONOS AUTÓNOMOS (NO SUPERPUESTOS)
-     ====================================================== */
-  const sub = document.getElementById("sub-tabs");
-  if (sub) {
-    sub.style.position = "static";        // elimina superposición
-    sub.style.opacity = "1";
-    sub.style.pointerEvents = "auto";
-    sub.style.background = "none";
-    sub.style.margin = "40px auto";
-    sub.style.display = "flex";
-    sub.style.flexWrap = "wrap";
-    sub.style.justifyContent = "center";
-    sub.style.gap = "20px";
-  }
-
-  /* Mover sub-pestañas al árbol central */
-  function moveSubTabsToTree() {
-    if (!sub || !tree) return;
-    tree.innerHTML = "";
-    Array.from(sub.children).forEach(btn => {
-      btn.style.minWidth = "180px";
-      btn.style.textAlign = "center";
-      btn.style.borderRadius = "16px";
-      btn.style.padding = "18px 16px";
-      btn.style.fontSize = "1rem";
-      btn.style.fontWeight = "500";
-      btn.style.background =
-        "linear-gradient(135deg,#0a2540,#020617)";
-      btn.style.border = "1px solid #1e3a8a";
-      btn.style.color = "#e5e7eb";
-      btn.style.cursor = "pointer";
-      btn.style.transition = "transform .3s ease, box-shadow .3s ease";
-      btn.onmouseenter = () =>
-        btn.style.transform = "scale(1.05)";
-      btn.onmouseleave = () =>
-        btn.style.transform = "scale(1)";
-      tree.appendChild(btn);
-    });
-  }
-
-  /* ======================================================
-     5) COLORES DIFERENCIADOS PARA ARTÍCULOS (HOJAS)
-     ====================================================== */
-  const observer = new MutationObserver(() => {
-    moveSubTabsToTree();
-    Array.from(tree.children).forEach((el, i) => {
-      el.style.background =
-        i % 2 === 0
-          ? "linear-gradient(135deg,#0a2540,#020617)"
-          : "linear-gradient(135deg,#111827,#020617)";
-    });
-  });
-
-  if (sub) {
-    observer.observe(sub, { childList: true });
-    moveSubTabsToTree();
-  }
-
-})();
-</script>
-<nav class="de-nav">
-  <div data-de-tabs></div>
-</nav>
-<h1 class="de-hero-title" data-de-hero-title>Didactic-Eureka</h1>
-<p class="de-hero-sub" data-de-hero-subtitle>Productividad Bifásica</p>
-<img src="index.png" alt="Portada" />
-<div class="de-banner"><img src="publicidad.png" alt="Publicidad" /></div>
-<div>Visitas: <span data-de-visits>0</span></div>
-<script>
-/* =========================================================
-   PATCH MAESTRO · RESTITUCIÓN TOTAL DEL ORGANISMO
-   Didactic-Eureka · Producto 1
-   ========================================================= */
-(async function () {
-
-  /* ========= CONFIG ========= */
-  const CONTACT_EMAIL = "tomaslavados@gmail.com"; // <-- cambia si deseas
-  const YOUTUBE_ID = "dQw4w9WgXcQ"; // <-- cambia por tu video real
-
-  /* ========= UTIL ========= */
-  const toTitleCase = s =>
-    s.replace(/[:]/g, "")
-     .replace(/[-_]/g, " ")
-     .toLowerCase()
-     .replace(/\b\w/g, c => c.toUpperCase());
-
-  function el(tag, attrs = {}, html = "") {
-    const e = document.createElement(tag);
-    Object.entries(attrs).forEach(([k,v]) => e.setAttribute(k,v));
-    if (html) e.innerHTML = html;
-    return e;
-  }
-
-  /* ========= CARGAR MANIFEST ========= */
-  let manifest;
-  try {
-    const r = await fetch("manifest.json", { cache: "no-store" });
-    manifest = await r.json();
-  } catch (e) {
-    console.warn("manifest.json no disponible");
-    return;
-  }
-
-  /* ========= ESTRUCTURA BASE DEFENSIVA ========= */
-  const body = document.body;
-
-  let nav = document.querySelector(".de-nav");
-  if (!nav) {
-    nav = el("nav", { class: "de-nav" });
-    body.prepend(nav);
-  }
-
-  let tabs = nav.querySelector("[data-de-tabs]");
-  if (!tabs) {
-    tabs = el("div", { "data-de-tabs": "" });
-    nav.appendChild(tabs);
-  }
-
-  let main = document.querySelector("[data-de-center]");
-  if (!main) {
-    main = el("main", { "data-de-center": "" });
-    body.appendChild(main);
-  }
-
-  /* ========= TÍTULO + BAJADA ========= */
-  let hero = document.querySelector(".de-hero");
-  if (!hero) {
-    hero = el("section", { class: "de-hero" });
-    hero.innerHTML = `
-      <h1 class="de-hero-title">Didactic-Eureka</h1>
-      <p class="de-hero-sub">Productividad Bifásica</p>
-    `;
-    body.insertBefore(hero, nav.nextSibling);
-  }
-
-  /* ========= NAV: SOLO CATEGORÍAS CON ARTÍCULOS ========= */
-  tabs.innerHTML = "";
-
-  function hasArticles(node) {
-    if (node.pdfs && node.pdfs.length) return true;
-    if (node.children) return node.children.some(hasArticles);
-    return false;
-  }
-
-  manifest.tree.children
-    .filter(hasArticles)
-    .forEach(cat => {
-      const wrap = el("div", { class: "de-tabwrap" });
-      const tab = el("button", { class: "de-tab" }, toTitleCase(cat.name));
-      const dropdown = el("div", { class: "de-dropdown" });
-
-      /* subcategorías */
-      (cat.children || []).filter(hasArticles).forEach(sub => {
-        const subBtn = el("div", { class: "de-subcat" }, "▸ " + toTitleCase(sub.name));
-        subBtn.onclick = () => renderTree(sub);
-        dropdown.appendChild(subBtn);
-      });
-
-      /* artículos directos */
-      (cat.pdfs || []).forEach(pdf => {
-        const a = el("a", {
-          class: "de-article",
-          href: pdf.file
-        }, "📄 " + pdf.title);
-        dropdown.appendChild(a);
-      });
-
-      wrap.appendChild(tab);
-      wrap.appendChild(dropdown);
-      tabs.appendChild(wrap);
-
-      tab.onclick = () => renderTree(cat);
-    });
-
-  /* ========= ÁRBOL CENTRAL ========= */
-  function renderTree(node) {
-    main.innerHTML = "";
-    const h = el("h2", {}, toTitleCase(node.name));
-    main.appendChild(h);
-
-    const grid = el("div", { class: "de-tree" });
-
-    (node.children || []).filter(hasArticles).forEach(sub => {
-      const box = el("div", { class: "de-node subcat" }, toTitleCase(sub.name));
-      box.onclick = () => renderTree(sub);
-      grid.appendChild(box);
-    });
-
-    (node.pdfs || []).forEach(pdf => {
-      const art = el("a", {
-        class: "de-node article",
-        href: pdf.file,
-        target: "_self"
-      }, pdf.title);
-      grid.appendChild(art);
-    });
-
-    main.appendChild(grid);
-  }
-
-  /* ========= BANNER PUBLICITARIO ========= */
-  let banner = document.getElementById("de-banner");
-  if (!banner) {
-    banner = el("div", { id: "de-banner" });
-    banner.innerHTML = `
-      <strong>Espacio Publicitario</strong> ·
-      <span>Próximamente</span> ·
-      <a href="mailto:${CONTACT_EMAIL}">Contacto</a>
-    `;
-    body.appendChild(banner);
-  }
-
-  /* ========= VIDEO YOUTUBE LOOP ========= */
-  let video = document.getElementById("de-video");
-  if (!video) {
-    video = el("div", { id: "de-video" });
-    video.innerHTML = `
-      <iframe
-        src="https://www.youtube.com/embed/${YOUTUBE_ID}?loop=1&playlist=${YOUTUBE_ID}&mute=1&controls=1"
-        allow="autoplay; encrypted-media"
-        allowfullscreen
-      ></iframe>
-    `;
-    body.appendChild(video);
-  }
-
-})();
-</script>
-
-<style>
-/* ====== ESTILOS DEFENSIVOS ====== */
-.de-nav { position: sticky; top:0; background:#020617; z-index:999; }
-.de-tab { font-size:1.25rem; padding:14px 24px; border-radius:16px; }
-.de-tabwrap { position:relative; display:inline-block; margin:6px; }
-.de-dropdown { display:none; position:absolute; top:100%; left:0;
-  background:#020617; padding:12px; border-radius:16px; }
-.de-tabwrap:hover .de-dropdown { display:block; }
-
-.de-subcat { padding:8px; cursor:pointer; color:#93c5fd; }
-.de-article { display:block; padding:8px; color:#e5e7eb; }
-
-.de-tree { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:16px; margin-top:24px; }
-
-.de-node { padding:20px; border-radius:16px; text-align:center; }
-.de-node.subcat { background:#0a2540; cursor:pointer; }
-.de-node.article { background:#111827; text-decoration:none; color:white; }
-
-#de-banner { position:fixed; bottom:0; width:100%; background:#020617;
-  padding:12px; text-align:center; }
-
-#de-video { max-width:900px; margin:40px auto; }
-#de-video iframe { width:100%; height:400px; border-radius:16px; }
-</style>
-</head>
-<meta name="description"
-      content="Didactic-Eureka: plataforma bifásica de conservación informativa y lectura estructurada" />
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<p class="nota-sistema">
-  Métrica en desarrollo — Iteración activa del sistema.
-</p>
-
-<link rel="stylesheet" href="css/correctivo-final.css">
-<section id="video" class="section-card">
-  <h2>Video</h2>
-  <div style="position:relative;padding-top:56.25%;border-radius:14px;overflow:hidden;">
-    <iframe
-      src="https://www.youtube.com/embed/Qz1BU-FPkU8?start=21"
-      title="Didactic-Eureka Video"
-      style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      allowfullscreen
-    ></iframe>
-  </div>
-</section>
-<script src="js/correctivo-final.js"></script>
-<section id="navegacion-formal">
-  <h2>Contenido</h2>
-  <div id="tabs-categorias"></div>
-  <div id="tabs-subcategorias"></div>
-  <div id="lista-articulos"></div>
-</section>
 
 
