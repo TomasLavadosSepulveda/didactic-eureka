@@ -20,3 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
     tabsContainer.appendChild(btn);
   });
 });
+const title =
+  window.TITLES_MAP[slug] ||
+  slug.replace(/[-_]/g, " ").replace(/\b\w/g, c => c.toUpperCase());
